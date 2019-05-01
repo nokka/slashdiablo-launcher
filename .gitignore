@@ -1,0 +1,17 @@
+#directories
+deploy/
+darwin/
+
+#file extensions
+*.o
+*.qmlc
+*.cpp
+*.h
+*.qrc
+*-packr.go
+*.dmg
+*.DS_Store
+
+#file prefixes
+moc*.*
+rcc*.*
