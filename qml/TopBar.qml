@@ -16,9 +16,11 @@ Rectangle {
             font.pointSize: 24; font.bold: true
         }
 
+        // Close button.
         Button {
             id: closeButton
             width: 25; height: 25
+            anchors.margins: 20 
             
             anchors.top: parent.top;
             anchors.right: parent.right;
@@ -35,13 +37,25 @@ Rectangle {
             onClicked: QmlBridge.closeLauncher()
         }
 
+        // Minimize button.
         Button {
             id: minimizeButton
             width: 25; height: 25
+            anchors.margins: 55;
+            anchors.topMargin: 19
             
-            x: 25; anchors.verticalCenter: parent.verticalCenter
+            anchors.top: parent.top;
+            anchors.right: parent.right;
             
-            text: "Minimize"
+            Text {
+                text: "__"
+                color: "#ffffff"
+                font.pointSize: 24; font.bold: true
+            }
+
+            background: Rectangle { 
+                color: "#00000000"
+            }
 
             onClicked: QmlBridge.minimizeLauncher()
         }

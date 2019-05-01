@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/nokka/slash-launcher/d2"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/quick"
 )
@@ -16,8 +17,12 @@ type QmlBridge struct {
 	// Reference to main view.
 	View *quick.QQuickView
 
-	_ func() `slot:"closeLauncher"`
-	_ func() `slot:"minimizeLauncher"`
+	// Game launcher
+	D2Launcher *d2.Launcher
+
+	_ func() `signal:"closeLauncher"`
+	_ func() `signal:"minimizeLauncher"`
+	_ func() `signal:"launchGame"`
 }
 
 // Connect will connect the QML signals to functions in Go.
@@ -30,5 +35,9 @@ func (q *QmlBridge) Connect() {
 	q.ConnectMinimizeLauncher(func() {
 		fmt.Println("Minimizing Launcher")
 		q.View.SetWindowState(core.Qt__WindowMinimized)
+	})
+
+	q.ConnectLaunchGame(func() {
+		q.D2Launcher.Exec()
 	})
 }

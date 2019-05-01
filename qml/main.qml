@@ -16,8 +16,8 @@ Rectangle {
     TopBar {}
 
     // Progress bar.
-    Progress{}
+    //Progress{}
 
-    // Launch button.
-    Button{}
+    // Bottom bar.
+    BottomBar{}
 }
