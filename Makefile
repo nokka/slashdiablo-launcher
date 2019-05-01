@@ -4,4 +4,4 @@ run:
 
 # Rebuild the app if you made changes to the Go layer.
 build:
-	qtdeploy build
+	cd cmd/launcher; qtdeploy build

@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/nokka/slash-launcher/bridge"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/quick"
 	"github.com/therecipe/qt/widgets"
@@ -24,7 +25,7 @@ func main() {
 	view.SetSource(core.NewQUrl3("qml/main.qml", 0))
 
 	// Create a new QML bridge that will bridge the client to Go.
-	var qmlBridge = NewQmlBridge(nil)
+	var qmlBridge = bridge.NewQmlBridge(nil)
 
 	// Connect the QML signals on the bridge to Go.
 	qmlBridge.Connect(view)
