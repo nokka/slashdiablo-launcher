@@ -13,19 +13,22 @@ import (
 type QmlBridge struct {
 	core.QObject
 
+	// Reference to main view.
+	View *quick.QQuickView
+
 	_ func() `slot:"closeLauncher"`
-	_ func() `slot:"minimize"`
+	_ func() `slot:"minimizeLauncher"`
 }
 
 // Connect will connect the QML signals to functions in Go.
-func (q *QmlBridge) Connect(view *quick.QQuickView) {
+func (q *QmlBridge) Connect() {
 	q.ConnectCloseLauncher(func() {
 		fmt.Println("Closing Launcher")
 		os.Exit(0)
 	})
 
-	q.ConnectMinimize(func() {
+	q.ConnectMinimizeLauncher(func() {
 		fmt.Println("Minimizing Launcher")
-		view.SetWindowState(core.Qt__WindowMinimized)
+		q.View.SetWindowState(core.Qt__WindowMinimized)
 	})
 }

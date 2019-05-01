@@ -43,7 +43,7 @@ Rectangle {
             
             text: "Minimize"
 
-            onClicked: QmlBridge.minimize()
+            onClicked: QmlBridge.minimizeLauncher()
         }
 
 }

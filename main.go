@@ -26,9 +26,10 @@ func main() {
 
 	// Create a new QML bridge that will bridge the client to Go.
 	var qmlBridge = bridge.NewQmlBridge(nil)
+	qmlBridge.View = view
 
 	// Connect the QML signals on the bridge to Go.
-	qmlBridge.Connect(view)
+	qmlBridge.Connect()
 
 	// Set the bridge on the view.
 	view.RootContext().SetContextProperty("QmlBridge", qmlBridge)
