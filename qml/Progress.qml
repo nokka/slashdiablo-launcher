@@ -4,24 +4,21 @@ import QtQuick.Controls.Styles 1.4
 
 Rectangle {
     // Size
-    width: 500
-    height: 80
-    x: 20
+    width: parent.width * 0.70
+    height: 20
+    x: 20 
 
     // Anchors
-    anchors.bottom: parent.bottom;
+    anchors.verticalCenter: parent.verticalCenter
 
     // Transparent background
     color: "#00000000" 
 
     ProgressBar {
-        value: 0.5
+        value: QmlBridge.patchProgress
         
         width: parent.width
-        height: 50
-        
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+        height: 20
         
         style: ProgressBarStyle {
             background: Rectangle {

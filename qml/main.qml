@@ -15,9 +15,6 @@ Rectangle {
     // Top bar for the entire app.
     TopBar {}
 
-    // Progress bar.
-    //Progress{}
-
     // Bottom bar.
     BottomBar{}
 }

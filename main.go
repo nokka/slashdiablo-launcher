@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"time"
 
 	"github.com/nokka/slash-launcher/bridge"
 	"github.com/nokka/slash-launcher/d2"
@@ -53,4 +54,12 @@ func main() {
 
 	// Finally, execute the application.
 	app.Exec()
+
+	go func() {
+		for i := 0; i < 10; i++ {
+			time.Sleep(1 * time.Second)
+			qmlBridge.SetPatchProgress(0.1 * float32(i))
+		}
+
+	}()
 }

@@ -20,6 +20,9 @@ type QmlBridge struct {
 	// Game launcher
 	D2Launcher *d2.Launcher
 
+	// Patching progress.
+	_ float32 `property:"patchProgress"`
+
 	_ func() `signal:"closeLauncher"`
 	_ func() `signal:"minimizeLauncher"`
 	_ func() `signal:"launchGame"`

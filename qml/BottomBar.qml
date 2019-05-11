@@ -9,9 +9,16 @@ Rectangle {
         color: "#100b17"
 
 
+        // Commented out for now.
+        //Progress{}
+
+        ProgressBar {
+            value: QmlBridge.patchProgress
+        }
+
         // Launch button.
         Button {
-            width: 300; height: 50
+            width: parent.width * 0.20; height: 50
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right;
             anchors.margins: 20 
