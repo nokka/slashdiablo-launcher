@@ -5,6 +5,7 @@ import (
 
 	"github.com/nokka/slash-launcher/bridge"
 	"github.com/nokka/slash-launcher/d2"
+	"github.com/nokka/slash-launcher/window"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/quick"
 	"github.com/therecipe/qt/widgets"
@@ -35,8 +36,17 @@ func main() {
 	// Connect the QML signals on the bridge to Go.
 	qmlBridge.Connect()
 
+	// Allows for windows to minimize on Darwin.
+	window.AllowMinimize(view.WinId())
+
 	// Set the bridge on the view.
 	view.RootContext().SetContextProperty("QmlBridge", qmlBridge)
+
+	// Center the view.
+	view.SetPosition2(
+		(widgets.QApplication_Desktop().Screen(0).Width()-view.Width())/2,
+		(widgets.QApplication_Desktop().Screen(0).Height()-view.Height())/2,
+	)
 
 	// Make the view visible.
 	view.Show()
