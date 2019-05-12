@@ -3,7 +3,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 Rectangle {
-    // Size
+    id: patcher
     width: parent.width * 0.70
     height: 20
     x: 20 
@@ -33,4 +33,6 @@ Rectangle {
             }
         }
     }
+
+    Component.onCompleted: QmlBridge.patchGame()
 }

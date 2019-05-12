@@ -9,12 +9,8 @@ Rectangle {
         color: "#100b17"
 
 
-        // Commented out for now.
-        //Progress{}
-
-        ProgressBar {
-            value: QmlBridge.patchProgress
-        }
+        // Patcher including progress bar.
+        Patcher{}
 
         // Launch button.
         Button {

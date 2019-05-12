@@ -15,3 +15,6 @@ darwin/
 #file prefixes
 moc*.*
 rcc*.*
+
+# binaries
+slash-launcher

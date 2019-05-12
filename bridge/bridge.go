@@ -1,7 +1,6 @@
 package bridge
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/nokka/slash-launcher/d2"
@@ -18,7 +17,7 @@ type QmlBridge struct {
 	View *quick.QQuickView
 
 	// Game launcher
-	D2Launcher *d2.Launcher
+	D2service *d2.Service
 
 	// Patching progress.
 	_ float32 `property:"patchProgress"`
@@ -26,21 +25,34 @@ type QmlBridge struct {
 	_ func() `signal:"closeLauncher"`
 	_ func() `signal:"minimizeLauncher"`
 	_ func() `signal:"launchGame"`
+
+	_ func() `slot:"patchGame"`
 }
 
 // Connect will connect the QML signals to functions in Go.
 func (q *QmlBridge) Connect() {
 	q.ConnectCloseLauncher(func() {
-		fmt.Println("Closing Launcher")
 		os.Exit(0)
 	})
 
 	q.ConnectMinimizeLauncher(func() {
-		fmt.Println("Minimizing Launcher")
 		q.View.SetWindowState(core.Qt__WindowMinimized)
 	})
 
 	q.ConnectLaunchGame(func() {
-		q.D2Launcher.Exec()
+		q.D2service.Exec()
+	})
+
+	q.ConnectPatchGame(func() {
+		go func() {
+			// Let the patcher run, it returns a channel
+			// where we get the progress from.
+			progress := q.D2service.Patch()
+
+			// Range over the percentages complete.
+			for percentage := range progress {
+				q.SetPatchProgress(percentage)
+			}
+		}()
 	})
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"time"
 
 	"github.com/nokka/slash-launcher/bridge"
 	"github.com/nokka/slash-launcher/d2"
@@ -24,24 +23,24 @@ func main() {
 	view.SetResizeMode(quick.QQuickView__SizeRootObjectToView)
 	view.SetFlags(core.Qt__FramelessWindowHint)
 
-	// Set our main.qml to the view.
-	view.SetSource(core.NewQUrl3("qml/main.qml", 0))
-
 	// Create a new QML bridge that will bridge the client to Go.
 	var qmlBridge = bridge.NewQmlBridge(nil)
 
 	// Setup the bridge dependencies.
-	qmlBridge.D2Launcher = d2.NewLauncher("/")
+	qmlBridge.D2service = d2.NewService("/")
 	qmlBridge.View = view
 
 	// Connect the QML signals on the bridge to Go.
 	qmlBridge.Connect()
 
-	// Allows for windows to minimize on Darwin.
-	window.AllowMinimize(view.WinId())
-
 	// Set the bridge on the view.
 	view.RootContext().SetContextProperty("QmlBridge", qmlBridge)
+
+	// Set our main.qml to the view.
+	view.SetSource(core.NewQUrl3("qml/main.qml", 0))
+
+	// Allows for windows to minimize on Darwin.
+	window.AllowMinimize(view.WinId())
 
 	// Center the view.
 	view.SetPosition2(
@@ -54,12 +53,4 @@ func main() {
 
 	// Finally, execute the application.
 	app.Exec()
-
-	go func() {
-		for i := 0; i < 10; i++ {
-			time.Sleep(1 * time.Second)
-			qmlBridge.SetPatchProgress(0.1 * float32(i))
-		}
-
-	}()
 }
