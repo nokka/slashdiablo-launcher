@@ -5,6 +5,7 @@ import (
 
 	"github.com/nokka/slash-launcher/bridge"
 	"github.com/nokka/slash-launcher/d2"
+	"github.com/nokka/slash-launcher/github"
 	"github.com/nokka/slash-launcher/window"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/quick"
@@ -12,6 +13,12 @@ import (
 )
 
 func main() {
+	// Environment variables set when building.
+	var (
+		githubOwner      = envString("GITHUB_OWNER", "")
+		githubRepository = envString("GITHUB_REPO", "")
+	)
+
 	// Enable high dpi scaling, useful for devices with high pixel density displays.
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
 
@@ -26,8 +33,11 @@ func main() {
 	// Create a new QML bridge that will bridge the client to Go.
 	var qmlBridge = bridge.NewQmlBridge(nil)
 
+	// Setup services.
+	gs := github.NewService(githubOwner, githubRepository)
+
 	// Setup the bridge dependencies.
-	qmlBridge.D2service = d2.NewService("/")
+	qmlBridge.D2service = d2.NewService("/", gs)
 	qmlBridge.View = view
 
 	// Connect the QML signals on the bridge to Go.
@@ -53,4 +63,12 @@ func main() {
 
 	// Finally, execute the application.
 	app.Exec()
+}
+
+func envString(env, fallback string) string {
+	e := os.Getenv(env)
+	if e == "" {
+		return fallback
+	}
+	return e
 }
