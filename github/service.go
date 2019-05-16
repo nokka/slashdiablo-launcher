@@ -2,7 +2,7 @@ package github
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"sync"
 
 	"github.com/google/go-github/github"
@@ -10,7 +10,7 @@ import (
 
 // Service encapsulates all the operations available on the github service.
 type Service interface {
-	GetFile(filePath string) ([]byte, error)
+	GetFile(filePath string) (io.ReadCloser, error)
 }
 
 type service struct {
@@ -22,22 +22,18 @@ type service struct {
 }
 
 // GetFile will the file by the given path in the repository set on the service.
-func (s *service) GetFile(filePath string) ([]byte, error) {
+func (s *service) GetFile(filePath string) (io.ReadCloser, error) {
 	client, err := s.getClient()
 	if err != nil {
 		return nil, err
 	}
-	r, err := client.Repositories.DownloadContents(s.ctx, s.owner, s.repository, filePath, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
-	}
-
-	return data, nil
+	return client.Repositories.DownloadContents(
+		s.ctx,
+		s.owner,
+		s.repository,
+		filePath,
+		nil,
+	)
 }
 
 // getClient creates the github API client if its not set already.

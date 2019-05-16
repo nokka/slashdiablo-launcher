@@ -25,10 +25,11 @@ Rectangle {
             anchors.top: parent.top;
             anchors.right: parent.right;
             
+            
             background: Rectangle { 
                 color: "#00000000"
                 Image {
-                    source: "../assets/close.png";
+                    source: "assets/close.png";
                     fillMode: Image.PreserveAspectFit
                     anchors.fill: parent; 
                 }

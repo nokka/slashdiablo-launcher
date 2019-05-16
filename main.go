@@ -37,7 +37,7 @@ func main() {
 	gs := github.NewService(githubOwner, githubRepository)
 
 	// Setup the bridge dependencies.
-	qmlBridge.D2service = d2.NewService("/", gs)
+	qmlBridge.D2service = d2.NewService("/tmp", gs)
 	qmlBridge.View = view
 
 	// Connect the QML signals on the bridge to Go.
