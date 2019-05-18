@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/nokka/slash-launcher/github"
+	"github.com/nokka/slash-launcher/storage"
 )
 
 // WriteCounter counts the number of bytes written to it. It implements to the io.Writer
@@ -35,11 +36,20 @@ func (wc *WriteCounter) Write(p []byte) (int, error) {
 type Service struct {
 	path          string
 	githubService github.Service
+	store         storage.Store
 }
 
 // Exec will exec the Diablo 2.
-func (s *Service) Exec() {
+func (s *Service) Exec() error {
+	config, err := s.store.Read()
+	if err != nil {
+		return err
+	}
+
 	fmt.Println("LAUNCH on path", s.path)
+	fmt.Println("WITH INSTANCES", config.D2Instances)
+
+	return nil
 }
 
 // Patch will check for updates and if found, patch the game.
@@ -82,9 +92,10 @@ func (s *Service) Patch() <-chan float32 {
 }
 
 // NewService returns a service with all the dependencies.
-func NewService(path string, githubService github.Service) *Service {
+func NewService(path string, githubService github.Service, store storage.Store) *Service {
 	return &Service{
 		path:          path,
 		githubService: githubService,
+		store:         store,
 	}
 }

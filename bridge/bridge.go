@@ -1,6 +1,7 @@
 package bridge
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/nokka/slash-launcher/d2"
@@ -27,6 +28,7 @@ type QmlBridge struct {
 	_ func() `signal:"launchGame"`
 
 	_ func() `slot:"patchGame"`
+	_ func() `slot:"checkGameLocation"`
 }
 
 // Connect will connect the QML signals to functions in Go.
@@ -44,7 +46,7 @@ func (q *QmlBridge) Connect() {
 	})
 
 	q.ConnectPatchGame(func() {
-		go func() {
+		/*go func() {
 			// Let the patcher run, it returns a channel
 			// where we get the progress from.
 			progress := q.D2service.Patch()
@@ -53,6 +55,10 @@ func (q *QmlBridge) Connect() {
 			for percentage := range progress {
 				q.SetPatchProgress(percentage)
 			}
-		}()
+		}()*/
+	})
+
+	q.ConnectCheckGameLocation(func() {
+		fmt.Println("Checking game location")
 	})
 }
