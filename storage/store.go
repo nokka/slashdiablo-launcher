@@ -15,11 +15,11 @@ const (
 	permissions = 0755
 )
 
-// Store represents the data store available while hiding implementation
-// details behind the interface.
+// Store represents the data store while hiding implementation behind the interface.
 type Store interface {
 	Load() error
 	Read() (*Config, error)
+	Write(config *Config) error
 }
 
 type store struct {
