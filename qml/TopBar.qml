@@ -61,4 +61,31 @@ Rectangle {
             onClicked: QmlBridge.minimizeLauncher()
         }
 
+        // Draggable area
+        Rectangle {
+            id: draggable
+            width: parent.width * 0.80
+            height: 40
+            color: "blue"
+            anchors.top: parent.top;
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            MouseArea {
+                id: draggable_mousearea
+                anchors.fill: parent;
+                property variant clickPos: "1,1"
+
+                onPressed: {
+                    clickPos  = Qt.point(mouse.x,mouse.y)
+                }
+
+                onPositionChanged: {
+                    var delta = Qt.point(mouse.x-clickPos.x, mouse.y-clickPos.y)
+                    root.x += delta.x;
+                    root.y += delta.y;
+                }
+            }
+            
+        }
+
 }
