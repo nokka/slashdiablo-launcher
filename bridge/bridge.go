@@ -38,7 +38,7 @@ func (q *QmlBridge) Connect() {
 	})
 
 	q.ConnectMinimizeLauncher(func() {
-		q.View.SetWindowState(core.Qt__WindowMinimized)
+		//q.View.SetWindowState(core.Qt__WindowMinimized)
 	})
 
 	q.ConnectLaunchGame(func() {

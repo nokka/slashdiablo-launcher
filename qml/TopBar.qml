@@ -47,18 +47,13 @@ Rectangle {
             
             anchors.top: parent.top;
             anchors.right: parent.right;
-            
-            Text {
-                text: "__"
-                color: "#ffffff"
-                font.pointSize: 24; font.bold: true
-            }
 
             background: Rectangle { 
-                color: "#00000000"
+                color: "blue"
             }
 
-            onClicked: QmlBridge.minimizeLauncher()
+            //onClicked: QmlBridge.minimizeLauncher()
+            onClicked: root.showMinimized()
         }
 
         // Draggable area

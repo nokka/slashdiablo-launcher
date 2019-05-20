@@ -1,8 +1,11 @@
-import QtQuick 2.2
-import QtQuick.Dialogs 1.2
+import QtQuick 2.4
+import QtQuick.Controls 2.5
 
-Rectangle {
+ApplicationWindow {
     id: root
+    visible: true
+    flags: Qt.FramelessWindowHint | Qt.WindowMinimizeButtonHint | Qt.Window
+
     width: 1024; height: 600
     color: "#1a1324"
     
