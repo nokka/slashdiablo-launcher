@@ -2,7 +2,7 @@ import QtQuick 2.4
 import QtQuick.Controls 2.5
 
 ApplicationWindow {
-    id: root
+    id: mainWindow
     visible: true
     flags: Qt.FramelessWindowHint | Qt.WindowMinimizeButtonHint | Qt.Window
 

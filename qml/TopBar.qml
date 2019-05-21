@@ -3,7 +3,7 @@ import QtQuick.Controls 2.5
 
 Rectangle {
         id: topbar
-        anchors.top: root.top;
+        anchors.top: mainWindow.top;
         width: parent.width
         height: 80
         color: "#100b17"
@@ -53,7 +53,7 @@ Rectangle {
             }
 
             //onClicked: QmlBridge.minimizeLauncher()
-            onClicked: root.showMinimized()
+            onClicked: mainWindow.showMinimized()
         }
 
         // Draggable area
@@ -76,8 +76,8 @@ Rectangle {
 
                 onPositionChanged: {
                     var delta = Qt.point(mouse.x-clickPos.x, mouse.y-clickPos.y)
-                    root.x += delta.x;
-                    root.y += delta.y;
+                    mainWindow.x += delta.x;
+                    mainWindow.y += delta.y;
                 }
             }
             
