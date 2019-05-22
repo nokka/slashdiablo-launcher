@@ -3,18 +3,20 @@ import QtQuick.Controls 2.5
 
 ApplicationWindow {
     id: mainWindow
+    objectName: "mainWindow"
+
     visible: true
-    flags: Qt.FramelessWindowHint | Qt.WindowMinimizeButtonHint | Qt.Window
+    flags: (Qt.WindowMinimizeButtonHint | Qt.FramelessWindowHint | Qt.Window)
 
     width: 1024; height: 600
     color: "#1a1324"
     
 
     // View that will ask to set gamepath.
-    //GamePath {}
+    GamePath {}
 
     // Background image.
-    Item {
+    /*Item {
         id: background
         anchors.fill: parent;
         Image { source: "assets/bg.jpg"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
@@ -24,5 +26,5 @@ ApplicationWindow {
     TopBar {}
 
     // Bottom bar.
-    BottomBar{}
+    BottomBar{}*/
 }

@@ -1,13 +1,15 @@
 package main
 
 import (
+	"errors"
 	"os"
 
 	"github.com/nokka/slash-launcher/bridge"
 	"github.com/nokka/slash-launcher/d2"
 	"github.com/nokka/slash-launcher/github"
-
-	// Qt.
+	"github.com/nokka/slash-launcher/log"
+	"github.com/nokka/slash-launcher/storage"
+	"github.com/nokka/slash-launcher/window"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
@@ -30,75 +32,69 @@ func main() {
 	ga := gui.NewQGuiApplication(len(os.Args), os.Args)
 	ga.SetWindowIcon(gui.NewQIcon5(":/qml/assets/tmp_icon.png"))
 
-	/*locations := core.QStandardPaths_StandardLocations(core.QStandardPaths__AppLocalDataLocation)
-	if len(locations) == 0 {
+	configPath, err := getConfigPath()
+	if err != nil {
 		os.Exit(0)
 	}
 
-	// Grab the first available location.
-	l := locations[0]*/
+	// The data directory is a requirement for the app.
+	os.MkdirAll(configPath, storage.Permissions)
 
-	//os.MkdirAll(fmt.Sprintf("%s/%s/%s", l, "slashdiablo.com", "slashdiablo.launcher"), 0700)
+	logger := log.NewLogger(configPath)
 
-	// OLD
-	// Create the view and configure it.
-	/*view := quick.NewQQuickView(nil)
-	view.SetResizeMode(quick.QQuickView__SizeRootObjectToView)
-	view.SetFlags(core.Qt__FramelessWindowHint |
-		core.Qt__WindowMinimizeButtonHint |
-		core.Qt__Window,
-	)*/
+	// Setup local storage.
+	store := storage.NewStore(configPath)
+	if err := store.Load(); err != nil {
+		logger.Log("unable to load config", err)
+		os.Exit(0)
+	}
+
+	// Setup services.
+	gs := github.NewService(githubOwner, githubRepository)
+	d2s := d2.NewService("/tmp", gs, store, logger)
 
 	// Create a new QML bridge that will bridge the GUI to Go.
 	var qmlBridge = bridge.NewQmlBridge(nil)
 
-	// Setup local storage.
-	/*store := storage.NewStore()
-	if err := store.Load(); err != nil {
-		fmt.Println(err)
-		os.Exit(0)
-	}*/
-
-	// Setup services.
-	gs := github.NewService(githubOwner, githubRepository)
-	d2s := d2.NewService("/tmp", gs)
-
 	// Setup the bridge dependencies.
 	qmlBridge.D2service = d2s
-	//qmlBridge.View = view
 
 	// Connect the QML signals on the bridge to Go.
 	qmlBridge.Connect()
 
-	// QML stuff.
+	// Setup QML engine.
 	qmlEngine := qml.NewQQmlApplicationEngine(nil)
 
-	// Set the bridge on the app.
+	qmlEngine.ConnectObjectCreated(func(object *core.QObject, url *core.QUrl) {
+		println("object created:", object.ObjectName())
+		if object.ObjectName() == "mainWindow" {
+			println("found")
+			window.AllowMinimize(gui.NewQWindowFromPointer(object.Pointer()).WinId())
+		}
+	})
+
+	// Connect the qml bridge to QML.
 	qmlEngine.RootContext().SetContextProperty("QmlBridge", qmlBridge)
 
 	// Set our main.qml to the view.
 	//qmlEngine.Load(core.NewQUrl3("qrc:/qml/main.qml", 0))
 	qmlEngine.Load(core.NewQUrl3("qml/main.qml", 0))
 
+	// Finally, exec the application.
 	gui.QGuiApplication_Exec()
+}
 
-	//view.SetSource(core.NewQUrl3("qml/main.qml", 0))
-	//view.SetSource(core.NewQUrl3("qrc:/qml/main.qml", 0))
-
-	// Allows for windows to minimize on Darwin.
-	/*window.AllowMinimize(view.WinId())
-
-	// Center the view.
-	view.SetPosition2(
-		(widgets.QApplication_Desktop().Screen(0).Width()-view.Width())/2,
-		(widgets.QApplication_Desktop().Screen(0).Height()-view.Height())/2,
+// Returns the target specific application data directory.
+func getConfigPath() (string, error) {
+	locations := core.QStandardPaths_StandardLocations(
+		core.QStandardPaths__AppLocalDataLocation,
 	)
+	if len(locations) == 0 {
+		return "", errors.New("failed to locate application data directory")
+	}
 
-	// Make the view visible.
-	view.Show()*/
-
-	// Finally, execute the application.
-	//app.Exec()
+	// Grab the first available location.
+	return locations[0], nil
 }
 
 func envString(env, fallback string) string {

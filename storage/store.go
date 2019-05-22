@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-
-	"github.com/therecipe/qt/core"
 )
 
 const (
-	configName  = "config.json"
-	permissions = 0755
+	// configName is the name of the config.
+	configName = "config.json"
+
+	// Permissions are the directory permissions for storage.
+	Permissions = 0755
 )
 
 // Store represents the data store while hiding implementation behind the interface.
@@ -29,7 +30,7 @@ type store struct {
 
 // Read will return the current configuration.
 func (s *store) Read() (*Config, error) {
-	body, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", s.path, s.configName))
+	/*body, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", s.path, s.configName))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +40,8 @@ func (s *store) Read() (*Config, error) {
 		return nil, err
 	}
 
-	return &conf, nil
+	return &conf, nil*/
+	return nil, errors.New("Error occured")
 }
 
 func (s *store) Write(config *Config) error {
@@ -53,7 +55,7 @@ func (s *store) Write(config *Config) error {
 	return ioutil.WriteFile(
 		fmt.Sprintf("%s/%s", s.path, s.configName),
 		body,
-		permissions,
+		Permissions,
 	)
 }
 
@@ -61,26 +63,6 @@ func (s *store) Write(config *Config) error {
 // exist, and will load a default config, if the config exists
 // it will be set on the store.
 func (s *store) Load() error {
-	// Get the target specific data storage location.
-	err := s.getLocation()
-	if err != nil {
-		return err
-	}
-
-	// Check if the data directory exists.
-	pathExists, err := s.pathExists()
-	if err != nil {
-		return err
-	}
-
-	// If the path doesn't exist, create it.
-	if !pathExists {
-		err := os.Mkdir(s.path, permissions)
-		if err != nil {
-			return err
-		}
-	}
-
 	// if the config doesn't exist, create it.
 	configExists, err := s.configExists()
 	if err != nil {
@@ -98,23 +80,7 @@ func (s *store) Load() error {
 	return nil
 }
 
-func (s *store) pathExists() (bool, error) {
-	// Returns an error if the path does not exist.
-	f, err := os.Stat(s.path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return false, nil
-		}
-		// Unknown error.
-		return false, err
-
-	}
-
-	return f.IsDir(), nil
-}
-
 func (s *store) configExists() (bool, error) {
-	// Returns an error if the config does not exist.
 	_, err := os.Stat(s.configName)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -128,21 +94,10 @@ func (s *store) configExists() (bool, error) {
 	return true, nil
 }
 
-func (s *store) getLocation() error {
-	locations := core.QStandardPaths_StandardLocations(core.QStandardPaths__AppLocalDataLocation)
-	if len(locations) == 0 {
-		return errors.New("missing app data location")
-	}
-
-	// Grab the first available location.
-	s.path = locations[0]
-
-	return nil
-}
-
 // NewStore returns a new store with all dependencies set up.
-func NewStore() Store {
+func NewStore(path string) Store {
 	return &store{
+		path:       path,
 		configName: configName,
 	}
 }

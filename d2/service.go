@@ -6,24 +6,27 @@ import (
 	"os"
 
 	"github.com/nokka/slash-launcher/github"
+	"github.com/nokka/slash-launcher/log"
+	"github.com/nokka/slash-launcher/storage"
 )
 
-// Service is responible for all things related to Diablo II.
+// Service is responsible for all things related to Diablo II.
 type Service struct {
 	path          string
 	githubService github.Service
-	//store         storage.Store
+	store         storage.Store
+	logger        log.Logger
 }
 
 // Exec will exec the Diablo 2.
 func (s *Service) Exec() error {
-	/*config, err := s.store.Read()
+	config, err := s.store.Read()
 	if err != nil {
 		return err
 	}
 
 	fmt.Println("LAUNCH on path", s.path)
-	fmt.Println("WITH INSTANCES", config.D2Instances)*/
+	fmt.Println("WITH INSTANCES", config.D2Instances)
 
 	return nil
 }
@@ -39,14 +42,15 @@ func (s *Service) Patch() <-chan float32 {
 		// file until it's downloaded, but we'll remove the tmp extension once downloaded.
 		out, err := os.Create(s.path + "/test.tmp")
 		if err != nil {
-			fmt.Println(err)
+			s.logger.Log("failed to create tmp file", err)
+			return
 		}
 
 		defer out.Close()
 
 		contents, err := s.githubService.GetFile("Patch_D2.mpq")
 		if err != nil {
-			fmt.Println(err)
+			s.logger.Log("failed to get file from github", err)
 			return
 		}
 
@@ -58,7 +62,7 @@ func (s *Service) Patch() <-chan float32 {
 
 		_, err = io.Copy(out, io.TeeReader(contents, counter))
 		if err != nil {
-			fmt.Println(err)
+			s.logger.Log("failed to write file locally", err)
 			return
 		}
 	}()
@@ -68,9 +72,16 @@ func (s *Service) Patch() <-chan float32 {
 }
 
 // NewService returns a service with all the dependencies.
-func NewService(path string, githubService github.Service) *Service {
+func NewService(
+	path string,
+	githubService github.Service,
+	store storage.Store,
+	logger log.Logger,
+) *Service {
 	return &Service{
 		path:          path,
 		githubService: githubService,
+		store:         store,
+		logger:        logger,
 	}
 }
