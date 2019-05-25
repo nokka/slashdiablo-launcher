@@ -1,8 +1,6 @@
 package bridge
 
 import (
-	"fmt"
-
 	"github.com/nokka/slash-launcher/config"
 	"github.com/therecipe/qt/core"
 )
@@ -26,11 +24,9 @@ func (c *ConfigBridge) Connect() {
 }
 
 func (c *ConfigBridge) setGamePaths(D2Location string, HDLocation string) bool {
-	fmt.Println("SET GAME PATHS RUNNING")
-
-	if err := c.Configuration.Update(map[string]interface{}{
-		"d2_location": D2Location,
-		"hd_location": HDLocation,
+	if err := c.Configuration.Update(config.UpdateConfigRequest{
+		D2Location: &D2Location,
+		HDLocation: &HDLocation,
 	}); err != nil {
 		return false
 	}

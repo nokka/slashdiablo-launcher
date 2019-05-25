@@ -5,7 +5,7 @@ import QtQuick.Dialogs 1.3
 
 Popup {
     id: gamePathDialog
-    modal: true
+    modal: false
     focus: true
     
     background: Rectangle {

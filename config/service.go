@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/nokka/slash-launcher/log"
 	"github.com/nokka/slash-launcher/storage"
 )
@@ -10,7 +8,7 @@ import (
 // Service is responsible for all things related to configuration.
 type Service interface {
 	Read() (*storage.Config, error)
-	Update(fields map[string]interface{}) error
+	Update(request UpdateConfigRequest) error
 }
 
 type service struct {
@@ -18,7 +16,7 @@ type service struct {
 	logger log.Logger
 }
 
-// Update will update the configuration with the given fields.
+// Read will read the configuration and return it.
 func (s *service) Read() (*storage.Config, error) {
 	conf, err := s.store.Read()
 	if err != nil {
@@ -29,10 +27,44 @@ func (s *service) Read() (*storage.Config, error) {
 	return conf, err
 }
 
+// UpdateConfigRequest is the data available to update the config with.
+type UpdateConfigRequest struct {
+	D2Location  *string
+	D2Instances *int
+	HDLocation  *string
+	HDInstances *int
+}
+
 // Update will update the configuration with the given fields.
-func (s *service) Update(fields map[string]interface{}) error {
-	fmt.Println("UPDATING FIELDS")
-	fmt.Println(fields)
+func (s *service) Update(request UpdateConfigRequest) error {
+	conf, err := s.store.Read()
+	if err != nil {
+		s.logger.Log("failed to read config", err)
+		return err
+	}
+
+	if request.D2Location != nil {
+		conf.D2Location = *request.D2Location
+	}
+
+	if request.D2Instances != nil {
+		conf.D2Instances = *request.D2Instances
+	}
+
+	if request.HDLocation != nil {
+		conf.HDLocation = *request.HDLocation
+	}
+
+	if request.HDInstances != nil {
+		conf.HDInstances = *request.HDInstances
+	}
+
+	err = s.store.Write(conf)
+	if err != nil {
+		s.logger.Log("failed to write config", err)
+		return err
+	}
+
 	return nil
 }
 

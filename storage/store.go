@@ -81,7 +81,7 @@ func (s *store) Load() error {
 }
 
 func (s *store) configExists() (bool, error) {
-	_, err := os.Stat(s.configName)
+	_, err := os.Stat(fmt.Sprintf("%s/%s", s.path, s.configName))
 	if err != nil {
 		if os.IsNotExist(err) {
 			return false, nil
