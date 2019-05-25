@@ -1,8 +1,11 @@
 package d2
 
 import (
+	"errors"
+	"fmt"
 	"io"
 	"os"
+	"os/exec"
 
 	"github.com/nokka/slash-launcher/config"
 	"github.com/nokka/slash-launcher/github"
@@ -18,7 +21,7 @@ type Service struct {
 
 // Exec will exec the Diablo 2.
 func (s *Service) Exec() error {
-	/*conf, err := s.configService.Read()
+	conf, err := s.configService.Read()
 	if err != nil {
 		return err
 	}
@@ -34,10 +37,9 @@ func (s *Service) Exec() error {
 	err = cmd.Run()
 	if err != nil {
 		s.logger.Log("unable to exec game path", conf.D2Location, err)
+		s.logger.Log(errors.New("My error"))
 		return err
-	}*/
-
-	s.logger.Log("derp", "derp")
+	}
 
 	return nil
 }

@@ -84,7 +84,7 @@ func (l *logger) write(logEntry []byte) error {
 
 	// Log file didn't exist, creating one.
 	if !exists {
-		f, err = os.Create(l.path)
+		f, err = os.Create(fmt.Sprintf("%s/%s", l.path, errorLog))
 		if err != nil {
 			return err
 		}
