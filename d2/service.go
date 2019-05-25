@@ -5,28 +5,27 @@ import (
 	"io"
 	"os"
 
+	"github.com/nokka/slash-launcher/config"
 	"github.com/nokka/slash-launcher/github"
 	"github.com/nokka/slash-launcher/log"
-	"github.com/nokka/slash-launcher/storage"
 )
 
 // Service is responsible for all things related to Diablo II.
 type Service struct {
-	path          string
 	githubService github.Service
-	store         storage.Store
+	configService config.Service
 	logger        log.Logger
 }
 
 // Exec will exec the Diablo 2.
 func (s *Service) Exec() error {
-	config, err := s.store.Read()
+	conf, err := s.configService.Read()
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("LAUNCH on path", s.path)
-	fmt.Println("WITH INSTANCES", config.D2Instances)
+	fmt.Println("LAUNCH ON LOCATION", conf.D2Location)
+	fmt.Println("WITH INSTANCES", conf.D2Instances)
 
 	return nil
 }
@@ -38,9 +37,15 @@ func (s *Service) Patch() <-chan float32 {
 	go func() {
 		defer close(progress)
 
+		conf, err := s.configService.Read()
+		if err != nil {
+			s.logger.Log("failed to read config", err)
+			return
+		}
+
 		// Create the file, but give it a tmp file extension, this means we won't overwrite a
 		// file until it's downloaded, but we'll remove the tmp extension once downloaded.
-		out, err := os.Create(s.path + "/test.tmp")
+		out, err := os.Create(conf.D2Location + "/test.tmp")
 		if err != nil {
 			s.logger.Log("failed to create tmp file", err)
 			return
@@ -73,15 +78,13 @@ func (s *Service) Patch() <-chan float32 {
 
 // NewService returns a service with all the dependencies.
 func NewService(
-	path string,
 	githubService github.Service,
-	store storage.Store,
+	configuration config.Service,
 	logger log.Logger,
 ) *Service {
 	return &Service{
-		path:          path,
 		githubService: githubService,
-		store:         store,
+		configService: configuration,
 		logger:        logger,
 	}
 }

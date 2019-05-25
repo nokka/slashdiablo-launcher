@@ -80,6 +80,6 @@ Rectangle {
                 mainWindow.x += delta.x;
                 mainWindow.y += delta.y;
             }
-        } 
+        }
     }
 }

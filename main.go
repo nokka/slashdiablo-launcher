@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/nokka/slash-launcher/bridge"
+	"github.com/nokka/slash-launcher/config"
 	"github.com/nokka/slash-launcher/d2"
 	"github.com/nokka/slash-launcher/github"
 	"github.com/nokka/slash-launcher/log"
@@ -28,6 +29,7 @@ func main() {
 
 	// Enable high dpi scaling, useful for devices with high pixel density displays.
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
+	core.QCoreApplication_SetAttribute(core.Qt__AA_UseSoftwareOpenGL, true)
 
 	ga := gui.NewQGuiApplication(len(os.Args), os.Args)
 	ga.SetWindowIcon(gui.NewQIcon5(":/qml/assets/tmp_icon.png"))
@@ -50,7 +52,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	config, err := store.Read()
+	conf, err := store.Read()
 	if err != nil {
 		logger.Log("unable to read config", err)
 		os.Exit(0)
@@ -58,35 +60,35 @@ func main() {
 
 	// Setup services.
 	gs := github.NewService(githubOwner, githubRepository)
-	d2s := d2.NewService("/tmp", gs, store, logger)
+	cs := config.NewService(store, logger)
+	d2s := d2.NewService(gs, cs, logger)
 
 	// Create a new QML bridge that will bridge the GUI to Go.
-	var qmlBridge = bridge.NewQmlBridge(nil)
+	qmlBridge := bridge.NewQmlBridge(nil)
+	qmlBridge.D2service = d2s
 
 	// Initiate the config bridge.
 	configBridge := bridge.NewConfigBridge(nil)
-	configBridge.SetD2Location(config.D2Location)
-	configBridge.SetD2Instances(config.D2Instances)
-	configBridge.SetHDLocation(config.HDLocation)
-	configBridge.SetHDInstances(config.HDInstances)
-	configBridge.Connect()
+	configBridge.Configuration = cs
 
-	// Setup the bridge dependencies.
-	qmlBridge.D2service = d2s
+	configBridge.SetD2Location(conf.D2Location)
+	configBridge.SetD2Instances(conf.D2Instances)
+	configBridge.SetHDLocation(conf.HDLocation)
+	configBridge.SetHDInstances(conf.HDInstances)
 
 	// Connect the QML signals on the bridge to Go.
 	qmlBridge.Connect()
+	configBridge.Connect()
 
 	// Setup QML engine.
 	qmlEngine := qml.NewQQmlApplicationEngine(nil)
-
 	qmlEngine.ConnectObjectCreated(func(object *core.QObject, url *core.QUrl) {
 		if object.ObjectName() == "mainWindow" {
 			window.AllowMinimize(gui.NewQWindowFromPointer(object.Pointer()).WinId())
 		}
 	})
 
-	// Connect the qml bridge to QML.
+	// Connect the bridges to QML.
 	qmlEngine.RootContext().SetContextProperty("QmlBridge", qmlBridge)
 	qmlEngine.RootContext().SetContextProperty("settings", configBridge)
 

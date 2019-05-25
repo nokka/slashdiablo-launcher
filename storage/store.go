@@ -43,6 +43,8 @@ func (s *store) Read() (*Config, error) {
 }
 
 func (s *store) Write(config *Config) error {
+	// @TODO: Add mutex.
+
 	// Marshal the data into json.
 	body, err := json.Marshal(config)
 	if err != nil {
