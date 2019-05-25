@@ -16,40 +16,40 @@ type QmlBridge struct {
 	// Game launcher
 	D2service *d2.Service
 
-	// Patching progress.
 	_ float32 `property:"patchProgress"`
-
-	_ func() `signal:"closeLauncher"`
-	_ func() `signal:"launchGame"`
-
-	_ func() `slot:"patchGame"`
-	_ func() `slot:"checkGameLocation"`
+	_ func()  `signal:"closeLauncher"`
+	_ func()  `signal:"launchGame"`
+	_ func()  `slot:"patchGame"`
 }
 
 // Connect will connect the QML signals to functions in Go.
 func (q *QmlBridge) Connect() {
-	q.ConnectCloseLauncher(func() {
-		os.Exit(0)
-	})
+	q.ConnectCloseLauncher(q.closeLauncher)
+	q.ConnectLaunchGame(q.launchGame)
+	q.ConnectPatchGame(q.patchGame)
+}
 
-	q.ConnectLaunchGame(func() {
-		q.D2service.Exec()
-	})
+func (q *QmlBridge) patchGame() {
+	fmt.Println("Patching game...")
+	/*go func() {
+		// Let the patcher run, it returns a channel
+		// where we get the progress from.
+		progress := q.D2service.Patch()
 
-	q.ConnectPatchGame(func() {
-		/*go func() {
-			// Let the patcher run, it returns a channel
-			// where we get the progress from.
-			progress := q.D2service.Patch()
+		// Range over the percentages complete.
+		for percentage := range progress {
+			q.SetPatchProgress(percentage)
+		}
+	}()*/
+}
 
-			// Range over the percentages complete.
-			for percentage := range progress {
-				q.SetPatchProgress(percentage)
-			}
-		}()*/
-	})
+func (q *QmlBridge) launchGame() {
+	err := q.D2service.Exec()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
 
-	q.ConnectCheckGameLocation(func() {
-		fmt.Println("Checking game location")
-	})
+func (q *QmlBridge) closeLauncher() {
+	os.Exit(0)
 }

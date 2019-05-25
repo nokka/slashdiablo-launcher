@@ -2,7 +2,6 @@ package storage
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -30,7 +29,7 @@ type store struct {
 
 // Read will return the current configuration.
 func (s *store) Read() (*Config, error) {
-	/*body, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", s.path, s.configName))
+	body, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", s.path, s.configName))
 	if err != nil {
 		return nil, err
 	}
@@ -40,8 +39,7 @@ func (s *store) Read() (*Config, error) {
 		return nil, err
 	}
 
-	return &conf, nil*/
-	return nil, errors.New("Error occured")
+	return &conf, nil
 }
 
 func (s *store) Write(config *Config) error {

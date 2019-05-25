@@ -2,12 +2,6 @@ import QtQuick 2.4
 import QtQuick.Controls 2.5
 
 Rectangle {
-    id: topbar
-    anchors.top: mainWindow.top;
-    width: parent.width
-    height: 80
-    color: "#100b17"
-
     Text {
         id: title
         text: "Slashdiablo"

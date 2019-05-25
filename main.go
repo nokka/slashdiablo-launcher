@@ -37,15 +37,22 @@ func main() {
 		os.Exit(0)
 	}
 
+	// Setup logger.
+	logger := log.NewLogger(configPath)
+
 	// The data directory is a requirement for the app.
 	os.MkdirAll(configPath, storage.Permissions)
-
-	logger := log.NewLogger(configPath)
 
 	// Setup local storage.
 	store := storage.NewStore(configPath)
 	if err := store.Load(); err != nil {
 		logger.Log("unable to load config", err)
+		os.Exit(0)
+	}
+
+	config, err := store.Read()
+	if err != nil {
+		logger.Log("unable to read config", err)
 		os.Exit(0)
 	}
 
@@ -55,6 +62,14 @@ func main() {
 
 	// Create a new QML bridge that will bridge the GUI to Go.
 	var qmlBridge = bridge.NewQmlBridge(nil)
+
+	// Initiate the config bridge.
+	configBridge := bridge.NewConfigBridge(nil)
+	configBridge.SetD2Location(config.D2Location)
+	configBridge.SetD2Instances(config.D2Instances)
+	configBridge.SetHDLocation(config.HDLocation)
+	configBridge.SetHDInstances(config.HDInstances)
+	configBridge.Connect()
 
 	// Setup the bridge dependencies.
 	qmlBridge.D2service = d2s
@@ -66,15 +81,14 @@ func main() {
 	qmlEngine := qml.NewQQmlApplicationEngine(nil)
 
 	qmlEngine.ConnectObjectCreated(func(object *core.QObject, url *core.QUrl) {
-		println("object created:", object.ObjectName())
 		if object.ObjectName() == "mainWindow" {
-			println("found")
 			window.AllowMinimize(gui.NewQWindowFromPointer(object.Pointer()).WinId())
 		}
 	})
 
 	// Connect the qml bridge to QML.
 	qmlEngine.RootContext().SetContextProperty("QmlBridge", qmlBridge)
+	qmlEngine.RootContext().SetContextProperty("settings", configBridge)
 
 	// Set our main.qml to the view.
 	//qmlEngine.Load(core.NewQUrl3("qrc:/qml/main.qml", 0))

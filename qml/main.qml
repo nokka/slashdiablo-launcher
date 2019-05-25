@@ -10,21 +10,39 @@ ApplicationWindow {
 
     width: 1024; height: 600
     color: "#1a1324"
-    
-
-    // View that will ask to set gamepath.
-    GamePath {}
 
     // Background image.
-    /*Item {
+    Item {
         id: background
         anchors.fill: parent;
         Image { source: "assets/bg.jpg"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
     }
 
+    Component.onCompleted: {
+        if(settings.D2Location.length == 0) {
+            gamePathDialog.open()
+        }
+    }
+
     // Top bar for the entire app.
-    TopBar {}
+    TopBar {
+        id: topbar
+        anchors.top: mainWindow.top;
+        width: parent.width
+        height: 80
+        color: "#100b17"
+    }
+
+    // Game path dialog, used when the Diablo game path hasn't been set.
+    Item {
+        GamePathDialog {
+            id: gamePathDialog
+            x: 0; y: 0
+            width: mainWindow.width
+            height: mainWindow.height
+        }
+    }
 
     // Bottom bar.
-    BottomBar{}*/
+    BottomBar{}
 }
