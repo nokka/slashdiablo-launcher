@@ -39,11 +39,11 @@ func main() {
 		os.Exit(0)
 	}
 
+	// Data directory is a requirement for the app.
+	os.MkdirAll(configPath, storage.Permissions)
+
 	// Setup logger.
 	logger := log.NewLogger(configPath)
-
-	// The data directory is a requirement for the app.
-	os.MkdirAll(configPath, storage.Permissions)
 
 	// Setup local storage.
 	store := storage.NewStore(configPath)

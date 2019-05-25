@@ -3,7 +3,13 @@ package log
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"sync"
 	"time"
+)
+
+const (
+	errorLog = "errors.log"
 )
 
 // Logger represents the logger interface while hiding the implementation.
@@ -12,7 +18,8 @@ type Logger interface {
 }
 
 type logger struct {
-	path string
+	path       string
+	writeMutex sync.Mutex
 }
 
 // Log will log the given keyvals.
@@ -43,14 +50,78 @@ func (l *logger) Log(keyvals ...interface{}) error {
 			data[k] = v
 		}
 	}
-	o, err := json.MarshalIndent(data, "", "\t")
+
+	// Indent to readable JSON.
+	formatted, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
-	fmt.Println(string(o))
+	// Write to file on disk.
+	if err := l.write(formatted); err != nil {
+		return err
+	}
+
 	return err
+}
+
+func (l *logger) write(logEntry []byte) error {
+	// Lock access to the file.
+	l.writeMutex.Lock()
+
+	// Unlock it when we're done writing.
+	defer l.writeMutex.Unlock()
+
+	// Check if the log file exists already.
+	exists, err := l.logExists()
+	if err != nil {
+		return err
+	}
+
+	// File pointer, we'll use it regardless if we create the file
+	// or if we open it in append mode to append the log entry.
+	var f *os.File
+
+	// Log file didn't exist, creating one.
+	if !exists {
+		f, err = os.Create(l.path)
+		if err != nil {
+			return err
+		}
+	} else {
+		// Open the file in append mode.
+		f, err = os.OpenFile(
+			fmt.Sprintf("%s/%s", l.path, errorLog),
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+			0644,
+		)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Close the file when we're done.
+	defer f.Close()
+
+	if _, err := f.Write(logEntry); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (l *logger) logExists() (bool, error) {
+	_, err := os.Stat(fmt.Sprintf("%s/%s", l.path, errorLog))
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		// Unknown error.
+		return false, err
+
+	}
+
+	return true, nil
 }
 
 // NewLogger returns a new logger with all dependencies set up.

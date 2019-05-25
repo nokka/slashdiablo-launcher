@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"sync"
 )
 
 const (
@@ -25,11 +26,12 @@ type Store interface {
 type store struct {
 	path       string
 	configName string
+	writeMutex sync.Mutex
 }
 
 // Read will return the current configuration.
 func (s *store) Read() (*Config, error) {
-	body, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", s.path, s.configName))
+	body, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", s.path, configName))
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +45,11 @@ func (s *store) Read() (*Config, error) {
 }
 
 func (s *store) Write(config *Config) error {
-	// @TODO: Add mutex.
+	// Lock access to the file.
+	s.writeMutex.Lock()
+
+	// Unlock it when we're done writing.
+	defer s.writeMutex.Unlock()
 
 	// Marshal the data into json.
 	body, err := json.Marshal(config)
@@ -53,7 +59,7 @@ func (s *store) Write(config *Config) error {
 
 	// Write to the file, replacing the existing config with the new updated one.
 	return ioutil.WriteFile(
-		fmt.Sprintf("%s/%s", s.path, s.configName),
+		fmt.Sprintf("%s/%s", s.path, configName),
 		body,
 		Permissions,
 	)
@@ -81,7 +87,7 @@ func (s *store) Load() error {
 }
 
 func (s *store) configExists() (bool, error) {
-	_, err := os.Stat(fmt.Sprintf("%s/%s", s.path, s.configName))
+	_, err := os.Stat(fmt.Sprintf("%s/%s", s.path, configName))
 	if err != nil {
 		if os.IsNotExist(err) {
 			return false, nil
@@ -97,7 +103,6 @@ func (s *store) configExists() (bool, error) {
 // NewStore returns a new store with all dependencies set up.
 func NewStore(path string) Store {
 	return &store{
-		path:       path,
-		configName: configName,
+		path: path,
 	}
 }
