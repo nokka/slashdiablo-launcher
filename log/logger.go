@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	errorLog = "errors.log"
+	errorLog = "errors.json"
 )
 
 // Logger represents the logger interface while hiding the implementation.

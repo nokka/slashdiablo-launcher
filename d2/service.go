@@ -1,8 +1,7 @@
 package d2
 
 import (
-	"errors"
-	"fmt"
+	"bytes"
 	"io"
 	"os"
 	"os/exec"
@@ -21,24 +20,27 @@ type Service struct {
 
 // Exec will exec the Diablo 2.
 func (s *Service) Exec() error {
-	conf, err := s.configService.Read()
+	_, err := s.configService.Read()
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("LAUNCH ON LOCATION", conf.D2Location)
-	fmt.Println("WITH INSTANCES", conf.D2Instances)
+	//execPath := fmt.Sprintf("%s\\%s", conf.D2Location, `Diablo II.exe`)
+	execPath := `D:\Games\Diablo II\Diablo II.exe`
 
-	command := "open"
-	arg1 := "-a"
-	arg2 := fmt.Sprintf("%s/Diablo II.exe", conf.D2Location)
-	cmd := exec.Command(command, arg1, arg2)
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+
+	cmd := exec.Command(execPath, "-w")
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
 
 	err = cmd.Run()
 	if err != nil {
-		s.logger.Log("unable to exec game path", conf.D2Location, err)
-		s.logger.Log(errors.New("My error"))
-		return err
+		s.logger.Log(
+			"location", execPath,
+			"error", stderr.String(),
+		)
 	}
 
 	return nil
