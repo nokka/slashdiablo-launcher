@@ -4,8 +4,8 @@ import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.3
 
 Popup {
-    id: gamePathDialog
-    modal: false
+    id: settingsDialog
+    modal: true
     focus: true
     
     background: Rectangle {
@@ -33,8 +33,8 @@ Popup {
 
             Row {
                 TextField {
-                    id: pathDialogInput
-                    width: fileDialogBox.width * 0.90
+                    id: d2pathInput
+                    width: fileDialogBox.width * 0.80
                     readOnly: true
                     text: ""
 
@@ -45,13 +45,24 @@ Popup {
                 }
 
                 Button {
-                    text: "Open"
-                    width: fileDialogBox.width * 0.10
-                    onClicked: fileDialog.open()
+                    id: chooseD2Path
+                    width: fileDialogBox.width * 0.20
+                    text: "CHOOSE"
+
+                    contentItem: Text {
+                        text: chooseD2Path.text
+                        font: chooseD2Path.font
+                        color: "#ffffff"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
 
                     background: Rectangle {
-                        color: "#1d1924"
+                        color: chooseD2Path.down ? "#49c5f2" : "#0b86ba"
                     }
+
+                    onClicked: d2PathDialog.open()
                 }
             }
 
@@ -76,10 +87,10 @@ Popup {
                     }
                     
                     onClicked: {
-                        console.log("save" + pathDialogInput.text)
-                        var success = settings.setGamePaths(pathDialogInput.text, "")
+                        console.log("save" + d2pathInput.text)
+                        var success = settings.setGamePaths(d2pathInput.text, "")
                         if (success) {
-                            gamePathDialog.close()
+                            settingsDialog.close()
                         }
                     }
                 }
@@ -87,15 +98,14 @@ Popup {
         }
 
         FileDialog {
-            id: fileDialog
+            id: d2PathDialog
             selectFolder: true
             title: "Please choose a file"
             folder: shortcuts.home
-            defaultSuffix: "derp"
             onAccepted: {
-                var path = fileDialog.fileUrl.toString()
+                var path = d2PathDialog.fileUrl.toString()
                 path = path.replace(/^(file:\/{2})/,"")
-                pathDialogInput.text = path
+                d2pathInput.text = path
             }
             onRejected: {
                 console.log("Canceled")
