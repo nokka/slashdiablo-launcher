@@ -11,6 +11,8 @@ ApplicationWindow {
     width: 1024; height: 600
     color: "#1a1324"
 
+    FontLoader { id: d2Font; source: "assets/fonts/EXL.ttf" }
+
      // Top bar for the entire app.
     TopBar {
         id: topbar
