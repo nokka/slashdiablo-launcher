@@ -5,6 +5,8 @@ import QtQuick.Dialogs 1.3
 
 Popup {
     id: settingsDialog
+    property var usingHD: false
+    
     modal: true
     focus: true
     
@@ -17,9 +19,20 @@ Popup {
         anchors.fill: parent
 
         Column {
+            Text {
+                text: "SETTINGS"
+                font.family: d2Font.name
+                font.pointSize: 22
+                color: "#ffffff"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                elide: Text.ElideRight
+            }
+
             id: fileDialogBox
             width: (mainWindow.width/2)
-            Layout.alignment: Qt.AlignHCenter
+            Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
+            Layout.topMargin: 100
             spacing: 5
 
             Column {
@@ -67,25 +80,78 @@ Popup {
             }
 
             Column {
-                Button {
-                    id: saveGamePath
-                    width: fileDialogBox.width
-                    text: "SAVE"
-                    
-                    contentItem: Text {
-                        text: saveGamePath.text
-                        font: saveGamePath.font
-                        color: "#ffffff"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideRight
+                topPadding: 10
+                
+                Heading {
+                    text: "Do you have a HD version?"
+                }
+            }
+
+            Row {
+                spacing: 5
+
+                Switch {
+                    id: control
+                    text: qsTr("Do you have a HD version?")
+
+                    indicator: Rectangle {
+                        implicitWidth: 48
+                        implicitHeight: 26
+                        x: control.leftPadding
+                        y: parent.height / 2 - height / 2
+                        radius: 13
+                        color: control.checked ? "#17a81a" : "#ffffff"
+                        border.color: control.checked ? "#17a81a" : "#cccccc"
+
+                        Rectangle {
+                            x: control.checked ? parent.width - width : 0
+                            width: 26
+                            height: 26
+                            radius: 13
+                            color: control.down ? "#cccccc" : "#ffffff"
+                            border.color: control.checked ? (control.down ? "#17a81a" : "#21be2b") : "#999999"
+                        }
                     }
 
-                    background: Rectangle {
-                        color: saveGamePath.down ? "#49c5f2" : "#0b86ba"
-                        radius: 2
+                    contentItem: Text {
+                        text: control.text
+                        font: control.font
+                        opacity: enabled ? 1.0 : 0.3
+                        color: control.down ? "#17a81a" : "#21be2b"
+                        verticalAlignment: Text.AlignVCenter
+                        leftPadding: control.indicator.width + control.spacing
                     }
-                    
+                }
+            }
+
+            Row {
+                TextField {
+                    id: hdPathInput
+                    width: fileDialogBox.width * 0.80
+                    readOnly: true
+                    background: Rectangle {
+                        radius: 3; color: "#1d1924"
+                    }
+                }
+
+                DefaultButton {
+                    id: chooseHDPath
+                    text: "CHOOSE"
+                    width: fileDialogBox.width * 0.20
+                    onClicked: hdPathDialog.open()
+                }
+
+                visible: usingHD
+            }
+
+            // Save button.
+            Column {
+                topPadding: 10
+
+                DefaultButton {
+                    id: saveGamePath 
+                    text: "SAVE SETTINGS"
+
                     onClicked: {
                         console.log("save" + d2pathInput.text)
                         var success = settings.setGamePaths(d2pathInput.text, "")
@@ -95,20 +161,30 @@ Popup {
                     }
                 }
             }
-        }
-
+        }   
+        
+        // File dialogs.
         FileDialog {
             id: d2PathDialog
             selectFolder: true
-            title: "Please choose a file"
             folder: shortcuts.home
+            
             onAccepted: {
                 var path = d2PathDialog.fileUrl.toString()
                 path = path.replace(/^(file:\/{2})/,"")
                 d2pathInput.text = path
             }
-            onRejected: {
-                console.log("Canceled")
+        }
+
+        FileDialog {
+            id: hdPathDialog
+            selectFolder: true
+            folder: shortcuts.home
+
+            onAccepted: {
+                var path = hdPathDialog.fileUrl.toString()
+                path = path.replace(/^(file:\/{2})/,"")
+                hdPathInput.text = path
             }
         }
     }
