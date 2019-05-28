@@ -19,14 +19,9 @@ Popup {
         anchors.fill: parent
 
         Column {
-            Text {
+            Heading {
                 text: "SETTINGS"
-                font.family: d2Font.name
-                font.pointSize: 22
-                color: "#ffffff"
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                elide: Text.ElideRight
+                font.pointSize: 20
             }
 
             id: fileDialogBox
@@ -36,9 +31,12 @@ Popup {
             spacing: 5
 
             Column {
+                topPadding: 15
+
                 Label {
-                    text: "Add gamepath for Diablo II"
-                    font.pointSize: 16
+                    text: "SET DIABLO II DIRECTORY"
+                    font.pointSize: 13
+                    font.family: d2Font.name
                     color: "#ffffff"
                     font.bold: true
                 }
@@ -57,71 +55,78 @@ Popup {
                     }
                 }
 
-                Button {
+                DefaultButton {
                     id: chooseD2Path
-                    width: fileDialogBox.width * 0.20
                     text: "CHOOSE"
-
-                    contentItem: Text {
-                        text: chooseD2Path.text
-                        font: chooseD2Path.font
-                        color: "#ffffff"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideRight
-                    }
-
-                    background: Rectangle {
-                        color: chooseD2Path.down ? "#49c5f2" : "#0b86ba"
-                    }
-
+                    width: fileDialogBox.width * 0.20
                     onClicked: d2PathDialog.open()
                 }
             }
 
             Column {
-                topPadding: 10
-                
+                topPadding: 15
                 Heading {
-                    text: "Do you have a HD version?"
+                    text: "NUMBER OF D2 INSTANCES TO LAUNCH"
+                }
+                
+                ComboBox {
+                    id: d2Instances
+                    model: [ 1, 2, 3, 4 ]
+                    height: 30
+                    width: 60
+
+                    background: Rectangle {
+                        color: "#1d1924"
+                        border.color: "#f0681f"
+                        radius: height/2
+                    }
                 }
             }
 
             Row {
-                spacing: 5
+                topPadding: 15
+                width: parent.width
+                
+                layoutDirection: Qt.RightToLeft
 
-                Switch {
-                    id: control
-                    text: qsTr("Do you have a HD version?")
+                Item {
+                    width: parent.width * 0.20
+                    height: 35
 
-                    indicator: Rectangle {
-                        implicitWidth: 48
-                        implicitHeight: 26
-                        x: control.leftPadding
-                        y: parent.height / 2 - height / 2
-                        radius: 13
-                        color: control.checked ? "#17a81a" : "#ffffff"
-                        border.color: control.checked ? "#17a81a" : "#cccccc"
+                    Switch {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: false
 
-                        Rectangle {
-                            x: control.checked ? parent.width - width : 0
-                            width: 26
-                            height: 26
-                            radius: 13
-                            color: control.down ? "#cccccc" : "#ffffff"
-                            border.color: control.checked ? (control.down ? "#17a81a" : "#21be2b") : "#999999"
+                        onClicked: {
+                            usingHD = !usingHD
                         }
                     }
-
-                    contentItem: Text {
-                        text: control.text
-                        font: control.font
-                        opacity: enabled ? 1.0 : 0.3
-                        color: control.down ? "#17a81a" : "#21be2b"
-                        verticalAlignment: Text.AlignVCenter
-                        leftPadding: control.indicator.width + control.spacing
-                    }
                 }
+
+                Item {
+                    width: parent.width * 0.80
+                    height: 35
+                     Layout.alignment: Qt.AlignLeft
+
+                     Heading {
+                         anchors.verticalCenter: parent.verticalCenter
+                         text: "Do you have a HD Diablo II?"
+                     }
+                }
+            }
+
+            Column {
+                topPadding: 15
+                Label {
+                    text: "SET HD DIRECTORY"
+                    font.pointSize: 13
+                    font.family: d2Font.name
+                    color: "#ffffff"
+                    font.bold: true
+                }
+
+                visible: usingHD
             }
 
             Row {
@@ -144,12 +149,35 @@ Popup {
                 visible: usingHD
             }
 
+            Column {
+                topPadding: 15
+
+                Heading {
+                    text: "NUMBER OF HD INSTANCES TO LAUNCH"
+                }
+                
+                ComboBox {
+                    id: hdInstances
+                    model: [ 1, 2, 3, 4 ]
+                    height: 30
+                    width: 60
+
+                    background: Rectangle {
+                        color: "#1d1924"
+                        border.color: "#f0681f"
+                        radius: height/2
+                    }
+                }
+
+                visible: usingHD
+            }
+
             // Save button.
             Column {
-                topPadding: 10
+                topPadding: 25
 
                 DefaultButton {
-                    id: saveGamePath 
+                    id: saveGamePath
                     text: "SAVE SETTINGS"
 
                     onClicked: {
