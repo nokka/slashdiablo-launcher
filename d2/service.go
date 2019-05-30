@@ -98,6 +98,7 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan error) {
 			contents, err := s.githubService.GetFile(f)
 			if err != nil {
 				s.logger.Log("failed to get file from github", err)
+				errors <- err
 				return
 			}
 

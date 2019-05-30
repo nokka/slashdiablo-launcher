@@ -41,6 +41,7 @@ func (q *QmlBridge) patchGame() {
 		for {
 			select {
 			case percentage := <-progress:
+				fmt.Println("Patching progress", percentage)
 				q.SetPatchProgress(percentage)
 			case err := <-errors:
 				fmt.Println("Received error", err)
