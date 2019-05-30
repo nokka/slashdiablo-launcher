@@ -30,23 +30,34 @@ func (q *QmlBridge) Connect() {
 }
 
 func (q *QmlBridge) patchGame() {
-	fmt.Println("Patching game...")
-	/*go func() {
-		// Let the patcher run, it returns a channel
-		// where we get the progress from.
-		progress := q.D2service.Patch()
+	// Run this on a seperate thread so we don't block the UI.
+	go func() {
+		done := make(chan bool, 1)
 
-		// Range over the percentages complete.
-		for percentage := range progress {
-			q.SetPatchProgress(percentage)
+		// Let the patcher run, it returns a channel
+		// where we get the progress from, and another channel withe errors.
+		progress, errors := q.D2service.Patch(done)
+
+		for {
+			select {
+			case percentage := <-progress:
+				q.SetPatchProgress(percentage)
+			case err := <-errors:
+				fmt.Println("Received error", err)
+				// @TODO: Add QML signal.
+				return
+			case <-done:
+				return
+			}
 		}
-	}()*/
+	}()
 }
 
 func (q *QmlBridge) launchGame() {
 	err := q.D2service.Exec()
 	if err != nil {
 		fmt.Println(err)
+		// @TODO: Add QML signal.
 	}
 }
 
