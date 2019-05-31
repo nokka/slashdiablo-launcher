@@ -19,6 +19,6 @@ func (wc *WriteCounter) Write(p []byte) (int, error) {
 	// Calculate the percentage and send it on the channel.
 	wc.progress <- wc.Written / wc.Total
 
-	// Return the length fo the written bytes this cycle.
+	// Return the length of the written bytes this cycle.
 	return n, nil
 }
