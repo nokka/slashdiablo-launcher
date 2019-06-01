@@ -15,25 +15,31 @@ type ConfigBridge struct {
 	_ string `property:"HDLocation"`
 	_ int    `property:"HDInstances"`
 
-	_ func(D2Location string, HDLocation string) bool `slot:"setGamePaths"`
+	//_ func(D2Location string, D2Instances int, HDLocation *string, HDInstances *int) bool `slot:"update"`
+	_ func(D2Location string, D2Instances int, HDLocation string, HDInstances int) bool `slot:"update"`
 }
 
 // Connect will connect the QML signals to functions in Go.
 func (c *ConfigBridge) Connect() {
-	c.ConnectSetGamePaths(c.setGamePaths)
+	c.ConnectUpdate(c.update)
 }
 
-func (c *ConfigBridge) setGamePaths(D2Location string, HDLocation string) bool {
+func (c *ConfigBridge) update(D2Location string, D2Instances int, HDLocation string, HDInstances int) bool {
+	// Save updates to the persistant storage.
 	if err := c.Configuration.Update(config.UpdateConfigRequest{
-		D2Location: &D2Location,
-		HDLocation: &HDLocation,
+		D2Location:  &D2Location,
+		D2Instances: &D2Instances,
+		HDLocation:  &HDLocation,
+		HDInstances: &HDInstances,
 	}); err != nil {
 		return false
 	}
 
 	// Update was successful, update QML.
 	c.SetD2Location(D2Location)
+	c.SetD2Instances(D2Instances)
 	c.SetHDLocation(HDLocation)
+	c.SetHDInstances(HDInstances)
 
 	return true
 }

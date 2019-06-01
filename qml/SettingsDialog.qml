@@ -94,6 +94,7 @@ Popup {
                     height: 35
 
                     Switch {
+                        id: hdEnabled
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         checked: false
@@ -181,8 +182,23 @@ Popup {
                     text: "SAVE SETTINGS"
 
                     onClicked: {
-                        console.log("save" + d2pathInput.text)
-                        var success = settings.setGamePaths(d2pathInput.text, "")
+                        var hdPath = hdPathInput.text
+                        var hdi = hdInstances.currentText
+                        
+                        // HD isn't enable, reset the HD fields.
+                        if(!hdEnabled.checked) {
+                            hdPath = ""
+                            hdi = 0
+                        }
+
+                        // Update settings in the backend.
+                        var success = settings.update(
+                            d2pathInput.text,
+                            d2Instances.currentText,
+                            hdPath,
+                            hdi
+                        )
+
                         if (success) {
                             settingsDialog.close()
                             QmlBridge.patchGame()
