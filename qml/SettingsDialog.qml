@@ -185,6 +185,7 @@ Popup {
                         var success = settings.setGamePaths(d2pathInput.text, "")
                         if (success) {
                             settingsDialog.close()
+                            QmlBridge.patchGame()
                         }
                     }
                 }

@@ -30,6 +30,7 @@ func (q *QmlBridge) Connect() {
 }
 
 func (q *QmlBridge) patchGame() {
+	fmt.Println("PATCHING GAME")
 	// Run this on a seperate thread so we don't block the UI.
 	go func() {
 		done := make(chan bool, 1)

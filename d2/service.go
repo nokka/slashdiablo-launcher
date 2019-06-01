@@ -71,6 +71,12 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan error) {
 			return
 		}
 
+		// No files to patch, return.
+		if len(patchFiles) == 0 {
+			fmt.Println("NO FILES TO PATCH")
+			return
+		}
+
 		// Create a write counter that will get bytes written per cycle, pass the
 		// progress channel to report the number of bytes written.
 		counter := &WriteCounter{
