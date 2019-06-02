@@ -6,13 +6,29 @@ import QtQuick.Dialogs 1.3
 Popup {
     id: settingsDialog
     property var usingHD: false
-    
-    modal: true
+
+    modal: false
     focus: true
+    closePolicy: Popup.NoAutoClose
     
     background: Rectangle {
         anchors.fill: parent
-        color: "#100b17"
+        color: "#000508"
+    }
+
+    onAboutToShow: {
+        d2pathInput.text = settings.D2Location
+        d2Instances.currentIndex = (settings.D2Instances-1)
+
+        if(settings.HDLocation != "") {
+            hdPathInput.text = settings.HDLocation
+            hdEnabled.checked = true
+
+        }
+
+        if(settings.HDInstances > 0) {
+            hdInstances.currentIndex = (settings.HDInstances-1)
+        }
     }
 
     ColumnLayout {
@@ -99,9 +115,9 @@ Popup {
                         anchors.verticalCenter: parent.verticalCenter
                         checked: false
 
-                        onClicked: {
+                        /*onClicked: {
                             usingHD = !usingHD
-                        }
+                        }*/
                     }
                 }
 
@@ -127,7 +143,7 @@ Popup {
                     font.bold: true
                 }
 
-                visible: usingHD
+                visible: hdEnabled.checked
             }
 
             Row {
@@ -147,7 +163,7 @@ Popup {
                     onClicked: hdPathDialog.open()
                 }
 
-                visible: usingHD
+                visible: hdEnabled.checked
             }
 
             Column {
@@ -170,7 +186,7 @@ Popup {
                     }
                 }
 
-                visible: usingHD
+                visible: hdEnabled.checked
             }
 
             // Save button.

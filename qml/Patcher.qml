@@ -4,7 +4,6 @@ import QtQuick.Controls.Styles 1.4
 
 Rectangle {
     id: patcher
-    width: parent.width * 0.70
     height: 20
     x: 20 
 
@@ -18,18 +17,18 @@ Rectangle {
         value: QmlBridge.patchProgress
         
         width: parent.width
-        height: 20
+        height: 10
         
         style: ProgressBarStyle {
             background: Rectangle {
                 radius: 2
-                color: "#00578a"
-                border.color: "#002b5c"
+                color: "#381612"
+                border.color: "#141009"
                 border.width: 1
             }
             
             progress: Rectangle {
-                color: "#0983b8"
+                color: "#873d29"
             }
         }
     }

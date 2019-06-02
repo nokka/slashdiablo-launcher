@@ -7,34 +7,34 @@ ApplicationWindow {
 
     visible: true
     flags: (Qt.WindowMinimizeButtonHint | Qt.FramelessWindowHint | Qt.Window)
-
+    color: "#080806"
     width: 1024; height: 600
-    color: "#1a1324"
 
+    // Load fonts.
     FontLoader { id: d2Font; source: "assets/fonts/EXL.ttf" }
 
-     // Top bar for the entire app.
+    // Background image.
+    /*Item {
+        id: background
+        anchors.fill: parent;
+        Image { source: "assets/bg2.jpg"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
+    }*/
+
+    // Top bar for the entire app.
     TopBar {
         id: topbar
         anchors.top: mainWindow.top;
         width: parent.width
-        height: 80
-        color: "#100b17"
+        height: 71
     }
 
     // Content area.
-    Item {
+    Rectangle {
         id: contentArea
-        anchors.top: topbar.bottom
         width: mainWindow.width
         height: (mainWindow.height-topbar.height)
-
-        // Background image.
-        Item {
-            id: background
-            anchors.fill: parent;
-            Image { source: "assets/bg.jpg"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
-        }
+        anchors.top: topbar.bottom
+        color: "#080806"
 
         // Bottom bar.
         BottomBar{}

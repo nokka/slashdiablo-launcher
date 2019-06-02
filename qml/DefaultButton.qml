@@ -3,8 +3,8 @@ import QtQuick.Controls 2.5
 
 Button {
     id: defaultButton
-    property var colorUp: "#f0681f"
-    property var colorDown: "#f57b25"
+    property var colorUp: "#0b86ba"
+    property var colorDown: "#1c99c7"
 
     contentItem: Text {
         color: "#ffffff"
