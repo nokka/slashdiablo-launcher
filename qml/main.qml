@@ -36,6 +36,9 @@ ApplicationWindow {
         anchors.top: topbar.bottom
         color: "#080806"
 
+        // Top ladder table.
+        //LadderTable{}
+
         // Bottom bar.
         BottomBar{}
     }
