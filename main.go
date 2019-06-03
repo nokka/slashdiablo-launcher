@@ -34,6 +34,14 @@ func main() {
 	ga := gui.NewQGuiApplication(len(os.Args), os.Args)
 	ga.SetWindowIcon(gui.NewQIcon5(":/qml/assets/tmp_icon.png"))
 
+	// TODO: Refactor
+	lm := NewLadderModel(nil)
+	lm.AddCharacter(&Character{
+		Name:  "Meanski",
+		Class: "Paladin",
+		Level: 99,
+	})
+
 	configPath, err := getConfigPath()
 	if err != nil {
 		os.Exit(0)
