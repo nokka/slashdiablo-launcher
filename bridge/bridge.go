@@ -20,6 +20,9 @@ type QmlBridge struct {
 	_ func()  `signal:"closeLauncher"`
 	_ func()  `signal:"launchGame"`
 	_ func()  `slot:"patchGame"`
+
+	// Models.
+	_ *core.QAbstractListModel `property:"ladderCharacters"`
 }
 
 // Connect will connect the QML signals to functions in Go.

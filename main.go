@@ -36,11 +36,14 @@ func main() {
 
 	// TODO: Refactor
 	lm := NewLadderModel(nil)
-	lm.AddCharacter(&Character{
+
+	char := Character{
 		Name:  "Meanski",
 		Class: "Paladin",
 		Level: 99,
-	})
+	}
+
+	lm.AddCharacter(&char)
 
 	configPath, err := getConfigPath()
 	if err != nil {
@@ -74,6 +77,8 @@ func main() {
 	// Create a new QML bridge that will bridge the GUI to Go.
 	qmlBridge := bridge.NewQmlBridge(nil)
 	qmlBridge.D2service = d2s
+
+	qmlBridge.SetLadderCharacters(lm)
 
 	// Initiate the config bridge.
 	configBridge := bridge.NewConfigBridge(nil)

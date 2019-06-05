@@ -37,7 +37,7 @@ ApplicationWindow {
         color: "#080806"
 
         // Top ladder table.
-        //LadderTable{}
+        LadderTable{}
 
         // Bottom bar.
         BottomBar{}
