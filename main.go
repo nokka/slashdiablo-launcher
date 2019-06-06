@@ -37,13 +37,23 @@ func main() {
 	// TODO: Refactor
 	lm := NewLadderModel(nil)
 
-	char := Character{
+	lm.AddCharacter(&Character{
 		Name:  "Meanski",
-		Class: "Paladin",
-		Level: 99,
-	}
+		Class: "pal",
+		Level: "99",
+	})
 
-	lm.AddCharacter(&char)
+	lm.AddCharacter(&Character{
+		Name:  "Nolan",
+		Class: "sor",
+		Level: "95",
+	})
+
+	lm.AddCharacter(&Character{
+		Name:  "Nolan",
+		Class: "sor",
+		Level: "95",
+	})
 
 	configPath, err := getConfigPath()
 	if err != nil {

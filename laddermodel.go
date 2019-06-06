@@ -15,11 +15,9 @@ const (
 
 // Character ...
 type Character struct {
-	core.QObject
-
 	Name  string
 	Class string
-	Level int
+	Level string
 }
 
 // LadderModel ...
@@ -27,10 +25,9 @@ type LadderModel struct {
 	core.QAbstractListModel
 
 	_ map[int]*core.QByteArray `property:"roles"`
-	_ []*Character             `property:"characters"`
+	_ func()                   `constructor:"init"`
 
-	_ func()                     `constructor:"init"`
-	_ func(character *Character) `slot:"addCharacter"`
+	characters []Character
 }
 
 func (m *LadderModel) init() {
@@ -44,12 +41,11 @@ func (m *LadderModel) init() {
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectColumnCount(m.columnCount)
 	m.ConnectRoleNames(m.roleNames)
-	m.ConnectAddCharacter(m.addCharacter)
 }
 
 func (m *LadderModel) rowCount(*core.QModelIndex) int {
-	fmt.Println("ROW COUNT", len(m.Characters()))
-	return len(m.Characters())
+	fmt.Println("ROW COUNT", len(m.characters))
+	return len(m.characters)
 }
 
 func (m *LadderModel) columnCount(*core.QModelIndex) int {
@@ -65,16 +61,12 @@ func (m *LadderModel) data(index *core.QModelIndex, role int) *core.QVariant {
 		return core.NewQVariant()
 	}
 
-	if index.Row() >= len(m.Characters()) {
+	if index.Row() >= len(m.characters) {
 		return core.NewQVariant()
 	}
 
-	var c = m.Characters()[len(m.Characters())-1-index.Row()]
-	if c == nil {
-		return core.NewQVariant()
-	}
+	c := m.characters[0]
 
-	fmt.Println("GOT PASSED NIL CHECK")
 	fmt.Println(c)
 
 	switch role {
@@ -89,7 +81,7 @@ func (m *LadderModel) data(index *core.QModelIndex, role int) *core.QVariant {
 		}
 	case Level:
 		{
-			return core.NewQVariant1("99")
+			return core.NewQVariant1(c.Level)
 		}
 
 	default:
@@ -99,13 +91,13 @@ func (m *LadderModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	}
 }
 
-func (m *LadderModel) addCharacter(c *Character) {
-	m.BeginInsertRows(core.NewQModelIndex(), 0, 0)
-	m.SetCharacters(append(m.Characters(), c))
+// AddCharacter ...
+func (m *LadderModel) AddCharacter(c *Character) {
+	m.BeginInsertRows(core.NewQModelIndex(), len(m.characters), len(m.characters))
+	m.characters = append(m.characters, *c)
 	m.EndInsertRows()
 }
 
 func init() {
 	LadderModel_QRegisterMetaType()
-	Character_QRegisterMetaType()
 }
