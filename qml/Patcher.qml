@@ -35,7 +35,7 @@ Rectangle {
 
     Component.onCompleted: {
         if(settings.D2Location.length > 0) {
-            QmlBridge.patchGame()
+            //QmlBridge.patchGame()
         }
     }
 }

@@ -12,6 +12,7 @@ ApplicationWindow {
 
     // Load fonts.
     FontLoader { id: d2Font; source: "assets/fonts/EXL.ttf" }
+    FontLoader { id: montserrat; source: "assets/fonts/Montserrat-Light.ttf" }
 
     // Background image.
     /*Item {

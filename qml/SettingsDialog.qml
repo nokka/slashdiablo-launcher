@@ -35,7 +35,7 @@ Popup {
         anchors.fill: parent
 
         Column {
-            Heading {
+            Header {
                 text: "SETTINGS"
                 font.pointSize: 20
             }
@@ -81,7 +81,7 @@ Popup {
 
             Column {
                 topPadding: 15
-                Heading {
+                Header {
                     text: "NUMBER OF D2 INSTANCES TO LAUNCH"
                 }
                 
@@ -126,7 +126,7 @@ Popup {
                     height: 35
                      Layout.alignment: Qt.AlignLeft
 
-                     Heading {
+                     Header {
                          anchors.verticalCenter: parent.verticalCenter
                          text: "Do you have a HD Diablo II?"
                      }
@@ -169,7 +169,7 @@ Popup {
             Column {
                 topPadding: 15
 
-                Heading {
+                Header {
                     text: "NUMBER OF HD INSTANCES TO LAUNCH"
                 }
                 
