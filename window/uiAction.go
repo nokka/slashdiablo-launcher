@@ -17,13 +17,6 @@ func (f *QFramelessWindow) SetupTitleBarActions() {
 			B: 232,
 		})
 	})
-	/*f.IconMaximize.Widget.ConnectEnterEvent(func(event *core.QEvent) {
-		f.IconMaximize.SetStyle(&RGB{
-			R: 0,
-			G: 162,
-			B: 232,
-		})
-	})*/
 	f.IconRestore.Widget.ConnectEnterEvent(func(event *core.QEvent) {
 		f.IconRestore.SetStyle(&RGB{
 			R: 0,
@@ -42,9 +35,6 @@ func (f *QFramelessWindow) SetupTitleBarActions() {
 	f.IconMinimize.Widget.ConnectLeaveEvent(func(event *core.QEvent) {
 		f.IconMinimize.SetStyle(nil)
 	})
-	/*f.IconMaximize.Widget.ConnectLeaveEvent(func(event *core.QEvent) {
-		f.IconMaximize.SetStyle(nil)
-	})*/
 	f.IconRestore.Widget.ConnectLeaveEvent(func(event *core.QEvent) {
 		f.IconRestore.SetStyle(nil)
 	})
@@ -52,14 +42,10 @@ func (f *QFramelessWindow) SetupTitleBarActions() {
 		f.IconClose.SetStyle(nil)
 	})
 
-	// Button Actions
+	// Button actions.
 	f.IconMinimize.Widget.ConnectMousePressEvent(func(e *gui.QMouseEvent) {
 		f.IsTitleBarPressed = false
 	})
-
-	/*f.IconMaximize.Widget.ConnectMousePressEvent(func(e *gui.QMouseEvent) {
-		f.IsTitleBarPressed = false
-	})*/
 
 	f.IconRestore.Widget.ConnectMousePressEvent(func(e *gui.QMouseEvent) {
 		f.IsTitleBarPressed = false
@@ -79,16 +65,6 @@ func (f *QFramelessWindow) SetupTitleBarActions() {
 		f.Widget.Show()
 	})
 
-	/*f.IconMaximize.Widget.ConnectMouseReleaseEvent(func(e *gui.QMouseEvent) {
-		isContain := f.IconMinimize.Widget.Rect().Contains(e.Pos(), false)
-		if !isContain {
-			return
-		}
-		f.windowMaximize()
-		f.Widget.Hide()
-		f.Widget.Show()
-	})*/
-
 	f.IconRestore.Widget.ConnectMouseReleaseEvent(func(e *gui.QMouseEvent) {
 		isContain := f.IconMinimize.Widget.Rect().Contains(e.Pos(), false)
 		if !isContain {
@@ -107,7 +83,7 @@ func (f *QFramelessWindow) SetupTitleBarActions() {
 		f.Close()
 	})
 
-	// TitleBar Actions
+	// Title bar actions.
 	t.ConnectMousePressEvent(func(e *gui.QMouseEvent) {
 		f.Widget.Raise()
 		f.IsTitleBarPressed = true
@@ -128,18 +104,9 @@ func (f *QFramelessWindow) SetupTitleBarActions() {
 		newPos := core.NewQPoint2(x, y)
 		f.Move(newPos)
 	})
-
-	/*t.ConnectMouseDoubleClickEvent(func(e *gui.QMouseEvent) {
-		if f.IconMaximize.Widget.IsVisible() {
-			f.windowMaximize()
-		} else {
-			f.windowRestore()
-		}
-	})*/
 }
 
 func (f *QFramelessWindow) windowMaximize() {
-	//f.IconMaximize.Widget.SetVisible(false)
 	f.IconRestore.Widget.SetVisible(true)
 	f.Layout.SetContentsMargins(0, 0, 0, 0)
 	f.SetWindowState(core.Qt__WindowMaximized)
@@ -147,7 +114,6 @@ func (f *QFramelessWindow) windowMaximize() {
 }
 
 func (f *QFramelessWindow) windowRestore() {
-	//f.IconMaximize.Widget.SetVisible(true)
 	f.IconRestore.Widget.SetVisible(false)
 	f.Layout.SetContentsMargins(f.shadowMargin, f.shadowMargin, f.shadowMargin, f.shadowMargin)
 	f.SetWindowState(core.Qt__WindowNoState)

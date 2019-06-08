@@ -11,8 +11,10 @@ import (
 	"github.com/therecipe/qt/widgets"
 )
 
+// Edge represents a position.
 type Edge int
 
+// Edge positions.
 const (
 	None        Edge = 0x0
 	Left        Edge = 0x1
@@ -25,12 +27,14 @@ const (
 	BottomRight Edge = 0x80
 )
 
+// RGB represents a color.
 type RGB struct {
 	R uint16
 	G uint16
 	B uint16
 }
 
+// QToolButtonForNotDarwin toolbar for everything but darwin.
 type QToolButtonForNotDarwin struct {
 	f       *QFramelessWindow
 	Widget  *widgets.QWidget
@@ -38,23 +42,20 @@ type QToolButtonForNotDarwin struct {
 	isHover bool
 }
 
+// QFramelessWindow is the main frameless window.
 type QFramelessWindow struct {
 	widgets.QMainWindow
-
-	WindowColor      *RGB
-	WindowColorAlpha float64
-
-	Widget  *widgets.QWidget
-	Layout  *widgets.QVBoxLayout
-	Content *widgets.QWidget
-
-	WindowWidget  *widgets.QFrame
-	WindowVLayout *widgets.QVBoxLayout
-	shadowMargin  int
-	borderSize    int
-	minimumWidth  int
-	minimumHeight int
-
+	WindowColor       *RGB
+	WindowColorAlpha  float64
+	Widget            *widgets.QWidget
+	Layout            *widgets.QVBoxLayout
+	Content           *widgets.QWidget
+	WindowWidget      *widgets.QFrame
+	WindowVLayout     *widgets.QVBoxLayout
+	shadowMargin      int
+	borderSize        int
+	minimumWidth      int
+	minimumHeight     int
 	TitleBar          *widgets.QWidget
 	TitleBarLayout    *widgets.QHBoxLayout
 	TitleLabel        *widgets.QLabel
@@ -64,15 +65,13 @@ type QFramelessWindow struct {
 	TitleBarMousePos  *core.QPoint
 	IsTitleBarPressed bool
 
-	// for darwin
+	// For darwin.
 	BtnMinimize *widgets.QToolButton
-	//BtnMaximize *widgets.QToolButton
-	BtnRestore *widgets.QToolButton
-	BtnClose   *widgets.QToolButton
+	BtnRestore  *widgets.QToolButton
+	BtnClose    *widgets.QToolButton
 
-	// for windows, linux
+	// For Windows and Linux.
 	IconMinimize *QToolButtonForNotDarwin
-	IconMaximize *QToolButtonForNotDarwin
 	IconRestore  *QToolButtonForNotDarwin
 	IconClose    *QToolButtonForNotDarwin
 
@@ -83,12 +82,11 @@ type QFramelessWindow struct {
 	hoverEdge           Edge
 	Position            *core.QPoint
 	MousePos            [2]int
-
-	borderless bool
+	borderless          bool
 }
 
-// CreateQFramelessWindow ...
-func CreateQFramelessWindow(alpha float64) *QFramelessWindow {
+// NewFramelessWindow creates a new frameless window.
+func NewFramelessWindow(alpha float64, width int, height int) *QFramelessWindow {
 	f := NewQFramelessWindow(nil, 0)
 	f.WindowColorAlpha = alpha
 	if f.WindowColorAlpha == 1.0 {
@@ -105,8 +103,9 @@ func CreateQFramelessWindow(alpha float64) *QFramelessWindow {
 	f.SetupAttributes()
 	f.SetupWindowActions()
 	f.SetupTitleBarActions()
-	f.SetFixedSize2(1024, 600)
-	f.SetupBorderSize(3)
+	f.SetFixedSize2(width, height)
+	f.SetupBorderSize(1)
+	f.SetupWidgetColor(0, 0, 0)
 
 	return f
 }
@@ -320,10 +319,6 @@ func (f *QFramelessWindow) SetTitleBarButtons() {
 	f.IconMinimize.f = f
 	f.IconMinimize.IconBtn.SetFixedSize2(iconSize, iconSize)
 	f.IconMinimize.SetObjectName("IconMinimize")
-	f.IconMaximize = NewQToolButtonForNotDarwin(nil)
-	f.IconMaximize.f = f
-	f.IconMaximize.IconBtn.SetFixedSize2(iconSize, iconSize)
-	f.IconMaximize.SetObjectName("IconMaximize")
 	f.IconRestore = NewQToolButtonForNotDarwin(nil)
 	f.IconRestore.f = f
 	f.IconRestore.IconBtn.SetFixedSize2(iconSize, iconSize)
@@ -336,14 +331,12 @@ func (f *QFramelessWindow) SetTitleBarButtons() {
 	f.SetIconsStyle(nil)
 
 	f.IconMinimize.Hide()
-	f.IconMaximize.Hide()
 	f.IconRestore.Hide()
 	f.IconClose.Hide()
 
 	f.TitleBarLayout.SetAlignment(f.TitleBarBtnWidget, core.Qt__AlignRight)
 	f.TitleBarLayout.AddWidget(f.TitleLabel, 0, 0)
 	f.TitleBarLayout.AddWidget(f.IconMinimize.Widget, 0, 0)
-	f.TitleBarLayout.AddWidget(f.IconMaximize.Widget, 0, 0)
 	f.TitleBarLayout.AddWidget(f.IconRestore.Widget, 0, 0)
 	f.TitleBarLayout.AddWidget(f.IconClose.Widget, 0, 0)
 }
@@ -352,7 +345,6 @@ func (f *QFramelessWindow) SetTitleBarButtons() {
 func (f *QFramelessWindow) SetIconsStyle(color *RGB) {
 	for _, b := range []*QToolButtonForNotDarwin{
 		f.IconMinimize,
-		f.IconMaximize,
 		f.IconRestore,
 		f.IconClose,
 	} {
@@ -484,18 +476,12 @@ func (f *QFramelessWindow) SetupTitleBarColorForNotDarwin(color *RGB) {
 	} else {
 		color = color.fade()
 	}
-	var SvgMinimize, SvgMaximize, SvgRestore, SvgClose string
+	var SvgMinimize, SvgRestore, SvgClose string
 
 	if runtime.GOOS == "windows" {
 		SvgMinimize = fmt.Sprintf(`
 		<svg style="width:24px;height:24px" viewBox="0 0 24 24">
 		<path fill="%s" d="M20,14H4V10H20" />
-		</svg>
-		`, color.Hex())
-
-		SvgMaximize = fmt.Sprintf(`
-		<svg style="width:24px;height:24px" viewBox="0 0 24 24">
-		<path fill="%s" d="M4,4H20V20H4V4M6,8V18H18V8H6Z" />
 		</svg>
 		`, color.Hex())
 
@@ -517,12 +503,6 @@ func (f *QFramelessWindow) SetupTitleBarColorForNotDarwin(color *RGB) {
 		</svg>
 		`, color.Hex())
 
-		SvgMaximize = fmt.Sprintf(`
-		<svg style="width:24px;height:24px" viewBox="0 0 24 24">
-		<path fill="%s" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M9,9H15V15H9" />
-		</svg>
-		`, color.Hex())
-
 		SvgRestore = fmt.Sprintf(`
 		<svg style="width:24px;height:24px" viewBox="0 0 24 24">
 		<path fill="%s" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M9,9H15V15H9" />
@@ -537,12 +517,10 @@ func (f *QFramelessWindow) SetupTitleBarColorForNotDarwin(color *RGB) {
 	}
 
 	f.IconMinimize.IconBtn.Load2(core.NewQByteArray2(SvgMinimize, len(SvgMinimize)))
-	f.IconMaximize.IconBtn.Load2(core.NewQByteArray2(SvgMaximize, len(SvgMaximize)))
 	f.IconRestore.IconBtn.Load2(core.NewQByteArray2(SvgRestore, len(SvgRestore)))
 	f.IconClose.IconBtn.Load2(core.NewQByteArray2(SvgClose, len(SvgClose)))
 
 	f.IconMinimize.Show()
-	f.IconMaximize.Show()
 	f.IconRestore.Show()
 	f.IconRestore.Widget.SetVisible(false)
 	f.IconClose.Show()

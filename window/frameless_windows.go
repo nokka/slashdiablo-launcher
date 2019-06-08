@@ -24,7 +24,6 @@ func (f *QFramelessWindow) SetupNativeEvent2() {
 		case w32.WM_NCCALCSIZE:
 			if msg.WParam == 1 {
 				*result = 0
-				// win.SetWindowLong(hwnd, win.DWL_MSGRESULT, 0)
 				return true
 			}
 			return false
@@ -64,11 +63,7 @@ func (f *QFramelessWindow) SetupNativeEvent() {
 
 			return true
 
-		// case win.WM_STYLECHANGING:
-		// case win.WM_STYLECHANGED:
-		// case win.WM_SHOWWINDOW:
 		case w32.WM_ACTIVATEAPP:
-			// case win.WM_NCACTIVATE:
 			f.putShadow(hwnd)
 
 		}
@@ -80,12 +75,12 @@ func (f *QFramelessWindow) putShadow(hwnd w32.HWND) {
 	if f.borderless {
 		return
 	}
-	// style
+
 	style := w32.GetWindowLong(hwnd, w32.GWL_STYLE)
 	style = style | w32.WS_THICKFRAME ^ w32.WS_CAPTION
 	w32.SetWindowLong(hwnd, w32.GWL_STYLE, uint32(style))
 
-	// shadow
+	// Set shadow.
 	shadow := &w32.MARGINS{1, 1, 1, 1}
 	w32.DwmExtendFrameIntoClientArea(hwnd, shadow)
 

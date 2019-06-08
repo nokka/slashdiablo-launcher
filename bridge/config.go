@@ -15,7 +15,6 @@ type ConfigBridge struct {
 	_ string `property:"HDLocation"`
 	_ int    `property:"HDInstances"`
 
-	//_ func(D2Location string, D2Instances int, HDLocation *string, HDInstances *int) bool `slot:"update"`
 	_ func(D2Location string, D2Instances int, HDLocation string, HDInstances int) bool `slot:"update"`
 }
 

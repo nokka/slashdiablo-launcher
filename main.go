@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"errors"
-	"fmt"
 	"os"
 
 	"github.com/nokka/slash-launcher/bridge"
@@ -41,21 +39,23 @@ func main() {
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
 	//core.QCoreApplication_SetAttribute(core.Qt__AA_UseSoftwareOpenGL, true)
 
-	a := &Launcher{}
-	a.app = widgets.NewQApplication(0, nil)
+	// Create base application.
+	app := widgets.NewQApplication(0, nil)
 
-	a.fw = window.CreateQFramelessWindow(1.0)
+	// Create a new frameless window, this is the root window.
+	fw := window.NewFramelessWindow(1.0, 1024, 600)
 
+	// Create a new QML widget, this is what we will draw the application on.
 	qmlWidget := newQmlWidget()
 
+	// Base layout that will be added to the root window.
 	layout := widgets.NewQVBoxLayout()
 	layout.SetContentsMargins(0, 0, 0, 0)
 	layout.AddWidget(qmlWidget, 0, 0)
 
-	a.fw.SetupContent(layout)
-	a.fw.SetupWidgetColor(0, 0, 0)
+	// Add the layout to the window, this is the only item on the base window.
+	fw.SetupContent(layout)
 
-	// TODO: Refactor
 	lm := NewLadderModel(nil)
 
 	lm.AddCharacter(&Character{
@@ -84,28 +84,8 @@ func main() {
 	// Data directory is a requirement for the app.
 	os.MkdirAll(configPath, storage.Permissions)
 
-	// Setup logger.
+	// Setup file logger.
 	logger := log.NewLogger(configPath)
-
-	// STD LOGGING
-	r, w, err := os.Pipe()
-	if err != nil {
-		os.Exit(0)
-	}
-
-	os.Stderr = w
-
-	go func() {
-		scanner := bufio.NewScanner(r)
-		for scanner.Scan() {
-			line := scanner.Text()
-			logger.Log("stdout", line)
-		}
-	}()
-
-	fmt.Printf("CAPTURING STDOUT \n")
-
-	// STD LOGGING END
 
 	// Setup local storage.
 	store := storage.NewStore(configPath)
@@ -114,68 +94,57 @@ func main() {
 		os.Exit(0)
 	}
 
-	fmt.Printf("STORE SETUP \n")
-
 	conf, err := store.Read()
 	if err != nil {
 		logger.Log("unable to read config", err)
 		os.Exit(0)
 	}
 
-	fmt.Printf("STORE READ \n")
-
 	// Setup services.
 	gs := github.NewService(githubOwner, githubRepository)
 	cs := config.NewService(store, logger)
 	d2s := d2.NewService(gs, cs, logger)
 
-	fmt.Printf("SERVICES SETUP \n")
-
-	// Create a new QML bridge that will bridge the GUI to Go.
+	// Setup QML bridge with all dependencies.
 	qmlBridge := bridge.NewQmlBridge(nil)
 	qmlBridge.D2service = d2s
 
-	// Initiate the config bridge.
+	// Setup config bridge with all dependencies.
 	configBridge := bridge.NewConfigBridge(nil)
 	configBridge.Configuration = cs
 
-	// Setup bridges.
+	// Add bridge to QML.
 	qmlWidget.RootContext().SetContextProperty("QmlBridge", qmlBridge)
-	qmlWidget.RootContext().SetContextProperty("settings", configBridge)
-
-	fmt.Printf("QML CONNECTED \n")
-	// Connect the QML signals on the bridge to Go.
 	qmlBridge.Connect()
+
+	qmlWidget.RootContext().SetContextProperty("settings", configBridge)
 	configBridge.Connect()
 
-	// Start using the connections.
+	// Connect ladder model to QML.
 	qmlBridge.SetLadderCharacters(lm)
+
+	// Set values from disk on the config bridge.
 	configBridge.SetD2Location(conf.D2Location)
 	configBridge.SetD2Instances(conf.D2Instances)
 	configBridge.SetHDLocation(conf.HDLocation)
 	configBridge.SetHDInstances(conf.HDInstances)
 
-	window.AllowMinimize(a.fw.WinId())
+	// Make sure the window is allowed to minimize.
+	window.AllowMinimize(fw.WinId())
 
-	fmt.Printf("MINIMIZE SETUP \n")
-
+	// Set the source for our drawable widget to our qml entrypoint.
 	qmlWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
 
-	fmt.Printf("QML SOURCE SET TO MAIN.qml \n")
+	fw.Show()
+	//fw.Widget.SetFocus2()
 
-	a.fw.Show()
-	a.fw.Widget.SetFocus2()
-	a.app.Exec()
+	app.Exec()
 }
 
 func newQmlWidget() *quick.QQuickWidget {
-	var quickWidget = quick.NewQQuickWidget(nil)
-	quickWidget.SetResizeMode(quick.QQuickWidget__SizeRootObjectToView)
-
-	//quickWidget.SetSource(core.NewQUrl3("qrc:/qml/main. qml", 0))
-	//quickWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
-
-	return quickWidget
+	var qwidget = quick.NewQQuickWidget(nil)
+	qwidget.SetResizeMode(quick.QQuickWidget__SizeRootObjectToView)
+	return qwidget
 }
 
 // Returns the target specific application data directory.
@@ -191,6 +160,7 @@ func getConfigPath() (string, error) {
 	return locations[0], nil
 }
 
+// envString extracts a string from os environment.
 func envString(env, fallback string) string {
 	e := os.Getenv(env)
 	if e == "" {
