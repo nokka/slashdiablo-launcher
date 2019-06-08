@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/nokka/slash-launcher/bridge"
@@ -85,6 +87,26 @@ func main() {
 	// Setup logger.
 	logger := log.NewLogger(configPath)
 
+	// STD LOGGING
+	r, w, err := os.Pipe()
+	if err != nil {
+		os.Exit(0)
+	}
+
+	os.Stderr = w
+
+	go func() {
+		scanner := bufio.NewScanner(r)
+		for scanner.Scan() {
+			line := scanner.Text()
+			logger.Log("stdout", line)
+		}
+	}()
+
+	fmt.Printf("CAPTURING STDOUT \n")
+
+	// STD LOGGING END
+
 	// Setup local storage.
 	store := storage.NewStore(configPath)
 	if err := store.Load(); err != nil {
@@ -92,40 +114,54 @@ func main() {
 		os.Exit(0)
 	}
 
+	fmt.Printf("STORE SETUP \n")
+
 	conf, err := store.Read()
 	if err != nil {
 		logger.Log("unable to read config", err)
 		os.Exit(0)
 	}
 
+	fmt.Printf("STORE READ \n")
+
 	// Setup services.
 	gs := github.NewService(githubOwner, githubRepository)
 	cs := config.NewService(store, logger)
 	d2s := d2.NewService(gs, cs, logger)
 
+	fmt.Printf("SERVICES SETUP \n")
+
 	// Create a new QML bridge that will bridge the GUI to Go.
 	qmlBridge := bridge.NewQmlBridge(nil)
 	qmlBridge.D2service = d2s
-
-	qmlBridge.SetLadderCharacters(lm)
 
 	// Initiate the config bridge.
 	configBridge := bridge.NewConfigBridge(nil)
 	configBridge.Configuration = cs
 
+	// Setup bridges.
+	qmlWidget.RootContext().SetContextProperty("QmlBridge", qmlBridge)
+	qmlWidget.RootContext().SetContextProperty("settings", configBridge)
+
+	fmt.Printf("QML CONNECTED \n")
+	// Connect the QML signals on the bridge to Go.
+	qmlBridge.Connect()
+	configBridge.Connect()
+
+	// Start using the connections.
+	qmlBridge.SetLadderCharacters(lm)
 	configBridge.SetD2Location(conf.D2Location)
 	configBridge.SetD2Instances(conf.D2Instances)
 	configBridge.SetHDLocation(conf.HDLocation)
 	configBridge.SetHDInstances(conf.HDInstances)
 
-	// Connect the QML signals on the bridge to Go.
-	qmlBridge.Connect()
-	configBridge.Connect()
-
 	window.AllowMinimize(a.fw.WinId())
 
-	qmlWidget.RootContext().SetContextProperty("QmlBridge", qmlBridge)
-	qmlWidget.RootContext().SetContextProperty("settings", configBridge)
+	fmt.Printf("MINIMIZE SETUP \n")
+
+	qmlWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
+
+	fmt.Printf("QML SOURCE SET TO MAIN.qml \n")
 
 	a.fw.Show()
 	a.fw.Widget.SetFocus2()
@@ -137,7 +173,7 @@ func newQmlWidget() *quick.QQuickWidget {
 	quickWidget.SetResizeMode(quick.QQuickWidget__SizeRootObjectToView)
 
 	//quickWidget.SetSource(core.NewQUrl3("qrc:/qml/main. qml", 0))
-	quickWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
+	//quickWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
 
 	return quickWidget
 }
