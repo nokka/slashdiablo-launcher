@@ -1,5 +1,7 @@
 package window
 
-func (f *QFramelessWindow) SetStyleMask()      {}
-func (f *QFramelessWindow) SetupNativeEvent()  {}
+// SetupNativeEvent overrides native events.
+func (f *QFramelessWindow) SetupNativeEvent() {}
+
+// SetupNativeEvent2 overrides native events.
 func (f *QFramelessWindow) SetupNativeEvent2() {}

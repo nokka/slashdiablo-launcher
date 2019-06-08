@@ -7,8 +7,38 @@ import (
 	"github.com/therecipe/qt/core"
 )
 
-func (f *QFramelessWindow) SetStyleMask() {}
+// SetupNativeEvent overrides native events.
+func (f *QFramelessWindow) SetupNativeEvent() {
+	f.WinId()
+	f.ConnectNativeEvent(func(eventType *core.QByteArray, message unsafe.Pointer, result *int) bool {
+		msg := (*w32.MSG)(message)
+		hwnd := msg.Hwnd
 
+		switch msg.Message {
+		case w32.WM_NCCALCSIZE:
+			if msg.WParam == 1 {
+				*result = 0
+				return true
+			}
+			*result = (int)(w32.DefWindowProc(msg.Hwnd, w32.WM_NCCALCSIZE, msg.WParam, msg.LParam))
+			return true
+
+		case w32.WM_GETMINMAXINFO:
+			mm := (*w32.MINMAXINFO)((unsafe.Pointer)(msg.LParam))
+			mm.PtMinTrackSize.X = int32(f.minimumWidth)
+			mm.PtMinTrackSize.Y = int32(f.minimumHeight)
+
+			return true
+
+		case w32.WM_ACTIVATEAPP:
+			f.putShadow(hwnd)
+
+		}
+		return false
+	})
+}
+
+// SetupNativeEvent2 overrides native events.
 func (f *QFramelessWindow) SetupNativeEvent2() {
 	filterObj := core.NewQAbstractNativeEventFilter()
 	filterObj.ConnectNativeEventFilter(func(eventType *core.QByteArray, message unsafe.Pointer, result *int) bool {
@@ -39,36 +69,6 @@ func (f *QFramelessWindow) SetupNativeEvent2() {
 		return false
 	})
 	core.QCoreApplication_Instance().InstallNativeEventFilter(filterObj)
-}
-
-func (f *QFramelessWindow) SetupNativeEvent() {
-	f.WinId()
-	f.ConnectNativeEvent(func(eventType *core.QByteArray, message unsafe.Pointer, result *int) bool {
-		msg := (*w32.MSG)(message)
-		hwnd := msg.Hwnd
-
-		switch msg.Message {
-		case w32.WM_NCCALCSIZE:
-			if msg.WParam == 1 {
-				*result = 0
-				return true
-			}
-			*result = (int)(w32.DefWindowProc(msg.Hwnd, w32.WM_NCCALCSIZE, msg.WParam, msg.LParam))
-			return true
-
-		case w32.WM_GETMINMAXINFO:
-			mm := (*w32.MINMAXINFO)((unsafe.Pointer)(msg.LParam))
-			mm.PtMinTrackSize.X = int32(f.minimumWidth)
-			mm.PtMinTrackSize.Y = int32(f.minimumHeight)
-
-			return true
-
-		case w32.WM_ACTIVATEAPP:
-			f.putShadow(hwnd)
-
-		}
-		return false
-	})
 }
 
 func (f *QFramelessWindow) putShadow(hwnd w32.HWND) {

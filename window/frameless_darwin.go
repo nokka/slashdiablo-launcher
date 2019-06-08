@@ -7,11 +7,8 @@ package window
 */
 import "C"
 
-// SetStyleMask ...
-func (f *QFramelessWindow) SetStyleMask() {}
-
-// SetupNativeEvent ...
+// SetupNativeEvent overrides native events.
 func (f *QFramelessWindow) SetupNativeEvent() {}
 
-// SetupNativeEvent2 ...
+// SetupNativeEvent2 overrides native events.
 func (f *QFramelessWindow) SetupNativeEvent2() {}

@@ -16,14 +16,6 @@ import (
 	"github.com/therecipe/qt/widgets"
 )
 
-// Launcher ...
-type Launcher struct {
-	fw *window.QFramelessWindow
-
-	app *widgets.QApplication
-	win *widgets.QMainWindow
-}
-
 func main() {
 	// Environment variables set when building.
 	var (
@@ -37,7 +29,6 @@ func main() {
 
 	// Enable high dpi scaling, useful for devices with high pixel density displays.
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
-	//core.QCoreApplication_SetAttribute(core.Qt__AA_UseSoftwareOpenGL, true)
 
 	// Create base application.
 	app := widgets.NewQApplication(0, nil)
@@ -48,33 +39,12 @@ func main() {
 	// Create a new QML widget, this is what we will draw the application on.
 	qmlWidget := newQmlWidget()
 
-	// Base layout that will be added to the root window.
-	layout := widgets.NewQVBoxLayout()
-	layout.SetContentsMargins(0, 0, 0, 0)
+	// Setup layout that will be added to the root window.
+	layout := newLayout()
 	layout.AddWidget(qmlWidget, 0, 0)
 
 	// Add the layout to the window, this is the only item on the base window.
 	fw.SetupContent(layout)
-
-	lm := NewLadderModel(nil)
-
-	lm.AddCharacter(&Character{
-		Name:  "Meanski",
-		Class: "pal",
-		Level: "99",
-	})
-
-	lm.AddCharacter(&Character{
-		Name:  "Nolan",
-		Class: "sor",
-		Level: "95",
-	})
-
-	lm.AddCharacter(&Character{
-		Name:  "Nolan",
-		Class: "sor",
-		Level: "95",
-	})
 
 	configPath, err := getConfigPath()
 	if err != nil {
@@ -105,6 +75,9 @@ func main() {
 	cs := config.NewService(store, logger)
 	d2s := d2.NewService(gs, cs, logger)
 
+	// Models.
+	lm := NewLadderModel(nil)
+
 	// Setup QML bridge with all dependencies.
 	qmlBridge := bridge.NewQmlBridge(nil)
 	qmlBridge.D2service = d2s
@@ -113,14 +86,7 @@ func main() {
 	configBridge := bridge.NewConfigBridge(nil)
 	configBridge.Configuration = cs
 
-	// Add bridge to QML.
-	qmlWidget.RootContext().SetContextProperty("QmlBridge", qmlBridge)
-	qmlBridge.Connect()
-
-	qmlWidget.RootContext().SetContextProperty("settings", configBridge)
-	configBridge.Connect()
-
-	// Connect ladder model to QML.
+	// Set ladder model on the bridge.
 	qmlBridge.SetLadderCharacters(lm)
 
 	// Set values from disk on the config bridge.
@@ -129,6 +95,13 @@ func main() {
 	configBridge.SetHDLocation(conf.HDLocation)
 	configBridge.SetHDInstances(conf.HDInstances)
 
+	// Add bridge to QML.
+	qmlWidget.RootContext().SetContextProperty("QmlBridge", qmlBridge)
+	qmlBridge.Connect()
+
+	qmlWidget.RootContext().SetContextProperty("settings", configBridge)
+	configBridge.Connect()
+
 	// Make sure the window is allowed to minimize.
 	window.AllowMinimize(fw.WinId())
 
@@ -136,18 +109,26 @@ func main() {
 	qmlWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
 
 	fw.Show()
-	//fw.Widget.SetFocus2()
+	fw.Widget.SetFocus2()
 
 	app.Exec()
 }
 
+// newQmlWidget returns a configured QML widget.
 func newQmlWidget() *quick.QQuickWidget {
 	var qwidget = quick.NewQQuickWidget(nil)
 	qwidget.SetResizeMode(quick.QQuickWidget__SizeRootObjectToView)
 	return qwidget
 }
 
-// Returns the target specific application data directory.
+// newLayout returns a configured layout.
+func newLayout() *widgets.QVBoxLayout {
+	layout := widgets.NewQVBoxLayout()
+	layout.SetContentsMargins(0, 0, 0, 0)
+	return layout
+}
+
+// getConfigPath returns the target specific application data directory.
 func getConfigPath() (string, error) {
 	locations := core.QStandardPaths_StandardLocations(
 		core.QStandardPaths__AppLocalDataLocation,

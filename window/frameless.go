@@ -129,13 +129,11 @@ func (f *QFramelessWindow) SetupBorderSize(size int) {
 // AddWindowNativeShadow for MacOS only
 func (f *QFramelessWindow) AddWindowNativeShadow() {
 	f.SetWindowFlag(core.Qt__NoDropShadowWindowHint, false)
-	f.SetStyleMask()
 }
 
 // RemoveWindowNativeShadow For MacOS only
 func (f *QFramelessWindow) RemoveWindowNativeShadow() {
 	f.SetWindowFlag(core.Qt__NoDropShadowWindowHint, true)
-	f.SetStyleMask()
 }
 
 // SetupWindowShadow ...
@@ -247,7 +245,6 @@ func (f *QFramelessWindow) SetupWidgetColor(red uint16, green uint16, blue uint1
 		border-radius: %s;
 		%s; 
 	}`, color.Hex(), borderSizeString, borderSizeString, borderSizeString, roundSizeString, style))
-	f.SetStyleMask()
 }
 
 // NewQToolButtonForNotDarwin ...
@@ -394,7 +391,7 @@ func (f *QFramelessWindow) SetupWindowFlags() {
 	f.SetWindowFlag(core.Qt__Window, true)
 	f.SetWindowFlag(core.Qt__FramelessWindowHint, true)
 	f.SetWindowFlag(core.Qt__NoDropShadowWindowHint, true)
-	f.SetStyleMask()
+	f.SetWindowFlag(core.Qt__MSWindowsFixedSizeDialogHint, true)
 }
 
 // SetupTitle ...
