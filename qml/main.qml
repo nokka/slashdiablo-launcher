@@ -1,12 +1,11 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.5
 
-ApplicationWindow {
+Rectangle {
     id: mainWindow
-    objectName: "mainWindow"
+    //objectName: "mainWindow"
 
-    visible: true
-    flags: (Qt.WindowMinimizeButtonHint | Qt.FramelessWindowHint | Qt.Window)
+    //flags: (Qt.WindowMinimizeButtonHint | Qt.FramelessWindowHint | Qt.Window)
     color: "#080806"
     width: 1024; height: 600
 

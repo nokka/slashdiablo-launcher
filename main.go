@@ -12,9 +12,17 @@ import (
 	"github.com/nokka/slash-launcher/storage"
 	"github.com/nokka/slash-launcher/window"
 	"github.com/therecipe/qt/core"
-	"github.com/therecipe/qt/gui"
-	"github.com/therecipe/qt/qml"
+	"github.com/therecipe/qt/quick"
+	"github.com/therecipe/qt/widgets"
 )
+
+// Launcher ...
+type Launcher struct {
+	fw *window.QFramelessWindow
+
+	app *widgets.QApplication
+	win *widgets.QMainWindow
+}
 
 func main() {
 	// Environment variables set when building.
@@ -29,10 +37,21 @@ func main() {
 
 	// Enable high dpi scaling, useful for devices with high pixel density displays.
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
-	core.QCoreApplication_SetAttribute(core.Qt__AA_UseSoftwareOpenGL, true)
+	//core.QCoreApplication_SetAttribute(core.Qt__AA_UseSoftwareOpenGL, true)
 
-	ga := gui.NewQGuiApplication(len(os.Args), os.Args)
-	ga.SetWindowIcon(gui.NewQIcon5(":/qml/assets/tmp_icon.png"))
+	a := &Launcher{}
+	a.app = widgets.NewQApplication(0, nil)
+
+	a.fw = window.CreateQFramelessWindow(1.0)
+
+	qmlWidget := newQmlWidget()
+
+	layout := widgets.NewQVBoxLayout()
+	layout.SetContentsMargins(0, 0, 0, 0)
+	layout.AddWidget(qmlWidget, 0, 0)
+
+	a.fw.SetupContent(layout)
+	a.fw.SetupWidgetColor(0, 0, 0)
 
 	// TODO: Refactor
 	lm := NewLadderModel(nil)
@@ -103,24 +122,24 @@ func main() {
 	qmlBridge.Connect()
 	configBridge.Connect()
 
-	// Setup QML engine.
-	qmlEngine := qml.NewQQmlApplicationEngine(nil)
-	qmlEngine.ConnectObjectCreated(func(object *core.QObject, url *core.QUrl) {
-		if object.ObjectName() == "mainWindow" {
-			window.AllowMinimize(gui.NewQWindowFromPointer(object.Pointer()).WinId())
-		}
-	})
+	window.AllowMinimize(a.fw.WinId())
 
-	// Connect the bridges to QML.
-	qmlEngine.RootContext().SetContextProperty("QmlBridge", qmlBridge)
-	qmlEngine.RootContext().SetContextProperty("settings", configBridge)
+	qmlWidget.RootContext().SetContextProperty("QmlBridge", qmlBridge)
+	qmlWidget.RootContext().SetContextProperty("settings", configBridge)
 
-	// Set our main.qml to the view.
-	//qmlEngine.Load(core.NewQUrl3("qrc:/qml/main.qml", 0))
-	qmlEngine.Load(core.NewQUrl3("qml/main.qml", 0))
+	a.fw.Show()
+	a.fw.Widget.SetFocus2()
+	a.app.Exec()
+}
 
-	// Finally, exec the application.
-	gui.QGuiApplication_Exec()
+func newQmlWidget() *quick.QQuickWidget {
+	var quickWidget = quick.NewQQuickWidget(nil)
+	quickWidget.SetResizeMode(quick.QQuickWidget__SizeRootObjectToView)
+
+	//quickWidget.SetSource(core.NewQUrl3("qrc:/qml/main. qml", 0))
+	quickWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
+
+	return quickWidget
 }
 
 // Returns the target specific application data directory.
