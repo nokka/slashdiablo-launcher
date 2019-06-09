@@ -94,6 +94,8 @@ func NewFramelessWindow(alpha float64, width int, height int) *QFramelessWindow 
 	f.SetCentralWidget(f.Widget)
 
 	f.shadowMargin = 0
+	f.borderSize = 1
+	
 	f.SetupUI(f.Widget)
 	f.SetupWindowFlags()
 
@@ -107,25 +109,9 @@ func NewFramelessWindow(alpha float64, width int, height int) *QFramelessWindow 
 	f.SetupTitleBarActions()
 
 	f.SetFixedSize2(width, height)
-	f.SetupBorderSize(1)
 	f.SetupWidgetColor(0, 0, 0)
 
 	return f
-}
-
-// SetupBorderSize ...
-func (f *QFramelessWindow) SetupBorderSize(size int) {
-	f.borderSize = size
-}
-
-// AddWindowNativeShadow for MacOS only
-func (f *QFramelessWindow) AddWindowNativeShadow() {
-	f.SetWindowFlag(core.Qt__NoDropShadowWindowHint, false)
-}
-
-// RemoveWindowNativeShadow For MacOS only
-func (f *QFramelessWindow) RemoveWindowNativeShadow() {
-	f.SetWindowFlag(core.Qt__NoDropShadowWindowHint, true)
 }
 
 // SetupWindowShadow ...
@@ -176,7 +162,6 @@ func (f *QFramelessWindow) SetupUI(widget *widgets.QWidget) {
 	f.TitleBarLayout = widgets.NewQHBoxLayout2(f.TitleBar)
 	f.TitleBarLayout.SetContentsMargins(0, 0, 0, 0)
 
-	// TODO: REMOVE
 	f.TitleLabel = widgets.NewQLabel(nil, 0)
 	f.TitleLabel.SetObjectName("TitleLabel")
 	f.TitleLabel.SetAlignment(core.Qt__AlignCenter)
@@ -213,7 +198,7 @@ func (f *QFramelessWindow) SetupWidgetColor(red uint16, green uint16, blue uint1
 
 	var roundSizeString string
 	if runtime.GOOS != "windows" {
-		roundSizeString = fmt.Sprintf("%d", f.borderSize*2) + "px"
+		roundSizeString = "10px" //fmt.Sprintf("%d", f.borderSize*2) + "px"
 	} else {
 		roundSizeString = "0px"
 	}
@@ -313,9 +298,9 @@ func (f *QFramelessWindow) SetTitleBarButtons() {
 
 	f.TitleBarLayout.SetAlignment(f.TitleBarBtnWidget, core.Qt__AlignRight)
 	f.TitleBarLayout.AddWidget(f.TitleLabel, 0, 0)
-	f.TitleBarLayout.AddWidget(f.IconMinimize.Widget, 0, core.Qt__AlignRight)
-	f.TitleBarLayout.AddWidget(f.IconRestore.Widget, 0, core.Qt__AlignRight)
-	f.TitleBarLayout.AddWidget(f.IconClose.Widget, 0, core.Qt__AlignRight)
+	f.TitleBarLayout.AddWidget(f.IconMinimize.Widget, 0, 0)
+	f.TitleBarLayout.AddWidget(f.IconRestore.Widget, 0, 0)
+	f.TitleBarLayout.AddWidget(f.IconClose.Widget, 0, 0)
 }
 
 // SetIconsStyle ...
