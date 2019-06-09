@@ -95,12 +95,12 @@ func NewFramelessWindow(alpha float64, width int, height int) *QFramelessWindow 
 
 	f.shadowMargin = 0
 	f.borderSize = 1
-	
+
 	f.SetupUI(f.Widget)
 	f.SetupWindowFlags()
 
 	// DO NOT NEED.
-	//f.SetupAttributes()
+	f.SetupAttributes()
 
 	// NEED TO HAVE.
 	f.SetupWindowActions()
@@ -195,13 +195,7 @@ func (f *QFramelessWindow) SetupWidgetColor(red uint16, green uint16, blue uint1
 	f.Widget.SetStyleSheet(" * { background-color: rgba(0, 0, 0, 0.0); color: rgba(0, 0, 0, 0); }")
 
 	borderSizeString := fmt.Sprintf("%d", f.borderSize*2) + "px"
-
-	var roundSizeString string
-	if runtime.GOOS != "windows" {
-		roundSizeString = "10px" //fmt.Sprintf("%d", f.borderSize*2) + "px"
-	} else {
-		roundSizeString = "0px"
-	}
+	roundSizeString := "5px"
 
 	f.WindowWidget.SetStyleSheet(fmt.Sprintf(`
 	#QFramelessWidget {
