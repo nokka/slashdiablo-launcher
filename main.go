@@ -106,7 +106,8 @@ func main() {
 	window.AllowMinimize(fw.WinId())
 
 	// Set the source for our drawable widget to our qml entrypoint.
-	qmlWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
+	//qmlWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
+	qmlWidget.SetSource(core.NewQUrl3("qrc:/qml/main.qml", 0))
 
 	fw.Show()
 	fw.Widget.SetFocus2()
