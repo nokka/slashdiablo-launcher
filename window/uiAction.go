@@ -106,13 +106,6 @@ func (f *QFramelessWindow) SetupTitleBarActions() {
 	})
 }
 
-func (f *QFramelessWindow) windowMaximize() {
-	f.IconRestore.Widget.SetVisible(true)
-	f.Layout.SetContentsMargins(0, 0, 0, 0)
-	f.SetWindowState(core.Qt__WindowMaximized)
-	f.IconRestore.SetStyle(nil)
-}
-
 func (f *QFramelessWindow) windowRestore() {
 	f.IconRestore.Widget.SetVisible(false)
 	f.Layout.SetContentsMargins(f.shadowMargin, f.shadowMargin, f.shadowMargin, f.shadowMargin)

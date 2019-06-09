@@ -89,12 +89,7 @@ type QFramelessWindow struct {
 func NewFramelessWindow(alpha float64, width int, height int) *QFramelessWindow {
 	f := NewQFramelessWindow(nil, 0)
 	f.WindowColorAlpha = alpha
-	/*if f.WindowColorAlpha == 1.0 {
-		f.SetupNativeEvent()
-	} else {
-		f.SetupNativeEvent2()
-	}*/
-	//f.SetupNativeEvent2()
+
 	f.Widget = widgets.NewQWidget(nil, 0)
 	f.SetCentralWidget(f.Widget)
 
@@ -116,17 +111,6 @@ func NewFramelessWindow(alpha float64, width int, height int) *QFramelessWindow 
 	f.SetupWidgetColor(0, 0, 0)
 
 	return f
-}
-
-// SetupMinimumSize ...
-func (f *QFramelessWindow) SetupMinimumSize(w int, h int) {
-	W := w + (2 * f.shadowMargin)
-	H := h + (2 * f.shadowMargin)
-	f.SetMinimumSize2(W, H)
-	f.Widget.SetMinimumSize2(W, H)
-	f.WindowWidget.SetMinimumSize2(w, h)
-	f.minimumWidth = w
-	f.minimumHeight = h
 }
 
 // SetupBorderSize ...
@@ -179,14 +163,6 @@ func (f *QFramelessWindow) SetupUI(widget *widgets.QWidget) {
 
 	f.Layout.SetContentsMargins(f.shadowMargin, f.shadowMargin, f.shadowMargin, f.shadowMargin)
 
-	// windowVLayout is the following structure layout
-	// +-----------+
-	// |           |
-	// +-----------+
-	// |           |
-	// +-----------+
-	// |           |
-	// +-----------+
 	f.WindowVLayout = widgets.NewQVBoxLayout2(f.WindowWidget)
 	f.WindowVLayout.SetContentsMargins(f.borderSize, f.borderSize, f.borderSize, 0)
 	f.WindowVLayout.SetContentsMargins(0, 0, 0, 0)
@@ -197,14 +173,10 @@ func (f *QFramelessWindow) SetupUI(widget *widgets.QWidget) {
 	f.TitleBar = widgets.NewQWidget(f.WindowWidget, 0)
 	f.TitleBar.SetObjectName("titleBar")
 	f.TitleBar.SetSizePolicy2(widgets.QSizePolicy__Expanding, widgets.QSizePolicy__Fixed)
-
-	// titleBarLayout is the following structure layout
-	// +--+--+--+--+
-	// |  |  |  |  |
-	// +--+--+--+--+
 	f.TitleBarLayout = widgets.NewQHBoxLayout2(f.TitleBar)
 	f.TitleBarLayout.SetContentsMargins(0, 0, 0, 0)
 
+	// TODO: REMOVE
 	f.TitleLabel = widgets.NewQLabel(nil, 0)
 	f.TitleLabel.SetObjectName("TitleLabel")
 	f.TitleLabel.SetAlignment(core.Qt__AlignCenter)
@@ -341,9 +313,9 @@ func (f *QFramelessWindow) SetTitleBarButtons() {
 
 	f.TitleBarLayout.SetAlignment(f.TitleBarBtnWidget, core.Qt__AlignRight)
 	f.TitleBarLayout.AddWidget(f.TitleLabel, 0, 0)
-	f.TitleBarLayout.AddWidget(f.IconMinimize.Widget, 0, 0)
-	f.TitleBarLayout.AddWidget(f.IconRestore.Widget, 0, 0)
-	f.TitleBarLayout.AddWidget(f.IconClose.Widget, 0, 0)
+	f.TitleBarLayout.AddWidget(f.IconMinimize.Widget, 0, core.Qt__AlignRight)
+	f.TitleBarLayout.AddWidget(f.IconRestore.Widget, 0, core.Qt__AlignRight)
+	f.TitleBarLayout.AddWidget(f.IconClose.Widget, 0, core.Qt__AlignRight)
 }
 
 // SetIconsStyle ...
@@ -577,15 +549,6 @@ func (f *QFramelessWindow) SetupTitleBarColorForDarwin(color *RGB) {
 			}
 		`
 	}
-	/*MaximizeColorHover := `
-		#BtnMaximize:hover {
-			background-color: rgb(53, 202, 74);
-			border-color: rgb(34, 182, 52);
-			background-image: url(":/icons/MaximizeHoverDarwin.png");
-			background-repeat: no-repeat;
-			background-position: center center;
-		}
-	`*/
 	RestoreColorHover := `
 		#BtnRestore:hover {
 			background-color: rgb(53, 202, 74);
@@ -614,7 +577,6 @@ func (f *QFramelessWindow) SetupTitleBarColorForDarwin(color *RGB) {
 		}
 	`
 	f.BtnMinimize.SetStyleSheet(baseStyle + minimizeColor + minimizeColorHover)
-	//f.BtnMaximize.SetStyleSheet(baseStyle + restoreAndMaximizeColor + MaximizeColorHover)
 	f.BtnRestore.SetStyleSheet(baseStyle + restoreAndMaximizeColor + RestoreColorHover)
 	f.BtnClose.SetStyleSheet(baseStyle + closeColor + closeColorHover)
 }
@@ -632,7 +594,6 @@ func (f *QFramelessWindow) UpdateWidget() {
 
 // SetupWindowActions ...
 func (f *QFramelessWindow) SetupWindowActions() {
-	// Ref: https://stackoverflow.com/questions/5752408/qt-resize-borderless-widget/37507341#37507341
 	f.ConnectEventFilter(func(watched *core.QObject, event *core.QEvent) bool {
 		e := gui.NewQMouseEventFromPointer(core.PointerFromQEvent(event))
 		switch event.Type() {
@@ -666,7 +627,6 @@ func (f *QFramelessWindow) SetupWindowActions() {
 }
 
 func (f *QFramelessWindow) mouseMove(e *gui.QMouseEvent) {
-	// https://stackoverflow.com/questions/5752408/qt-resize-borderless-widget/37507341
 	window := f
 	margin := f.shadowMargin
 
