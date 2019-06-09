@@ -89,20 +89,28 @@ type QFramelessWindow struct {
 func NewFramelessWindow(alpha float64, width int, height int) *QFramelessWindow {
 	f := NewQFramelessWindow(nil, 0)
 	f.WindowColorAlpha = alpha
-	if f.WindowColorAlpha == 1.0 {
+	/*if f.WindowColorAlpha == 1.0 {
 		f.SetupNativeEvent()
 	} else {
 		f.SetupNativeEvent2()
-	}
+	}*/
+	//f.SetupNativeEvent2()
 	f.Widget = widgets.NewQWidget(nil, 0)
 	f.SetCentralWidget(f.Widget)
 
 	f.shadowMargin = 0
 	f.SetupUI(f.Widget)
 	f.SetupWindowFlags()
-	f.SetupAttributes()
+
+	// DO NOT NEED.
+	//f.SetupAttributes()
+
+	// NEED TO HAVE.
 	f.SetupWindowActions()
+
+	// NEED TO HAVE.
 	f.SetupTitleBarActions()
+
 	f.SetFixedSize2(width, height)
 	f.SetupBorderSize(1)
 	f.SetupWidgetColor(0, 0, 0)
@@ -356,10 +364,6 @@ func (f *QFramelessWindow) SetTitleBarButtonsForDarwin() {
 	f.BtnMinimize.SetObjectName("BtnMinimize")
 	f.BtnMinimize.SetSizePolicy(btnSizePolicy)
 
-	/*f.BtnMaximize = widgets.NewQToolButton(f.TitleBar)
-	f.BtnMaximize.SetObjectName("BtnMaximize")
-	f.BtnMaximize.SetSizePolicy(btnSizePolicy)*/
-
 	f.BtnRestore = widgets.NewQToolButton(f.TitleBar)
 	f.BtnRestore.SetObjectName("BtnRestore")
 	f.BtnRestore.SetSizePolicy(btnSizePolicy)
@@ -373,7 +377,6 @@ func (f *QFramelessWindow) SetTitleBarButtonsForDarwin() {
 	f.TitleBarLayout.SetAlignment(f.TitleBarBtnWidget, core.Qt__AlignLeft)
 	f.TitleBarLayout.AddWidget(f.BtnClose, 0, 0)
 	f.TitleBarLayout.AddWidget(f.BtnMinimize, 0, 0)
-	//f.TitleBarLayout.AddWidget(f.BtnMaximize, 0, 0)
 	f.TitleBarLayout.AddWidget(f.BtnRestore, 0, 0)
 	f.TitleBarLayout.AddWidget(f.TitleLabel, 0, 0)
 }
