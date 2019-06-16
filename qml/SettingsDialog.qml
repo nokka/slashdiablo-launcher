@@ -5,7 +5,6 @@ import QtQuick.Dialogs 1.3
 
 Popup {
     id: settingsDialog
-    property var usingHD: false
 
     modal: false
     focus: true

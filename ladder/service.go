@@ -13,6 +13,7 @@ type service struct {
 	sdClient    Client
 	ladderModel *TopLadderModel
 	logger      log.Logger
+	characters  []Character
 }
 
 // GetLadder will fetch the ladder from the Slashdiablo API.
@@ -22,11 +23,11 @@ func (s *service) SetLadderCharacters(mode string) error {
 		return err
 	}
 
-	// Get the top 10 ladder positions.
-	top := characters[:10]
+	// Set the top 10 ladder positions.
+	s.characters = characters[:10]
 
-	for i := 0; i < len(top); i++ {
-		s.ladderModel.AddCharacter(&characters[i])
+	for i := 0; i < len(s.characters); i++ {
+		s.ladderModel.AddCharacter(&s.characters[i])
 	}
 
 	return nil
