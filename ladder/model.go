@@ -1,27 +1,19 @@
-package main
+package ladder
 
 import (
-	"fmt"
-
 	"github.com/therecipe/qt/core"
 )
 
 // Model Roles
 const (
-	Name = int(core.Qt__UserRole) + 1<<iota
+	Rank = int(core.Qt__UserRole) + 1<<iota
+	Name
 	Class
 	Level
 )
 
-// Character ...
-type Character struct {
-	Name  string
-	Class string
-	Level string
-}
-
-// LadderModel ...
-type LadderModel struct {
+// TopLadderModel ...
+type TopLadderModel struct {
 	core.QAbstractListModel
 
 	_ map[int]*core.QByteArray `property:"roles"`
@@ -30,8 +22,9 @@ type LadderModel struct {
 	characters []Character
 }
 
-func (m *LadderModel) init() {
+func (m *TopLadderModel) init() {
 	m.SetRoles(map[int]*core.QByteArray{
+		Rank:  core.NewQByteArray2("rank", -1),
 		Name:  core.NewQByteArray2("name", -1),
 		Class: core.NewQByteArray2("class", -1),
 		Level: core.NewQByteArray2("level", -1),
@@ -43,20 +36,19 @@ func (m *LadderModel) init() {
 	m.ConnectRoleNames(m.roleNames)
 }
 
-func (m *LadderModel) rowCount(*core.QModelIndex) int {
-	fmt.Println("ROW COUNT", len(m.characters))
+func (m *TopLadderModel) rowCount(*core.QModelIndex) int {
 	return len(m.characters)
 }
 
-func (m *LadderModel) columnCount(*core.QModelIndex) int {
+func (m *TopLadderModel) columnCount(*core.QModelIndex) int {
 	return 1
 }
 
-func (m *LadderModel) roleNames() map[int]*core.QByteArray {
+func (m *TopLadderModel) roleNames() map[int]*core.QByteArray {
 	return m.Roles()
 }
 
-func (m *LadderModel) data(index *core.QModelIndex, role int) *core.QVariant {
+func (m *TopLadderModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	if !index.IsValid() {
 		return core.NewQVariant()
 	}
@@ -65,23 +57,25 @@ func (m *LadderModel) data(index *core.QModelIndex, role int) *core.QVariant {
 		return core.NewQVariant()
 	}
 
-	c := m.characters[0]
-
-	fmt.Println(c)
+	item := m.characters[index.Row()]
 
 	switch role {
+	case Rank:
+		{
+			return core.NewQVariant1(item.Rank)
+		}
 	case Name:
 		{
-			return core.NewQVariant1(c.Name)
+			return core.NewQVariant1(item.Name)
 		}
 
 	case Class:
 		{
-			return core.NewQVariant1(c.Class)
+			return core.NewQVariant1(item.Class[:3])
 		}
 	case Level:
 		{
-			return core.NewQVariant1(c.Level)
+			return core.NewQVariant1(item.Level)
 		}
 
 	default:
@@ -91,13 +85,13 @@ func (m *LadderModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	}
 }
 
-// AddCharacter ...
-func (m *LadderModel) AddCharacter(c *Character) {
+// AddCharacter adds a character to the model.
+func (m *TopLadderModel) AddCharacter(c *Character) {
 	m.BeginInsertRows(core.NewQModelIndex(), len(m.characters), len(m.characters))
 	m.characters = append(m.characters, *c)
 	m.EndInsertRows()
 }
 
 func init() {
-	LadderModel_QRegisterMetaType()
+	TopLadderModel_QRegisterMetaType()
 }

@@ -8,13 +8,17 @@ import (
 // ConfigBridge is the connection between QML and the Go config.
 type ConfigBridge struct {
 	core.QObject
+
+	// Services.
 	Configuration config.Service
 
+	// Properties.
 	_ string `property:"D2Location"`
 	_ int    `property:"D2Instances"`
 	_ string `property:"HDLocation"`
 	_ int    `property:"HDInstances"`
 
+	// Functions.
 	_ func(D2Location string, D2Instances int, HDLocation string, HDInstances int) bool `slot:"update"`
 }
 

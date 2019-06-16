@@ -16,7 +16,7 @@ import (
 
 // Service is responsible for all things related to Diablo II.
 type Service struct {
-	githubService github.Service
+	githubClient  github.Client
 	configService config.Service
 	logger        log.Logger
 }
@@ -101,7 +101,7 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan error) {
 
 			defer out.Close()
 
-			contents, err := s.githubService.GetFile(f)
+			contents, err := s.githubClient.GetFile(f)
 			if err != nil {
 				s.logger.Log("failed to get file from github", err)
 				errors <- err
@@ -164,7 +164,7 @@ func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, i
 }
 
 func (s *Service) getManifest() (*Manifest, error) {
-	contents, err := s.githubService.GetFile("manifest.json")
+	contents, err := s.githubClient.GetFile("manifest.json")
 	if err != nil {
 		s.logger.Log("failed to get manifest from github", err)
 		return nil, err
@@ -198,12 +198,12 @@ type PatchFile struct {
 
 // NewService returns a service with all the dependencies.
 func NewService(
-	githubService github.Service,
+	githubClient github.Client,
 	configuration config.Service,
 	logger log.Logger,
 ) *Service {
 	return &Service{
-		githubService: githubService,
+		githubClient:  githubClient,
 		configService: configuration,
 		logger:        logger,
 	}

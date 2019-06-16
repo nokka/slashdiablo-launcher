@@ -8,26 +8,26 @@ import (
 	"github.com/google/go-github/github"
 )
 
-// Service encapsulates all the operations available on the github service.
-type Service interface {
+// Client encapsulates all the operations available on github.
+type Client interface {
 	GetFile(filePath string) (io.ReadCloser, error)
 }
 
-type service struct {
+type client struct {
 	owner      string
 	repository string
 	mutex      sync.Mutex
-	client     *github.Client
+	httpClient *github.Client
 	ctx        context.Context
 }
 
 // GetFile will the file by the given path in the repository set on the service.
-func (s *service) GetFile(filePath string) (io.ReadCloser, error) {
-	client, err := s.getClient()
+func (s *client) GetFile(filePath string) (io.ReadCloser, error) {
+	c, err := s.getHTTPClient()
 	if err != nil {
 		return nil, err
 	}
-	return client.Repositories.DownloadContents(
+	return c.Repositories.DownloadContents(
 		s.ctx,
 		s.owner,
 		s.repository,
@@ -36,8 +36,8 @@ func (s *service) GetFile(filePath string) (io.ReadCloser, error) {
 	)
 }
 
-// getClient creates the github API client if its not set already.
-func (s *service) getClient() (*github.Client, error) {
+// getHTTPClient creates the github API client if its not set already.
+func (s *client) getHTTPClient() (*github.Client, error) {
 	// Lock in case multiple threads are trying to get
 	// the client at the same time.
 	s.mutex.Lock()
@@ -45,16 +45,16 @@ func (s *service) getClient() (*github.Client, error) {
 	// Unlock when we're done mutating the client.
 	defer s.mutex.Unlock()
 
-	if s.client == nil {
-		s.client = github.NewClient(nil)
+	if s.httpClient == nil {
+		s.httpClient = github.NewClient(nil)
 	}
 
-	return s.client, nil
+	return s.httpClient, nil
 }
 
-// NewService returns a new github service with all dependencies setup.
-func NewService(owner string, repository string) Service {
-	return &service{
+// NewClient returns a new github client with all dependencies setup.
+func NewClient(owner string, repository string) Client {
+	return &client{
 		owner:      owner,
 		repository: repository,
 		ctx:        context.Background(),

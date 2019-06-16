@@ -8,6 +8,7 @@ import (
 	"github.com/nokka/slash-launcher/config"
 	"github.com/nokka/slash-launcher/d2"
 	"github.com/nokka/slash-launcher/github"
+	"github.com/nokka/slash-launcher/ladder"
 	"github.com/nokka/slash-launcher/log"
 	"github.com/nokka/slash-launcher/storage"
 	"github.com/nokka/slash-launcher/window"
@@ -21,6 +22,7 @@ func main() {
 	var (
 		githubOwner      = envString("GITHUB_OWNER", "")
 		githubRepository = envString("GITHUB_REPO", "")
+		ladderAddress    = envString("LADDER_ADDRESS", "")
 	)
 
 	// Set app context.
@@ -70,44 +72,49 @@ func main() {
 		os.Exit(0)
 	}
 
-	// Setup services.
-	gs := github.NewService(githubOwner, githubRepository)
-	cs := config.NewService(store, logger)
-	d2s := d2.NewService(gs, cs, logger)
-
 	// Models.
-	lm := NewLadderModel(nil)
+	lm := ladder.NewTopLadderModel(nil)
 
-	// Setup QML bridge with all dependencies.
+	// Setup clients.
+	gc := github.NewClient(githubOwner, githubRepository)
+	lc := ladder.NewClient(ladderAddress)
+
+	// Setup services.
+	cs := config.NewService(store, logger)
+	d2s := d2.NewService(gc, cs, logger)
+	ls := ladder.NewService(lc, lm, logger)
+
+	// Setup QML bridges with all dependencies.
 	qmlBridge := bridge.NewQmlBridge(nil)
 	qmlBridge.D2service = d2s
 
-	// Setup config bridge with all dependencies.
 	configBridge := bridge.NewConfigBridge(nil)
 	configBridge.Configuration = cs
-
-	// Set ladder model on the bridge.
-	qmlBridge.SetLadderCharacters(lm)
-
-	// Set values from disk on the config bridge.
 	configBridge.SetD2Location(conf.D2Location)
 	configBridge.SetD2Instances(conf.D2Instances)
 	configBridge.SetHDLocation(conf.HDLocation)
 	configBridge.SetHDInstances(conf.HDInstances)
 
-	// Add bridge to QML.
+	ladderBridge := bridge.NewLadderBridge(nil)
+	ladderBridge.LadderService = ls
+	ladderBridge.SetCharacters(lm)
+
+	// Add bridges to QML.
 	qmlWidget.RootContext().SetContextProperty("QmlBridge", qmlBridge)
 	qmlBridge.Connect()
 
 	qmlWidget.RootContext().SetContextProperty("settings", configBridge)
 	configBridge.Connect()
 
+	qmlWidget.RootContext().SetContextProperty("ladder", ladderBridge)
+	ladderBridge.Connect()
+
 	// Make sure the window is allowed to minimize.
 	window.AllowMinimize(fw.WinId())
 
 	// Set the source for our drawable widget to our qml entrypoint.
-	//qmlWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
-	qmlWidget.SetSource(core.NewQUrl3("qrc:/qml/main.qml", 0))
+	qmlWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
+	//qmlWidget.SetSource(core.NewQUrl3("qrc:/qml/main.qml", 0))
 
 	fw.Show()
 	fw.Widget.SetFocus2()

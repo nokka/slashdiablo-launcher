@@ -13,16 +13,16 @@ import (
 type QmlBridge struct {
 	core.QObject
 
-	// Game launcher
+	// Services.
 	D2service *d2.Service
 
+	// Properties.
 	_ float32 `property:"patchProgress"`
-	_ func()  `signal:"closeLauncher"`
-	_ func()  `signal:"launchGame"`
-	_ func()  `slot:"patchGame"`
 
-	// Models.
-	_ *core.QAbstractListModel `property:"ladderCharacters"`
+	// Functions.
+	_ func() `signal:"closeLauncher"`
+	_ func() `signal:"launchGame"`
+	_ func() `slot:"patchGame"`
 }
 
 // Connect will connect the QML signals to functions in Go.

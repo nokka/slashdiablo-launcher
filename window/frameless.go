@@ -109,7 +109,7 @@ func NewFramelessWindow(alpha float64, width int, height int) *QFramelessWindow 
 	f.SetupTitleBarActions()
 
 	f.SetFixedSize2(width, height)
-	f.SetupWidgetColor(0, 0, 0)
+	f.SetupWidgetColor(8, 8, 5)
 
 	return f
 }
