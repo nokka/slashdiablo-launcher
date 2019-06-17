@@ -77,5 +77,5 @@ Rectangle {
 		}
 	}
 
-	Component.onCompleted: ladder.getLadder("exp")
+	//Component.onCompleted: ladder.getLadder("exp")
 }

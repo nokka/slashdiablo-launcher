@@ -1,6 +1,8 @@
 package ladder
 
 import (
+	"fmt"
+
 	"github.com/therecipe/qt/core"
 )
 
@@ -16,13 +18,16 @@ const (
 type TopLadderModel struct {
 	core.QAbstractListModel
 
-	_ map[int]*core.QByteArray `property:"roles"`
-	_ func()                   `constructor:"init"`
+	_ func() `constructor:"init"`
 
-	characters []Character
+	_ map[int]*core.QByteArray `property:"roles"`
+	_ []*Character             `property:"characters"`
+
+	_ func(*Character) `slot:"addCharacter"`
 }
 
 func (m *TopLadderModel) init() {
+	fmt.Println("INIT")
 	m.SetRoles(map[int]*core.QByteArray{
 		Rank:  core.NewQByteArray2("rank", -1),
 		Name:  core.NewQByteArray2("name", -1),
@@ -30,34 +35,47 @@ func (m *TopLadderModel) init() {
 		Level: core.NewQByteArray2("level", -1),
 	})
 
+	fmt.Println("CONNECTING")
 	m.ConnectData(m.data)
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectColumnCount(m.columnCount)
 	m.ConnectRoleNames(m.roleNames)
+	m.ConnectAddCharacter(m.addCharacter)
 }
 
 func (m *TopLadderModel) rowCount(*core.QModelIndex) int {
-	return len(m.characters)
+	fmt.Println("ROW COUNT")
+	return len(m.Characters())
 }
 
 func (m *TopLadderModel) columnCount(*core.QModelIndex) int {
+	fmt.Println("COLUMN COUNT")
 	return 1
 }
 
 func (m *TopLadderModel) roleNames() map[int]*core.QByteArray {
+	fmt.Println("ROLE NAMES")
 	return m.Roles()
 }
 
 func (m *TopLadderModel) data(index *core.QModelIndex, role int) *core.QVariant {
+	fmt.Println("DATA CALLED")
 	if !index.IsValid() {
 		return core.NewQVariant()
 	}
 
-	if index.Row() >= len(m.characters) {
-		return core.NewQVariant()
-	}
+	fmt.Println("GETTING CHAR", role)
+	chars := m.Characters()
+	fmt.Printf("%+v \n", chars)
 
-	item := m.characters[index.Row()]
+	if chars == nil {
+		fmt.Println("chars was nil")
+	}
+	item := Character{
+		Name:  "nokka",
+		Class: "pal",
+		Level: 99,
+	}
 
 	switch role {
 	case Rank:
@@ -86,12 +104,14 @@ func (m *TopLadderModel) data(index *core.QModelIndex, role int) *core.QVariant 
 }
 
 // AddCharacter adds a character to the model.
-func (m *TopLadderModel) AddCharacter(c *Character) {
-	m.BeginInsertRows(core.NewQModelIndex(), len(m.characters), len(m.characters))
-	m.characters = append(m.characters, *c)
+func (m *TopLadderModel) addCharacter(c *Character) {
+	fmt.Println("ADD CHARACTER CALLED")
+	m.BeginInsertRows(core.NewQModelIndex(), 0, 0)
+	m.SetCharacters(append(m.Characters(), c))
 	m.EndInsertRows()
 }
 
 func init() {
 	TopLadderModel_QRegisterMetaType()
+	Character_QRegisterMetaType()
 }
