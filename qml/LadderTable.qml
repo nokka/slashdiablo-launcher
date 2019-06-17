@@ -23,13 +23,13 @@ Rectangle {
 			font.pointSize: 16
 			topPadding: 5
 			bottomPadding: 5
-			visible: !ladder.loading
+			visible: true//!ladder.loading
 		}
 
 		ListView {
 			id: ladderList
 			spacing: 3
-			visible: !ladder.loading
+			visible: true//!ladder.loading
 
 			Layout.fillWidth: true
 			Layout.fillHeight: true
