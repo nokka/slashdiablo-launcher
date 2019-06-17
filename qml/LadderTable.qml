@@ -41,12 +41,12 @@ Rectangle {
 		Item {
 			Layout.fillWidth: true
 			Layout.fillHeight: true
-			visible: (ladder.loading || errored)
+			visible: false//(ladder.loading || errored)
 
 			// Loading bar.			
 			CircularProgress {
 				anchors.centerIn: parent
-				visible: ladder.loading
+				visible: false//ladder.loading
     		}
 
 			// Error item.

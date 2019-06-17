@@ -64,15 +64,14 @@ func (m *TopLadderModel) data(index *core.QModelIndex, role int) *core.QVariant 
 		return core.NewQVariant()
 	}
 
-	fmt.Println("GETTING CHAR", role)
+	fmt.Println("ADDING ROW", index.Row())
 	chars := m.Characters()
-	fmt.Printf("%+v \n", chars)
 
-	if chars == nil {
-		fmt.Println("chars was nil")
-	}
+	fmt.Println(len(chars))
+	fmt.Println(chars[0])
+
 	item := Character{
-		Name:  "nokka",
+		Name:  "test",
 		Class: "pal",
 		Level: 99,
 	}
