@@ -75,12 +75,6 @@ func main() {
 	// Models.
 	lm := ladder.NewTopLadderModel(nil)
 
-	lm.AddCharacter(&ladder.Character{
-		Name:  "test",
-		Class: "Pal",
-		Level: 99,
-	})
-
 	// Setup clients.
 	gc := github.NewClient(githubOwner, githubRepository)
 	lc := ladder.NewClient(ladderAddress)
