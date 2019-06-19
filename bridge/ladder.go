@@ -26,7 +26,6 @@ type LadderBridge struct {
 // Connect will connect the QML signals to functions in Go.
 func (b *LadderBridge) Connect() {
 	b.ConnectGetLadder(b.getLadder)
-	//b.ConnectSetData(b.setData)
 }
 
 func (b *LadderBridge) getLadder(mode string) {
@@ -37,6 +36,7 @@ func (b *LadderBridge) getLadder(mode string) {
 		// Set the ladder characters on the model.
 		err := b.LadderService.SetLadderCharacters(mode)
 		if err != nil {
+			b.SetError(true)
 			return
 		}
 

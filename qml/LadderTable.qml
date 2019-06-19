@@ -4,8 +4,6 @@ import QtQuick.Controls 2.3		//Button
 import QtQuick.Layouts 1.3		//ColumnLayout
 
 Rectangle {
-	property var errored: false
-
     id: ladderTableBox
 	width: mainWindow.width * 0.30
     height: parent.height - 100
@@ -16,20 +14,21 @@ Rectangle {
 
 	ColumnLayout {
 		anchors.fill: parent
-		
+
+		// Shown when there's characters to show.
 		Header {
 			Layout.alignment: Qt.AlignTop
 			text: "LADDER TOP 10"
 			font.pointSize: 16
 			topPadding: 5
 			bottomPadding: 5
-			visible: true//!ladder.loading
+			visible: (!ladder.loading && !ladder.error)
 		}
 
 		ListView {
 			id: ladderList
 			spacing: 3
-			visible: true//!ladder.loading
+			visible: (!ladder.loading && !ladder.error)
 
 			Layout.fillWidth: true
 			Layout.fillHeight: true
@@ -38,21 +37,22 @@ Rectangle {
 			delegate: LadderTableDelegate{}
 		}
 
+		// Show if we're loading on if there's been an error.
 		Item {
 			Layout.fillWidth: true
 			Layout.fillHeight: true
-			visible: false//(ladder.loading || errored)
+			visible: (ladder.loading || ladder.error)
 
-			// Loading bar.			
+			// Loading circle.			
 			CircularProgress {
 				anchors.centerIn: parent
-				visible: false//ladder.loading
+				visible: ladder.loading
     		}
 
 			// Error item.
 			Item {
 				anchors.centerIn: parent
-				visible: errored
+				visible: ladder.error
 				height: 100
 
 				Image {
@@ -77,5 +77,7 @@ Rectangle {
 		}
 	}
 
-	Component.onCompleted: ladder.getLadder("exp")
+	Component.onCompleted: {
+		ladder.getLadder("exp")
+	}
 }

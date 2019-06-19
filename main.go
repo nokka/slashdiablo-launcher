@@ -98,6 +98,8 @@ func main() {
 	ladderBridge := bridge.NewLadderBridge(nil)
 	ladderBridge.LadderService = ls
 	ladderBridge.SetCharacters(lm)
+	ladderBridge.SetLoading(false)
+	ladderBridge.SetError(false)
 
 	// Add bridges to QML.
 	qmlWidget.RootContext().SetContextProperty("QmlBridge", qmlBridge)
