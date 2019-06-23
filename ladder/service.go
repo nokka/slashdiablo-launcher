@@ -1,6 +1,8 @@
 package ladder
 
 import (
+	"errors"
+
 	"github.com/nokka/slash-launcher/log"
 )
 
@@ -19,22 +21,32 @@ type service struct {
 func (s *service) SetLadderCharacters(mode string) error {
 	characters, err := s.sdClient.GetLadder(mode)
 	if err != nil {
+		s.logger.Log("msg", "failed to get top ladder", "err", err)
 		return err
 	}
 
-	// Set the top 10 ladder positions.
-	topChars := characters[:10]
+	if len(characters) >= 10 {
+		// Set the top 10 ladder positions.
+		topChars := characters[:10]
 
-	for _, char := range topChars {
-		c := NewCharacter(nil)
-		c.Rank = char.Rank
-		c.Name = char.Name
-		c.Class = char.Class
-		c.Level = char.Level
-		s.ladderModel.AddCharacter(c)
+		for _, char := range topChars {
+			s.ladderModel.AddCharacter(newCharacter(char))
+		}
+	} else {
+		return errors.New("missing ladder characters")
 	}
 
 	return nil
+}
+
+// newCharacter will create a new QObject character that we can pass to the model.
+func newCharacter(char ladderCharacter) *Character {
+	c := NewCharacter(nil)
+	c.Rank = char.Rank
+	c.Name = char.Name
+	c.Class = char.Class
+	c.Level = char.Level
+	return c
 }
 
 // NewService returns a service with all the dependencies.

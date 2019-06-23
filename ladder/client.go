@@ -10,7 +10,7 @@ import (
 
 // Client encapsulates the details of the Slashdiablo API.
 type Client interface {
-	GetLadder(mode string) ([]Character, error)
+	GetLadder(mode string) ([]ladderCharacter, error)
 }
 
 type client struct {
@@ -18,10 +18,17 @@ type client struct {
 }
 
 type ladderResponse struct {
-	Characters []Character `json:"characters"`
+	Characters []ladderCharacter `json:"characters"`
 }
 
-func (c *client) GetLadder(mode string) ([]Character, error) {
+type ladderCharacter struct {
+	Name  string
+	Class string
+	Level int
+	Rank  int
+}
+
+func (c *client) GetLadder(mode string) ([]ladderCharacter, error) {
 	response, err := c.do(http.MethodGet, c.address+"/ladder/rankings/"+mode+"?class=overall", nil)
 	if err != nil {
 		return nil, err

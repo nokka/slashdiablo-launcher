@@ -1,4 +1,4 @@
-import QtQuick 2.4
+import QtQuick 2.12
 
 Rectangle {
     property int fontSize: 12
@@ -16,7 +16,8 @@ Rectangle {
 	}
 
     Text {
-        id: rankItem 
+        id: rankItem
+        width: 15
         font.family: montserrat.name
         font.pixelSize: fontSize
         color: "#ffffff"
@@ -28,6 +29,7 @@ Rectangle {
 
     Text {
         id: classItem 
+        width: 30
         font.family: montserrat.name
         font.pixelSize: fontSize
         color: "#f3e6d0"
@@ -52,7 +54,7 @@ Rectangle {
         color: "#517d8a"
         font.family: montserrat.name
         font.pixelSize: fontSize
-        text: model.level
+        text: "lvl " + model.level
         anchors.verticalCenter: parent.verticalCenter
         anchors.rightMargin: 20
         anchors.right: parent.right

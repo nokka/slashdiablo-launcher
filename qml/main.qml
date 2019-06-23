@@ -1,4 +1,4 @@
-import QtQuick 2.4
+import QtQuick 2.12
 import QtQuick.Controls 2.5
 
 Rectangle {
@@ -14,18 +14,18 @@ Rectangle {
     FontLoader { id: montserrat; source: "assets/fonts/Montserrat-Light.ttf" }
 
     // Background image.
-    /*Item {
+    Item {
         id: background
         anchors.fill: parent;
-        Image { source: "assets/bg2.jpg"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
-    }*/
+        Image { source: "assets/tmp/bg.png"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
+    }
 
     // Top bar for the entire app.
     TopBar {
         id: topbar
         anchors.top: mainWindow.top;
         width: parent.width
-        height: 71
+        height: 50
     }
 
     // Content area.
@@ -34,7 +34,11 @@ Rectangle {
         width: mainWindow.width
         height: (mainWindow.height-topbar.height)
         anchors.top: topbar.bottom
-        color: "#080806"
+        //color: "#080806"
+        color: "#00000000"
+
+        // Main content area.
+        ContentArea{}
 
         // Top ladder table.
         LadderTable{}

@@ -1,4 +1,4 @@
-import QtQuick 2.10				//Item
+import QtQuick 2.12				//Item
 import QtQuick.Controls 1.4		//TableView
 import QtQuick.Controls 2.3		//Button
 import QtQuick.Layouts 1.3		//ColumnLayout
@@ -20,8 +20,8 @@ Rectangle {
 			Layout.alignment: Qt.AlignTop
 			text: "LADDER TOP 10"
 			font.pointSize: 16
-			topPadding: 5
-			bottomPadding: 5
+			topPadding: 20
+			bottomPadding: 15
 			visible: (!ladder.loading && !ladder.error)
 		}
 

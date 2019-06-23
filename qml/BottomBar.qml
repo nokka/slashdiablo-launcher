@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.12
 import QtQuick.Controls 2.5
 
 Rectangle {
@@ -15,14 +15,14 @@ Rectangle {
 
         // Launch button.
         Button {
-            width: parent.width * 0.20; height: 50
+            width: parent.width * 0.23; height: 50
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right;
             anchors.margins: 20
             anchors.rightMargin: 72
 
             Text {
-                text: "LAUNCH"
+                text: "PLAY"
                 color: "#f3e6d0"
                 font.family: d2Font.name
                 anchors.verticalCenter: parent.verticalCenter
@@ -30,12 +30,20 @@ Rectangle {
                 font.pointSize: 16;
             }
 
-            background: Rectangle {
+            /*background: Rectangle {
                 color: "#790905"
                 radius: 2
+            }*/
+
+            background: Rectangle {
+                radius: 3
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: "#4398d1" }
+                    GradientStop { position: 1.0; color: "#347bad" }
+                }
             }
 
-            onClicked: QmlBridge.launchGame()
+        onClicked: QmlBridge.launchGame()
         }
 
         // Settings button.
