@@ -1,6 +1,7 @@
 package d2
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -23,21 +24,30 @@ type Service struct {
 
 // Exec will exec the Diablo 2.
 func (s *Service) Exec() error {
-	conf, err := s.configService.Read()
+	_, err := s.configService.Read()
 	if err != nil {
 		return err
 	}
 
-	cmd := exec.Command("cmd.exe", "/C", "call", `Diablo II.exe`, "-w")
-	cmd.Dir = conf.D2Location
+	go func() {
+		execPath := `D:\Games\Diablo II\Diablo II.exe`
 
-	err = cmd.Run()
-	if err != nil {
-		s.logger.Log(
-			"location", conf.D2Location,
-			"error", err,
+		var (
+			out    bytes.Buffer
+			stderr bytes.Buffer
 		)
-	}
+
+		cmd := exec.Command(execPath, "-w")
+		cmd.Stdout = &out
+		cmd.Stderr = &stderr
+
+		err = cmd.Run()
+		if err != nil {
+			fmt.Println("ERROR", err)
+		}
+
+		fmt.Println("OUTPUT", out.String())
+	}()
 
 	return nil
 }

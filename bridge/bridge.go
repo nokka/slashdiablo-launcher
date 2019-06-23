@@ -2,7 +2,6 @@ package bridge
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/nokka/slash-launcher/d2"
 	"github.com/therecipe/qt/core"
@@ -20,14 +19,12 @@ type QmlBridge struct {
 	_ float32 `property:"patchProgress"`
 
 	// Functions.
-	_ func() `signal:"closeLauncher"`
 	_ func() `signal:"launchGame"`
 	_ func() `slot:"patchGame"`
 }
 
 // Connect will connect the QML signals to functions in Go.
 func (q *QmlBridge) Connect() {
-	q.ConnectCloseLauncher(q.closeLauncher)
 	q.ConnectLaunchGame(q.launchGame)
 	q.ConnectPatchGame(q.patchGame)
 }
@@ -64,8 +61,4 @@ func (q *QmlBridge) launchGame() {
 		fmt.Println(err)
 		// @TODO: Add QML signal.
 	}
-}
-
-func (q *QmlBridge) closeLauncher() {
-	os.Exit(0)
 }

@@ -18,3 +18,6 @@ rcc*.*
 
 # binaries
 slash-launcher
+
+# bnet files
+BnetLog.txt
