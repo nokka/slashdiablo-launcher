@@ -14,7 +14,7 @@ Rectangle {
     color: "#00000000" 
 
     ProgressBar {
-        value: QmlBridge.patchProgress
+        value: diablo.patchProgress
         
         width: parent.width
         height: 10
@@ -35,7 +35,7 @@ Rectangle {
 
     Component.onCompleted: {
         if(settings.D2Location.length > 0) {
-            //QmlBridge.patchGame()
+            //diablo.patchGame()
         }
     }
 }

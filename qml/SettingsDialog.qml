@@ -216,7 +216,7 @@ Popup {
 
                         if (success) {
                             settingsDialog.close()
-                            QmlBridge.patchGame()
+                            //diablo.patchGame()
                         }
                     }
                 }

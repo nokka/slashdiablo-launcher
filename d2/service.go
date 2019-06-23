@@ -1,13 +1,11 @@
 package d2
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"time"
 
 	"github.com/nokka/slash-launcher/config"
@@ -24,30 +22,18 @@ type Service struct {
 
 // Exec will exec the Diablo 2.
 func (s *Service) Exec() error {
-	_, err := s.configService.Read()
+	conf, err := s.configService.Read()
 	if err != nil {
 		return err
 	}
 
-	go func() {
-		execPath := `D:\Games\Diablo II\Diablo II.exe`
-
-		var (
-			out    bytes.Buffer
-			stderr bytes.Buffer
-		)
-
-		cmd := exec.Command(execPath, "-w")
-		cmd.Stdout = &out
-		cmd.Stderr = &stderr
-
-		err = cmd.Run()
-		if err != nil {
-			fmt.Println("ERROR", err)
-		}
-
-		fmt.Println("OUTPUT", out.String())
-	}()
+	for i := 0; i < conf.D2Instances; i++ {
+		go func() {
+			if err := Exec(conf.D2Location); err != nil {
+				s.logger.Log("msg", "failed to exec diablo II", "err", err)
+			}
+		}()
+	}
 
 	return nil
 }

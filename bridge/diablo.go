@@ -7,9 +7,9 @@ import (
 	"github.com/therecipe/qt/core"
 )
 
-// QmlBridge is the connection between QML and Go, it facilitates
+// DiabloBridge is the connection between QML and Go, it facilitates
 // a way to setup signals that can be interpreted in Go code.
-type QmlBridge struct {
+type DiabloBridge struct {
 	core.QObject
 
 	// Services.
@@ -24,12 +24,12 @@ type QmlBridge struct {
 }
 
 // Connect will connect the QML signals to functions in Go.
-func (q *QmlBridge) Connect() {
+func (q *DiabloBridge) Connect() {
 	q.ConnectLaunchGame(q.launchGame)
 	q.ConnectPatchGame(q.patchGame)
 }
 
-func (q *QmlBridge) patchGame() {
+func (q *DiabloBridge) patchGame() {
 	fmt.Println("PATCHING GAME")
 	// Run this on a seperate thread so we don't block the UI.
 	go func() {
@@ -55,7 +55,7 @@ func (q *QmlBridge) patchGame() {
 	}()
 }
 
-func (q *QmlBridge) launchGame() {
+func (q *DiabloBridge) launchGame() {
 	err := q.D2service.Exec()
 	if err != nil {
 		fmt.Println(err)

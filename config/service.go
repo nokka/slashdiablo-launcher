@@ -1,6 +1,8 @@
 package config
 
 import (
+	"strings"
+
 	"github.com/nokka/slash-launcher/log"
 	"github.com/nokka/slash-launcher/storage"
 )
@@ -43,6 +45,30 @@ func (s *service) Update(request UpdateConfigRequest) error {
 		return err
 	}
 
+	s.logger.Log("BEFORE", *request.D2Location)
+	normalize(&request)
+	s.logger.Log("AFTER", *request.D2Location)
+
+	/*var (
+		d2Location = request.D2Location
+		hdLocation = request.HDLocation
+	)
+
+	if d2Location != nil {
+		s.logger.Log("msg", "BEFORE NORMALIZATION ", *d2Location)
+		s.logger.Log("msg", "DOING UPDATE", "runtime", runtime.GOOS)
+	}*/
+
+	// Normalize the path on Windows.
+	/*if runtime.GOOS == "windows" {
+		l := normalizePath(d2Location)
+		d2Location = &l
+
+		normalizePath(hdLocation)
+	}*/
+
+	//s.logger.Log("normalized path", d2Location, "normalized HD", hdLocation)
+
 	if request.D2Location != nil {
 		conf.D2Location = *request.D2Location
 	}
@@ -66,6 +92,18 @@ func (s *service) Update(request UpdateConfigRequest) error {
 	}
 
 	return nil
+}
+
+func normalize(request *UpdateConfigRequest) {
+	if request.D2Location != nil {
+		v := strings.Replace(*request.D2Location, "/", "\\", -1)
+		request.D2Location = &v
+	}
+
+	if request.HDLocation != nil {
+		v := strings.Replace(*request.HDLocation, "/", "\\", -1)
+		request.HDLocation = &v
+	}
 }
 
 // NewService returns a service with all the dependencies.

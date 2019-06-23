@@ -85,8 +85,8 @@ func main() {
 	ls := ladder.NewService(lc, lm, logger)
 
 	// Setup QML bridges with all dependencies.
-	qmlBridge := bridge.NewQmlBridge(nil)
-	qmlBridge.D2service = d2s
+	diabloBridge := bridge.NewDiabloBridge(nil)
+	diabloBridge.D2service = d2s
 
 	configBridge := bridge.NewConfigBridge(nil)
 	configBridge.Configuration = cs
@@ -102,8 +102,8 @@ func main() {
 	ladderBridge.SetError(false)
 
 	// Add bridges to QML.
-	qmlWidget.RootContext().SetContextProperty("QmlBridge", qmlBridge)
-	qmlBridge.Connect()
+	qmlWidget.RootContext().SetContextProperty("diablo", diabloBridge)
+	diabloBridge.Connect()
 
 	qmlWidget.RootContext().SetContextProperty("settings", configBridge)
 	configBridge.Connect()

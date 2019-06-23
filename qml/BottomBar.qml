@@ -43,7 +43,7 @@ Rectangle {
                 }
             }
 
-        onClicked: QmlBridge.launchGame()
+        onClicked: diablo.launchGame()
         }
 
         // Settings button.
