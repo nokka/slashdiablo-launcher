@@ -27,12 +27,30 @@ func (s *Service) Exec() error {
 		return err
 	}
 
-	for i := 0; i < conf.D2Instances; i++ {
-		go func() {
-			if err := Exec(conf.D2Location); err != nil {
-				s.logger.Log("msg", "failed to exec diablo II", "err", err)
-			}
-		}()
+	if conf.D2Instances > 0 {
+		for i := 0; i < conf.D2Instances; i++ {
+			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
+			time.Sleep(500 * time.Millisecond)
+			go func() {
+				if err := Exec(conf.D2Location); err != nil {
+					s.logger.Log("msg", "failed to exec Diablo II", "err", err)
+					return
+				}
+			}()
+		}
+	}
+
+	if conf.HDInstances > 0 {
+		for i := 0; i < conf.HDInstances; i++ {
+			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
+			time.Sleep(500 * time.Millisecond)
+			go func() {
+				if err := Exec(conf.HDLocation); err != nil {
+					s.logger.Log("msg", "failed to exec HD Diablo II", "err", err)
+					return
+				}
+			}()
+		}
 	}
 
 	return nil

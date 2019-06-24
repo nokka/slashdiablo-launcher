@@ -15,11 +15,16 @@ const (
 // Logger represents the logger interface while hiding the implementation.
 type Logger interface {
 	Log(keyvals ...interface{}) error
+	Debug(string) error
 }
 
 type logger struct {
 	path       string
 	writeMutex sync.Mutex
+}
+
+func (l *logger) Debug(entry string) error {
+	return l.write([]byte(entry))
 }
 
 // Log will log the given keyvals.

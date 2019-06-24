@@ -19,5 +19,6 @@ rcc*.*
 # binaries
 slash-launcher
 
-# bnet files
+# Diablo II files
 BnetLog.txt
+D2HD.ini

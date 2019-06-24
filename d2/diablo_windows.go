@@ -4,6 +4,8 @@ package d2
 
 import (
 	"os/exec"
+	"strings"
+	"unicode/utf8"
 )
 
 // CheckVersion will check the given installations Diablo II version.
@@ -13,7 +15,14 @@ func CheckVersion(path string) string {
 
 // Exec will execute the Diablo II.exe in the given directory.
 func Exec(path string) error {
-	cmd := exec.Command(path, "-w")
+	// Windows uses backslashes for paths, so we'll reverse them.
+	reversed := strings.Replace(path, "/", "\\", -1)
+
+	// Remove the heading backslash on Windows.
+	trimmed := trimFirstRune(reversed)
+
+	// Exec the Diablo II.exe.
+	cmd := exec.Command(trimmed+"\\Diablo II.exe", "-w")
 
 	err := cmd.Run()
 	if err != nil {
@@ -21,4 +30,9 @@ func Exec(path string) error {
 	}
 
 	return nil
+}
+
+func trimFirstRune(s string) string {
+	_, i := utf8.DecodeRuneInString(s)
+	return s[i:]
 }
