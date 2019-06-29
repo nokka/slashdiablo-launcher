@@ -8,9 +8,9 @@ import (
 	"unicode/utf8"
 )
 
-// CheckVersion will check the given installations Diablo II version.
-func CheckVersion(path string) string {
-	return "1.13c"
+// checkVersion will check the given installations Diablo II version.
+func checkVersion(path string) string {
+	return "1.12"
 }
 
 // Exec will execute the Diablo II.exe in the given directory.

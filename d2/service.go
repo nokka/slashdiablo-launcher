@@ -144,6 +144,17 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan error) {
 	return progress, errors
 }
 
+// CheckGameVersion will check the game version for the Diablo II installation given.
+func (s *Service) CheckGameVersion() (string, error) {
+	conf, err := s.configService.Read()
+	if err != nil {
+		s.logger.Log("msg", "failed to read config", "err", err)
+		return "", err
+	}
+
+	return checkVersion(conf.D2Location), nil
+}
+
 func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, int64, error) {
 	shouldPatch := make([]string, 0)
 	var totalContentLength int64
