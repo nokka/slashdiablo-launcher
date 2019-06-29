@@ -20,13 +20,22 @@ type DiabloBridge struct {
 
 	// Functions.
 	_ func() `signal:"launchGame"`
-	_ func() `slot:"patchGame"`
+	_ func() `signal:"patchGame"`
+	_ func() `signal:"checkGameVersion"`
 }
 
 // Connect will connect the QML signals to functions in Go.
 func (q *DiabloBridge) Connect() {
 	q.ConnectLaunchGame(q.launchGame)
 	q.ConnectPatchGame(q.patchGame)
+}
+
+func (q *DiabloBridge) launchGame() {
+	err := q.D2service.Exec()
+	if err != nil {
+		fmt.Println(err)
+		// @TODO: Add QML signal.
+	}
 }
 
 func (q *DiabloBridge) patchGame() {
@@ -55,10 +64,6 @@ func (q *DiabloBridge) patchGame() {
 	}()
 }
 
-func (q *DiabloBridge) launchGame() {
-	err := q.D2service.Exec()
-	if err != nil {
-		fmt.Println(err)
-		// @TODO: Add QML signal.
-	}
+func (q *DiabloBridge) checkGameVersion() {
+	fmt.Println("Check game version")
 }
