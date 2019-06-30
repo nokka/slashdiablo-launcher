@@ -4,9 +4,9 @@ package d2
 
 import "fmt"
 
-// checkVersion will check the given installations Diablo II version.
-func checkVersion(dir string) string {
-	return "1.12"
+// validate113cVersion will check the given installations Diablo II version.
+func validate113cVersion(dir string) bool {
+	return false
 }
 
 // Exec will execute the Diablo II.exe in the given directory.

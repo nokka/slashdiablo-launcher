@@ -3,9 +3,6 @@ import QtQuick.Controls 2.5
 
 Rectangle {
     id: mainWindow
-    //objectName: "mainWindow"
-
-    //flags: (Qt.WindowMinimizeButtonHint | Qt.FramelessWindowHint | Qt.Window)
     color: "#080806"
     width: 1024; height: 600
 
@@ -48,18 +45,17 @@ Rectangle {
     }
 
     // Game path dialog, used when the Diablo game path hasn't been set.
-    Item {
-        SettingsDialog {
-            id: settingsDialog
-            x: 0; y: 0
-            width: mainWindow.width
-            height: mainWindow.height
-        }
+    SettingsDialog {
+        id: settingsDialog
+        visible: false
+        x: 0; y: 0
+        width: mainWindow.width
+        height: mainWindow.height
     }
 
     Component.onCompleted: {
-        if(settings.D2Location.length == 0) {
-            settingsDialog.open()
+        if(settings.D2Location.length === 0) {
+            settingsDialog.visible = true
         }
     }
 }

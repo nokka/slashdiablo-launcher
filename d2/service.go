@@ -3,9 +3,7 @@ package d2
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
-	"os"
 	"time"
 
 	"github.com/nokka/slash-launcher/config"
@@ -56,21 +54,96 @@ func (s *Service) Exec() error {
 	return nil
 }
 
-// Patch will check for updates and if found, patch the game.
-func (s *Service) Patch(done chan bool) (<-chan float32, <-chan error) {
+func (s *Service) updateTo113c(paths []string, progress chan float32, state chan PatchState) error {
+
+	for i, path := range paths {
+		progress <- 0.00
+		time.Sleep(2 * time.Second)
+		fmt.Println("--------------------------")
+		fmt.Println("DOWNGRADING TO 1.13c")
+		state <- PatchState{Message: fmt.Sprintf("Patching %s to 1.13c", path)}
+		fmt.Println(i, path)
+		progress <- 1.00
+		time.Sleep(2 * time.Second)
+	}
+	// Download manifest from patch repository.
+	/*manifest, err := s.getManifest("manifest.json")
+	if err != nil {
+		s.logger.Log("msg", "failed to get manifest", "err", err)
+		errors <- err
+		return
+	}*/
+
+	return nil
+}
+
+func (s *Service) applySlashPatch(path string, progress chan float32, state chan PatchState) error {
+	progress <- 0.00
+	time.Sleep(1 * time.Second)
+	fmt.Println("APPLY SLASH PATCH ", path)
+	state <- PatchState{Message: fmt.Sprintf("Applying latest Slashdiablo patch to %s", path)}
+	progress <- 1.00
+	time.Sleep(2 * time.Second)
+	return nil
+}
+
+// Patch will check for updates and if found, patch the game, both D2 and HD version.
+func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 	progress := make(chan float32)
-	errors := make(chan error)
+	state := make(chan PatchState)
 
 	go func() {
 		conf, err := s.configService.Read()
 		if err != nil {
 			s.logger.Log("msg", "failed to read config", "err", err)
-			errors <- err
+			state <- PatchState{Error: err}
 			return
 		}
 
+		// Check versions for both D2 and HD version.
+		correctD2Version := validate113cVersion(conf.D2Location)
+		correctHDVersion := validate113cVersion(conf.HDLocation)
+
+		var pathsToUpdate []string
+		if conf.D2Location != "" && !correctD2Version {
+			pathsToUpdate = append(pathsToUpdate, conf.D2Location)
+		}
+
+		if conf.HDLocation != "" && !correctHDVersion {
+			pathsToUpdate = append(pathsToUpdate, conf.HDLocation)
+		}
+
+		// Update Diablo installs to 1.13c if we have to.
+		if len(pathsToUpdate) > 0 {
+			if err := s.updateTo113c(pathsToUpdate, progress, state); err != nil {
+				s.logger.Log("msg", "failed to apply 1.13c", "err", err)
+				state <- PatchState{Error: err}
+				return
+			}
+		}
+
+		// Apply latest Slashdiablo patch.
+		if conf.D2Location != "" {
+			err = s.applySlashPatch(conf.D2Location, progress, state)
+			if err != nil {
+				s.logger.Log("msg", "failed to patch slashdiablo patch", "err", err)
+				state <- PatchState{Error: err}
+				return
+			}
+		}
+
+		// Apply patch to HD install if has been set.
+		if conf.HDLocation != "" {
+			err = s.applySlashPatch(conf.HDLocation, progress, state)
+			if err != nil {
+				s.logger.Log("msg", "failed to patch slashdiablo patch", "err", err)
+				state <- PatchState{Error: err}
+				return
+			}
+		}
+
 		// Download manifest from patch repository.
-		manifest, err := s.getManifest()
+		/*manifest, err := s.getManifest()
 		if err != nil {
 			s.logger.Log("msg", "failed to get manifest", "err", err)
 			errors <- err
@@ -136,23 +209,23 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan error) {
 				errors <- err
 				return
 			}
-		}
+		}*/
 
 		done <- true
 	}()
 
-	return progress, errors
+	return progress, state
 }
 
-// CheckGameVersion will check the game version for the Diablo II installation given.
-func (s *Service) CheckGameVersion() (string, error) {
+// CheckGameVersions swill check the game version for both the installations.
+func (s *Service) CheckGameVersions() (bool, bool, error) {
 	conf, err := s.configService.Read()
 	if err != nil {
 		s.logger.Log("msg", "failed to read config", "err", err)
-		return "", err
+		return false, false, err
 	}
 
-	return checkVersion(conf.D2Location), nil
+	return validate113cVersion(conf.D2Location), validate113cVersion(conf.HDLocation), nil
 }
 
 func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, int64, error) {
@@ -188,8 +261,8 @@ func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, i
 	return shouldPatch, totalContentLength, nil
 }
 
-func (s *Service) getManifest() (*Manifest, error) {
-	contents, err := s.githubClient.GetFile("manifest.json")
+func (s *Service) getManifest(path string) (*Manifest, error) {
+	contents, err := s.githubClient.GetFile(path)
 	if err != nil {
 		s.logger.Log("failed to get manifest from github", err)
 		return nil, err
@@ -206,6 +279,12 @@ func (s *Service) getManifest() (*Manifest, error) {
 	}
 
 	return &manifest, nil
+}
+
+// PatchState represents the state given on every patch cycle.
+type PatchState struct {
+	Message string
+	Error   error
 }
 
 // Manifest represents the current patch.

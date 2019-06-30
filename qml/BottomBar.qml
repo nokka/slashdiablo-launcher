@@ -15,6 +15,7 @@ Rectangle {
 
         // Launch button.
         Button {
+            enabled: diablo.playable
             width: parent.width * 0.23; height: 50
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right;
@@ -30,11 +31,6 @@ Rectangle {
                 font.pointSize: 16;
             }
 
-            /*background: Rectangle {
-                color: "#790905"
-                radius: 2
-            }*/
-
             background: Rectangle {
                 radius: 3
                 gradient: Gradient {
@@ -43,7 +39,7 @@ Rectangle {
                 }
             }
 
-        onClicked: diablo.launchGame()
+            onClicked: diablo.launchGame()
         }
 
         // Settings button.
@@ -72,7 +68,7 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
-                onClicked: settingsDialog.open()
+                onClicked: settingsDialog.visible = true
             }
         }
 }

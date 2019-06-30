@@ -87,6 +87,9 @@ func main() {
 	// Setup QML bridges with all dependencies.
 	diabloBridge := bridge.NewDiabloBridge(nil)
 	diabloBridge.D2service = d2s
+	diabloBridge.SetPatching(false)
+	diabloBridge.SetErrored(false)
+	diabloBridge.SetPlayable(false)
 
 	configBridge := bridge.NewConfigBridge(nil)
 	configBridge.Configuration = cs

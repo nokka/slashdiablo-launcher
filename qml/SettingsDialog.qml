@@ -3,36 +3,11 @@ import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.3
 
-Popup {
-    id: settingsDialog
-
-    modal: false
-    focus: true
-    closePolicy: Popup.NoAutoClose
+Rectangle {
+    color: "#080806"
     
-    background: Rectangle {
-        anchors.fill: parent
-        color: "#000508"
-    }
-
-    onAboutToShow: {
-        d2pathInput.text = settings.D2Location
-        d2Instances.currentIndex = (settings.D2Instances-1)
-
-        if(settings.HDLocation != "") {
-            hdPathInput.text = settings.HDLocation
-            hdEnabled.checked = true
-
-        }
-
-        if(settings.HDInstances > 0) {
-            hdInstances.currentIndex = (settings.HDInstances-1)
-        }
-    }
-
     ColumnLayout {
         anchors.fill: parent
-
         Column {
             Header {
                 text: "SETTINGS"
@@ -62,7 +37,7 @@ Popup {
                     id: d2pathInput
                     width: fileDialogBox.width * 0.80
                     readOnly: true
-                    text: ""
+                    text: settings.D2Location
 
                     background: Rectangle {
                         radius: 3
@@ -113,10 +88,6 @@ Popup {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         checked: false
-
-                        /*onClicked: {
-                            usingHD = !usingHD
-                        }*/
                     }
                 }
 
@@ -150,6 +121,7 @@ Popup {
                     id: hdPathInput
                     width: fileDialogBox.width * 0.80
                     readOnly: true
+                    text: settings.HDLocation
                     background: Rectangle {
                         radius: 3; color: "#1d1924"
                     }
@@ -215,8 +187,8 @@ Popup {
                         )
 
                         if (success) {
-                            settingsDialog.close()
-                            //diablo.patchGame()
+                            settingsDialog.visible = false
+                            diablo.checkForUpdates()
                         }
                     }
                 }
