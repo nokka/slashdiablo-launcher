@@ -3,7 +3,9 @@ package d2
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/nokka/slash-launcher/config"
@@ -55,24 +57,98 @@ func (s *Service) Exec() error {
 }
 
 func (s *Service) updateTo113c(paths []string, progress chan float32, state chan PatchState) error {
-
-	for i, path := range paths {
-		progress <- 0.00
-		time.Sleep(2 * time.Second)
-		fmt.Println("--------------------------")
-		fmt.Println("DOWNGRADING TO 1.13c")
-		state <- PatchState{Message: fmt.Sprintf("Patching %s to 1.13c", path)}
-		fmt.Println(i, path)
-		progress <- 1.00
-		time.Sleep(2 * time.Second)
-	}
 	// Download manifest from patch repository.
-	/*manifest, err := s.getManifest("manifest.json")
+	manifest, err := s.getManifest("1.13c/manifest.json")
 	if err != nil {
 		s.logger.Log("msg", "failed to get manifest", "err", err)
-		errors <- err
-		return
-	}*/
+		return err
+	}
+
+	for _, path := range paths {
+		// Figure out which files to patch.
+		patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
+		if err != nil {
+			s.logger.Log("msg", "failed to get files to patch", "err", err)
+			return err
+		}
+
+		// Reset progress.
+		progress <- 0.00
+
+		// Create a write counter that will get bytes written per cycle, pass the
+		// progress channel to report the number of bytes written.
+		counter := &WriteCounter{
+			Total:    float32(patchLength),
+			progress: progress,
+		}
+
+		// Store the downloaded .tmp suffixed files.
+		var tmpFiles []string
+
+		// Patch the files.
+		for _, fileName := range patchFiles {
+			// Create the file, but give it a tmp file extension, this means we won't overwrite a
+			// file until it's downloaded, but we'll remove the tmp extension once downloaded.
+			tmpPath := fmt.Sprintf("%s/%s.tmp", path, fileName)
+
+			err := s.downloadFile(fileName, tmpPath, counter)
+			if err != nil {
+				return err
+			}
+
+			tmpFiles = append(tmpFiles, tmpPath)
+		}
+
+		// All the files were successfully downloaded, remove the .tmp suffix
+		// to complete the patch entirely.
+		for _, tmpFile := range tmpFiles {
+			fmt.Println("TO RENAME ------")
+			fmt.Println(tmpFile)
+			fmt.Println("NEW NAME")
+			fmt.Println(tmpFile[:len(tmpFile)-4])
+
+			err = os.Rename(tmpFile, tmpFile[:len(tmpFile)-4])
+			if err != nil {
+				s.logger.Log("msg", "failed to rename tmp file", "err", err)
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (s *Service) cleanUpFailedPatch() error {
+	return nil
+}
+
+func (s *Service) downloadFile(fileName string, path string, counter *WriteCounter) error {
+	fmt.Println("CREATED LOCAL PATH")
+	fmt.Println(path)
+
+	out, err := os.Create(path)
+	if err != nil {
+		s.logger.Log("msg", "failed to create tmp file", "err", err)
+		return err
+	}
+
+	defer out.Close()
+
+	f := fmt.Sprintf("%s/%s", "1.13c", fileName)
+	fmt.Println("FILE PATH ON GITHUB")
+	fmt.Println(f)
+
+	contents, err := s.githubClient.GetFile(f)
+	if err != nil {
+		s.logger.Log("failed to get file from github", err)
+		return err
+	}
+
+	_, err = io.Copy(out, io.TeeReader(contents, counter))
+	if err != nil {
+		s.logger.Log("failed to write file locally", err)
+		return err
+	}
 
 	return nil
 }

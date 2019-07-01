@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/google/go-github/github"
+	"golang.org/x/oauth2"
 )
 
 // Client encapsulates all the operations available on github.
@@ -45,10 +46,19 @@ func (s *client) getHTTPClient() (*github.Client, error) {
 	// Unlock when we're done mutating the client.
 	defer s.mutex.Unlock()
 
-	if s.httpClient == nil {
-		s.httpClient = github.NewClient(nil)
+	if s.httpClient != nil {
+		return s.httpClient, nil
 	}
 
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: ""},
+	)
+
+	tc := oauth2.NewClient(ctx, ts)
+	client := github.NewClient(tc)
+
+	s.httpClient = client
 	return s.httpClient, nil
 }
 
