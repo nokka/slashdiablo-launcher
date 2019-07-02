@@ -21,17 +21,6 @@ type Service struct {
 	logger        log.Logger
 }
 
-// CheckGameVersions swill check the game version for both the installations.
-func (s *Service) CheckGameVersions() (bool, bool, error) {
-	conf, err := s.configService.Read()
-	if err != nil {
-		s.logger.Log("msg", "failed to read config", "err", err)
-		return false, false, err
-	}
-
-	return validate113cVersion(conf.D2Location), validate113cVersion(conf.HDLocation), nil
-}
-
 // Exec will exec the Diablo 2.
 func (s *Service) Exec() error {
 	conf, err := s.configService.Read()
