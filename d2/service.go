@@ -2,7 +2,6 @@ package d2
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,6 +19,17 @@ type Service struct {
 	githubClient  github.Client
 	configService config.Service
 	logger        log.Logger
+}
+
+// CheckGameVersions swill check the game version for both the installations.
+func (s *Service) CheckGameVersions() (bool, bool, error) {
+	conf, err := s.configService.Read()
+	if err != nil {
+		s.logger.Log("msg", "failed to read config", "err", err)
+		return false, false, err
+	}
+
+	return validate113cVersion(conf.D2Location), validate113cVersion(conf.HDLocation), nil
 }
 
 // Exec will exec the Diablo 2.
@@ -58,17 +68,6 @@ func (s *Service) Exec() error {
 	return nil
 }
 
-// CheckGameVersions swill check the game version for both the installations.
-func (s *Service) CheckGameVersions() (bool, bool, error) {
-	conf, err := s.configService.Read()
-	if err != nil {
-		s.logger.Log("msg", "failed to read config", "err", err)
-		return false, false, err
-	}
-
-	return validate113cVersion(conf.D2Location), validate113cVersion(conf.HDLocation), nil
-}
-
 // Patch will check for updates and if found, patch the game, both D2 and HD version.
 func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 	progress := make(chan float32)
@@ -97,12 +96,13 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 
 		// Update Diablo installs to 1.13c if we have to.
 		if len(pathsToUpdate) > 0 {
-			if err := s.updateTo113c(pathsToUpdate, progress, state); err != nil {
+			state <- PatchState{Message: "Updating Diablo II to 1.13c"}
+			if err := s.apply113c(pathsToUpdate, progress); err != nil {
 				s.logger.Log("msg", "failed to apply 1.13c", "err", err)
 				state <- PatchState{Message: "Failed to patch - cleaning up directory"}
 
 				// Make sure we clean up the failed patches.
-				err := s.cleanUpFailedPatch(pathsToUpdate)
+				err := s.cleanUpFailedPatches(pathsToUpdate)
 				if err != nil {
 					s.logger.Log("msg", "failed to clean up failed 1.13c path", "err", err)
 					state <- PatchState{Error: err}
@@ -112,9 +112,11 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			}
 		}
 
+		state <- PatchState{Message: "Applying Slashdiablo patch to Diablo II"}
+
 		// Apply latest Slashdiablo patch.
 		if conf.D2Location != "" {
-			err = s.applySlashPatch(conf.D2Location, progress, state)
+			err = s.applySlashPatch(conf.D2Location, progress)
 			if err != nil {
 				s.logger.Log("msg", "failed to patch slashdiablo patch", "err", err)
 				state <- PatchState{Error: err}
@@ -124,7 +126,7 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 
 		// Apply patch to HD install if has been set.
 		if conf.HDLocation != "" {
-			err = s.applySlashPatch(conf.HDLocation, progress, state)
+			err = s.applySlashPatch(conf.HDLocation, progress)
 			if err != nil {
 				s.logger.Log("msg", "failed to patch slashdiablo patch", "err", err)
 				state <- PatchState{Error: err}
@@ -132,82 +134,13 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			}
 		}
 
-		// Download manifest from patch repository.
-		/*manifest, err := s.getManifest()
-		if err != nil {
-			s.logger.Log("msg", "failed to get manifest", "err", err)
-			errors <- err
-			return
-		}
-
-		// Figure out which files to patch.
-		patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, conf.D2Location)
-		if err != nil {
-			s.logger.Log("msg", "failed to get files to patch", "err", err)
-			errors <- err
-			return
-		}
-
-		// No files to patch, return.
-		if len(patchFiles) == 0 {
-			fmt.Println("NO FILES TO PATCH")
-			return
-		}
-
-		// Create a write counter that will get bytes written per cycle, pass the
-		// progress channel to report the number of bytes written.
-		counter := &WriteCounter{
-			Total:    float32(patchLength),
-			progress: progress,
-		}
-
-		// Patch the files.
-		for _, fileName := range patchFiles {
-			f := fileName
-
-			// Create the file, but give it a tmp file extension, this means we won't overwrite a
-			// file until it's downloaded, but we'll remove the tmp extension once downloaded.
-			tmp := fmt.Sprintf("%s/%s.tmp", conf.D2Location, f)
-
-			out, err := os.Create(tmp)
-			if err != nil {
-				s.logger.Log("msg", "failed to create tmp file", "err", err)
-				errors <- err
-				return
-			}
-
-			defer out.Close()
-
-			contents, err := s.githubClient.GetFile(f)
-			if err != nil {
-				s.logger.Log("failed to get file from github", err)
-				errors <- err
-				return
-			}
-
-			_, err = io.Copy(out, io.TeeReader(contents, counter))
-			if err != nil {
-				s.logger.Log("failed to write file locally", err)
-				errors <- err
-				return
-			}
-
-			// Download complete, remove the .tmp suffix.
-			err = os.Rename(tmp, fmt.Sprintf("%s/%s", conf.D2Location, f))
-			if err != nil {
-				s.logger.Log("msg", "failed to rename tmp file", "err", err)
-				errors <- err
-				return
-			}
-		}*/
-
 		done <- true
 	}()
 
 	return progress, state
 }
 
-func (s *Service) updateTo113c(paths []string, progress chan float32, state chan PatchState) error {
+func (s *Service) apply113c(paths []string, progress chan float32) error {
 	// Download manifest from patch repository.
 	manifest, err := s.getManifest("1.13c/manifest.json")
 	if err != nil {
@@ -235,14 +168,10 @@ func (s *Service) updateTo113c(paths []string, progress chan float32, state chan
 		var tmpFiles []string
 
 		// Patch the files.
-		for i, fileName := range patchFiles {
+		for _, fileName := range patchFiles {
 			// Create the file, but give it a tmp file extension, this means we won't overwrite a
 			// file until it's downloaded, but we'll remove the tmp extension once downloaded.
 			tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, fileName))
-
-			if i == 10 {
-				return errors.New("Unexpected error")
-			}
 
 			err := s.downloadFile(fileName, tmpPath, counter)
 			if err != nil {
@@ -265,17 +194,59 @@ func (s *Service) updateTo113c(paths []string, progress chan float32, state chan
 	return nil
 }
 
-func (s *Service) applySlashPatch(path string, progress chan float32, state chan PatchState) error {
+func (s *Service) applySlashPatch(path string, progress chan float32) error {
+	// Download manifest from patch repository.
+	manifest, err := s.getManifest("current/manifest.json")
+	if err != nil {
+		return err
+	}
+
+	// Figure out which files to patch.
+	patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
+	if err != nil {
+		return err
+	}
+
+	// Reset progress.
 	progress <- 0.00
-	time.Sleep(1 * time.Second)
-	fmt.Println("APPLY SLASH PATCH ", path)
-	state <- PatchState{Message: fmt.Sprintf("Applying latest Slashdiablo patch to %s", path)}
-	progress <- 1.00
-	time.Sleep(2 * time.Second)
+
+	// Create a write counter that will get bytes written per cycle, pass the
+	// progress channel to report the number of bytes written.
+	counter := &WriteCounter{
+		Total:    float32(patchLength),
+		progress: progress,
+	}
+
+	// Store the downloaded .tmp suffixed files.
+	var tmpFiles []string
+
+	// Patch the files.
+	for _, fileName := range patchFiles {
+		// Create the file, but give it a tmp file extension, this means we won't overwrite a
+		// file until it's downloaded, but we'll remove the tmp extension once downloaded.
+		tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, fileName))
+
+		err := s.downloadFile(fileName, tmpPath, counter)
+		if err != nil {
+			return err
+		}
+
+		tmpFiles = append(tmpFiles, tmpPath)
+	}
+
+	// All the files were successfully downloaded, remove the .tmp suffix
+	// to complete the patch entirely.
+	for _, tmpFile := range tmpFiles {
+		err = os.Rename(tmpFile, tmpFile[:len(tmpFile)-4])
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
-func (s *Service) cleanUpFailedPatch(dirs []string) error {
+func (s *Service) cleanUpFailedPatches(dirs []string) error {
 	for _, dir := range dirs {
 		files, err := ioutil.ReadDir(localizePath(dir))
 		if err != nil {
@@ -285,8 +256,10 @@ func (s *Service) cleanUpFailedPatch(dirs []string) error {
 		for _, f := range files {
 			fileName := f.Name()
 			if strings.Contains(fileName, ".tmp") {
-				fmt.Println("DELETE FILE")
-				fmt.Println(fileName)
+				err := os.Remove(localizePath(fmt.Sprintf("%s/%s", dir, fileName)))
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
