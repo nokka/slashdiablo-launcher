@@ -14,3 +14,8 @@ func Exec(path string) error {
 	fmt.Println(path)
 	return nil
 }
+
+// localizePath will localize the path for the OS.
+func localizePath(path string) string {
+	return path
+}

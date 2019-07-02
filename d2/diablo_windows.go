@@ -15,14 +15,11 @@ func validate113cVersion(path string) bool {
 
 // Exec will execute the Diablo II.exe in the given directory.
 func Exec(path string) error {
-	// Windows uses backslashes for paths, so we'll reverse them.
-	reversed := strings.Replace(path, "/", "\\", -1)
-
-	// Remove the heading backslash on Windows.
-	trimmed := trimFirstRune(reversed)
+	// Localize the path.
+	localized := localizePath(path)
 
 	// Exec the Diablo II.exe.
-	cmd := exec.Command(trimmed+"\\Diablo II.exe", "-w")
+	cmd := exec.Command(localized+"\\Diablo II.exe", "-w")
 
 	err := cmd.Run()
 	if err != nil {
@@ -32,7 +29,18 @@ func Exec(path string) error {
 	return nil
 }
 
-func trimFirstRune(s string) string {
+// localizePath will localize the path for the OS.
+func localizePath(path string) string {
+	// Windows uses backslashes for paths, so we'll reverse them.
+	reversed := strings.Replace(path, "/", "\\", -1)
+
+	// Remove the heading backslash.
+	_, i := utf8.DecodeRuneInString(reversed)
+
+	return reversed[i:]
+}
+
+/*func trimFirstRune(s string) string {
 	_, i := utf8.DecodeRuneInString(s)
 	return s[i:]
-}
+}*/

@@ -2,10 +2,12 @@ package d2
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/nokka/slash-launcher/config"
@@ -56,111 +58,15 @@ func (s *Service) Exec() error {
 	return nil
 }
 
-func (s *Service) updateTo113c(paths []string, progress chan float32, state chan PatchState) error {
-	// Download manifest from patch repository.
-	manifest, err := s.getManifest("1.13c/manifest.json")
+// CheckGameVersions swill check the game version for both the installations.
+func (s *Service) CheckGameVersions() (bool, bool, error) {
+	conf, err := s.configService.Read()
 	if err != nil {
-		s.logger.Log("msg", "failed to get manifest", "err", err)
-		return err
+		s.logger.Log("msg", "failed to read config", "err", err)
+		return false, false, err
 	}
 
-	for _, path := range paths {
-		// Figure out which files to patch.
-		patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
-		if err != nil {
-			s.logger.Log("msg", "failed to get files to patch", "err", err)
-			return err
-		}
-
-		// Reset progress.
-		progress <- 0.00
-
-		// Create a write counter that will get bytes written per cycle, pass the
-		// progress channel to report the number of bytes written.
-		counter := &WriteCounter{
-			Total:    float32(patchLength),
-			progress: progress,
-		}
-
-		// Store the downloaded .tmp suffixed files.
-		var tmpFiles []string
-
-		// Patch the files.
-		for _, fileName := range patchFiles {
-			// Create the file, but give it a tmp file extension, this means we won't overwrite a
-			// file until it's downloaded, but we'll remove the tmp extension once downloaded.
-			tmpPath := fmt.Sprintf("%s/%s.tmp", path, fileName)
-
-			err := s.downloadFile(fileName, tmpPath, counter)
-			if err != nil {
-				return err
-			}
-
-			tmpFiles = append(tmpFiles, tmpPath)
-		}
-
-		// All the files were successfully downloaded, remove the .tmp suffix
-		// to complete the patch entirely.
-		for _, tmpFile := range tmpFiles {
-			fmt.Println("TO RENAME ------")
-			fmt.Println(tmpFile)
-			fmt.Println("NEW NAME")
-			fmt.Println(tmpFile[:len(tmpFile)-4])
-
-			err = os.Rename(tmpFile, tmpFile[:len(tmpFile)-4])
-			if err != nil {
-				s.logger.Log("msg", "failed to rename tmp file", "err", err)
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
-func (s *Service) cleanUpFailedPatch() error {
-	return nil
-}
-
-func (s *Service) downloadFile(fileName string, path string, counter *WriteCounter) error {
-	fmt.Println("CREATED LOCAL PATH")
-	fmt.Println(path)
-
-	out, err := os.Create(path)
-	if err != nil {
-		s.logger.Log("msg", "failed to create tmp file", "err", err)
-		return err
-	}
-
-	defer out.Close()
-
-	f := fmt.Sprintf("%s/%s", "1.13c", fileName)
-	fmt.Println("FILE PATH ON GITHUB")
-	fmt.Println(f)
-
-	contents, err := s.githubClient.GetFile(f)
-	if err != nil {
-		s.logger.Log("failed to get file from github", err)
-		return err
-	}
-
-	_, err = io.Copy(out, io.TeeReader(contents, counter))
-	if err != nil {
-		s.logger.Log("failed to write file locally", err)
-		return err
-	}
-
-	return nil
-}
-
-func (s *Service) applySlashPatch(path string, progress chan float32, state chan PatchState) error {
-	progress <- 0.00
-	time.Sleep(1 * time.Second)
-	fmt.Println("APPLY SLASH PATCH ", path)
-	state <- PatchState{Message: fmt.Sprintf("Applying latest Slashdiablo patch to %s", path)}
-	progress <- 1.00
-	time.Sleep(2 * time.Second)
-	return nil
+	return validate113cVersion(conf.D2Location), validate113cVersion(conf.HDLocation), nil
 }
 
 // Patch will check for updates and if found, patch the game, both D2 and HD version.
@@ -193,7 +99,15 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 		if len(pathsToUpdate) > 0 {
 			if err := s.updateTo113c(pathsToUpdate, progress, state); err != nil {
 				s.logger.Log("msg", "failed to apply 1.13c", "err", err)
-				state <- PatchState{Error: err}
+				state <- PatchState{Message: "Failed to patch - cleaning up directory"}
+
+				// Make sure we clean up the failed patches.
+				err := s.cleanUpFailedPatch(pathsToUpdate)
+				if err != nil {
+					s.logger.Log("msg", "failed to clean up failed 1.13c path", "err", err)
+					state <- PatchState{Error: err}
+					return
+				}
 				return
 			}
 		}
@@ -293,15 +207,116 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 	return progress, state
 }
 
-// CheckGameVersions swill check the game version for both the installations.
-func (s *Service) CheckGameVersions() (bool, bool, error) {
-	conf, err := s.configService.Read()
+func (s *Service) updateTo113c(paths []string, progress chan float32, state chan PatchState) error {
+	// Download manifest from patch repository.
+	manifest, err := s.getManifest("1.13c/manifest.json")
 	if err != nil {
-		s.logger.Log("msg", "failed to read config", "err", err)
-		return false, false, err
+		return err
 	}
 
-	return validate113cVersion(conf.D2Location), validate113cVersion(conf.HDLocation), nil
+	for _, path := range paths {
+		// Figure out which files to patch.
+		patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
+		if err != nil {
+			return err
+		}
+
+		// Reset progress.
+		progress <- 0.00
+
+		// Create a write counter that will get bytes written per cycle, pass the
+		// progress channel to report the number of bytes written.
+		counter := &WriteCounter{
+			Total:    float32(patchLength),
+			progress: progress,
+		}
+
+		// Store the downloaded .tmp suffixed files.
+		var tmpFiles []string
+
+		// Patch the files.
+		for i, fileName := range patchFiles {
+			// Create the file, but give it a tmp file extension, this means we won't overwrite a
+			// file until it's downloaded, but we'll remove the tmp extension once downloaded.
+			tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, fileName))
+
+			if i == 10 {
+				return errors.New("Unexpected error")
+			}
+
+			err := s.downloadFile(fileName, tmpPath, counter)
+			if err != nil {
+				return err
+			}
+
+			tmpFiles = append(tmpFiles, tmpPath)
+		}
+
+		// All the files were successfully downloaded, remove the .tmp suffix
+		// to complete the patch entirely.
+		for _, tmpFile := range tmpFiles {
+			err = os.Rename(tmpFile, tmpFile[:len(tmpFile)-4])
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (s *Service) applySlashPatch(path string, progress chan float32, state chan PatchState) error {
+	progress <- 0.00
+	time.Sleep(1 * time.Second)
+	fmt.Println("APPLY SLASH PATCH ", path)
+	state <- PatchState{Message: fmt.Sprintf("Applying latest Slashdiablo patch to %s", path)}
+	progress <- 1.00
+	time.Sleep(2 * time.Second)
+	return nil
+}
+
+func (s *Service) cleanUpFailedPatch(dirs []string) error {
+	for _, dir := range dirs {
+		files, err := ioutil.ReadDir(localizePath(dir))
+		if err != nil {
+			return err
+		}
+
+		for _, f := range files {
+			fileName := f.Name()
+			if strings.Contains(fileName, ".tmp") {
+				fmt.Println("DELETE FILE")
+				fmt.Println(fileName)
+			}
+		}
+	}
+
+	return nil
+}
+
+func (s *Service) downloadFile(fileName string, path string, counter *WriteCounter) error {
+	out, err := os.Create(path)
+	if err != nil {
+		s.logger.Log("msg", "failed to create tmp file", "err", err)
+		return err
+	}
+
+	defer out.Close()
+
+	f := fmt.Sprintf("%s/%s", "1.13c", fileName)
+	contents, err := s.githubClient.GetFile(f)
+	if err != nil {
+		s.logger.Log("failed to get file from github", err)
+		return err
+	}
+
+	_, err = io.Copy(out, io.TeeReader(contents, counter))
+	if err != nil {
+		s.logger.Log("failed to write file locally", err)
+		return err
+	}
+
+	return nil
 }
 
 func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, int64, error) {
@@ -312,7 +327,7 @@ func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, i
 		f := file
 
 		// Full path on disk to the patch file.
-		path := fmt.Sprintf("%s/%s", d2path, f.Name)
+		path := localizePath(fmt.Sprintf("%s/%s", d2path, f.Name))
 
 		// Get the checksum from the patch file on disk.
 		hashed, err := hashCRC32(path, polynomial)
