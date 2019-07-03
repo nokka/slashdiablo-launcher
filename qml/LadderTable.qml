@@ -78,6 +78,6 @@ Rectangle {
 	}
 
 	Component.onCompleted: {
-		ladder.getLadder("exp")
+		//ladder.getLadder("exp")
 	}
 }

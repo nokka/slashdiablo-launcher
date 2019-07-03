@@ -9,7 +9,7 @@ Button {
     contentItem: Text {
         color: "#ffffff"
         text: parent.text
-        font.family: d2Font.name
+        font.family: montserrat.name
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight

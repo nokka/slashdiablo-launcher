@@ -72,6 +72,15 @@ Rectangle {
             font.pixelSize: 11
             anchors.horizontalCenter: parent.horizontalCenter
         }
+
+        Text {
+            color: "#ffffff"
+            topPadding: 30
+            text: "Couldn't patch game files"
+            font.family: montserrat.name
+            font.pixelSize: 11
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
     }
 
     // Show when patching is done, no error occurred and the game is playable.
@@ -89,8 +98,8 @@ Rectangle {
     }
 
     Component.onCompleted: {
-        if(settings.D2Location.length > 0) {
+        /*if(settings.D2Location.length > 0) {
             diablo.checkForUpdates()
-        }
+        }*/
     }
 }

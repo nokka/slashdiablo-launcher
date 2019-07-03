@@ -17,16 +17,16 @@ Rectangle {
             id: fileDialogBox
             width: (mainWindow.width/2)
             Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-            Layout.topMargin: 100
+            Layout.topMargin: 50    
             spacing: 5
 
             Column {
                 topPadding: 15
 
                 Label {
-                    text: "SET DIABLO II DIRECTORY"
+                    text: "Set Diablo II directory"
                     font.pointSize: 13
-                    font.family: d2Font.name
+                    font.family: montserrat.name
                     color: "#ffffff"
                     font.bold: true
                 }
@@ -47,7 +47,7 @@ Rectangle {
 
                 DefaultButton {
                     id: chooseD2Path
-                    text: "CHOOSE"
+                    text: "Open"
                     width: fileDialogBox.width * 0.20
                     onClicked: d2PathDialog.open()
                 }
@@ -56,20 +56,13 @@ Rectangle {
             Column {
                 topPadding: 15
                 Header {
-                    text: "NUMBER OF D2 INSTANCES TO LAUNCH"
+                    text: "Number of instances"
                 }
                 
-                ComboBox {
+                Dropdown{
                     id: d2Instances
-                    model: [ 1, 2, 3, 4 ]
                     height: 30
                     width: 60
-
-                    background: Rectangle {
-                        color: "#1d1924"
-                        border.color: "#f0681f"
-                        radius: height/2
-                    }
                 }
             }
 
@@ -106,9 +99,9 @@ Rectangle {
             Column {
                 topPadding: 15
                 Label {
-                    text: "SET HD DIRECTORY"
+                    text: "Set HD directory"
                     font.pointSize: 13
-                    font.family: d2Font.name
+                    font.family: montserrat.name
                     color: "#ffffff"
                     font.bold: true
                 }
@@ -129,7 +122,7 @@ Rectangle {
 
                 DefaultButton {
                     id: chooseHDPath
-                    text: "CHOOSE"
+                    text: "Open"
                     width: fileDialogBox.width * 0.20
                     onClicked: hdPathDialog.open()
                 }
@@ -141,7 +134,7 @@ Rectangle {
                 topPadding: 15
 
                 Header {
-                    text: "NUMBER OF HD INSTANCES TO LAUNCH"
+                    text: "Number of HD instances"
                 }
                 
                 ComboBox {
