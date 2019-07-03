@@ -207,25 +207,6 @@ func (s *Service) doPatch(files []PatchFile, path string, progress chan float32)
 	return nil
 }
 
-func (s *Service) cleanUpFailedPatch(dir string) error {
-	files, err := ioutil.ReadDir(localizePath(dir))
-	if err != nil {
-		return err
-	}
-
-	for _, f := range files {
-		fileName := f.Name()
-		if strings.Contains(fileName, ".tmp") {
-			err := os.Remove(localizePath(fmt.Sprintf("%s/%s", dir, fileName)))
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
 func (s *Service) downloadFile(fileName string, path string, counter *WriteCounter) error {
 	out, err := os.Create(path)
 	if err != nil {
@@ -246,6 +227,25 @@ func (s *Service) downloadFile(fileName string, path string, counter *WriteCount
 	if err != nil {
 		s.logger.Log("failed to write file locally", err)
 		return err
+	}
+
+	return nil
+}
+
+func (s *Service) cleanUpFailedPatch(dir string) error {
+	files, err := ioutil.ReadDir(localizePath(dir))
+	if err != nil {
+		return err
+	}
+
+	for _, f := range files {
+		fileName := f.Name()
+		if strings.Contains(fileName, ".tmp") {
+			err := os.Remove(localizePath(fmt.Sprintf("%s/%s", dir, fileName)))
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil

@@ -39,8 +39,3 @@ func localizePath(path string) string {
 
 	return reversed[i:]
 }
-
-/*func trimFirstRune(s string) string {
-	_, i := utf8.DecodeRuneInString(s)
-	return s[i:]
-}*/
