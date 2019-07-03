@@ -83,25 +83,17 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			pathsToUpdate = append(pathsToUpdate, conf.HDLocation)
 		}
 
-		// Update Diablo installs to 1.13c if we have to.
+		// Update Diablo installs to 1.13c if any of them are on the wrong version.
 		if len(pathsToUpdate) > 0 {
 			state <- PatchState{Message: "Updating Diablo II to 1.13c"}
 			if err := s.apply113c(pathsToUpdate, progress); err != nil {
 				s.logger.Log("msg", "failed to apply 1.13c", "err", err)
-				state <- PatchState{Message: "Failed to patch - cleaning up directory"}
-
-				// Make sure we clean up the failed patches.
-				err := s.cleanUpFailedPatches(pathsToUpdate)
-				if err != nil {
-					s.logger.Log("msg", "failed to clean up failed 1.13c path", "err", err)
-					state <- PatchState{Error: err}
-					return
-				}
+				state <- PatchState{Error: err}
 				return
 			}
 		}
 
-		state <- PatchState{Message: "Applying Slashdiablo patch to Diablo II"}
+		state <- PatchState{Message: "Applying Slashdiablo patch"}
 
 		// Apply latest Slashdiablo patch.
 		if conf.D2Location != "" {
@@ -137,46 +129,13 @@ func (s *Service) apply113c(paths []string, progress chan float32) error {
 	}
 
 	for _, path := range paths {
-		// Figure out which files to patch.
-		patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
-		if err != nil {
+		if err := s.doPatch(manifest.Files, path, progress); err != nil {
+			// Make sure we clean up the failed patch.
+			if err := s.cleanUpFailedPatch(path); err != nil {
+				return err
+			}
+
 			return err
-		}
-
-		// Reset progress.
-		progress <- 0.00
-
-		// Create a write counter that will get bytes written per cycle, pass the
-		// progress channel to report the number of bytes written.
-		counter := &WriteCounter{
-			Total:    float32(patchLength),
-			progress: progress,
-		}
-
-		// Store the downloaded .tmp suffixed files.
-		var tmpFiles []string
-
-		// Patch the files.
-		for _, fileName := range patchFiles {
-			// Create the file, but give it a tmp file extension, this means we won't overwrite a
-			// file until it's downloaded, but we'll remove the tmp extension once downloaded.
-			tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, fileName))
-
-			err := s.downloadFile(fileName, tmpPath, counter)
-			if err != nil {
-				return err
-			}
-
-			tmpFiles = append(tmpFiles, tmpPath)
-		}
-
-		// All the files were successfully downloaded, remove the .tmp suffix
-		// to complete the patch entirely.
-		for _, tmpFile := range tmpFiles {
-			err = os.Rename(tmpFile, tmpFile[:len(tmpFile)-4])
-			if err != nil {
-				return err
-			}
 		}
 	}
 
@@ -190,8 +149,21 @@ func (s *Service) applySlashPatch(path string, progress chan float32) error {
 		return err
 	}
 
+	if err = s.doPatch(manifest.Files, path, progress); err != nil {
+		// Make sure we clean up the failed patch.
+		if err := s.cleanUpFailedPatch(path); err != nil {
+			return err
+		}
+
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) doPatch(files []PatchFile, path string, progress chan float32) error {
 	// Figure out which files to patch.
-	patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
+	patchFiles, patchLength, err := s.getFilesToPatch(files, path)
 	if err != nil {
 		return err
 	}
@@ -235,20 +207,18 @@ func (s *Service) applySlashPatch(path string, progress chan float32) error {
 	return nil
 }
 
-func (s *Service) cleanUpFailedPatches(dirs []string) error {
-	for _, dir := range dirs {
-		files, err := ioutil.ReadDir(localizePath(dir))
-		if err != nil {
-			return err
-		}
+func (s *Service) cleanUpFailedPatch(dir string) error {
+	files, err := ioutil.ReadDir(localizePath(dir))
+	if err != nil {
+		return err
+	}
 
-		for _, f := range files {
-			fileName := f.Name()
-			if strings.Contains(fileName, ".tmp") {
-				err := os.Remove(localizePath(fmt.Sprintf("%s/%s", dir, fileName)))
-				if err != nil {
-					return err
-				}
+	for _, f := range files {
+		fileName := f.Name()
+		if strings.Contains(fileName, ".tmp") {
+			err := os.Remove(localizePath(fmt.Sprintf("%s/%s", dir, fileName)))
+			if err != nil {
+				return err
 			}
 		}
 	}
