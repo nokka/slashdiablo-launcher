@@ -22,6 +22,7 @@ func main() {
 	var (
 		githubOwner      = envString("GITHUB_OWNER", "")
 		githubRepository = envString("GITHUB_REPO", "")
+		githubToken      = envString("GITHUB_TOKEN", "")
 		ladderAddress    = envString("LADDER_ADDRESS", "")
 	)
 
@@ -76,7 +77,7 @@ func main() {
 	lm := ladder.NewTopLadderModel(nil)
 
 	// Setup clients.
-	gc := github.NewClient(githubOwner, githubRepository)
+	gc := github.NewClient(githubOwner, githubRepository, githubToken)
 	lc := ladder.NewClient(ladderAddress)
 
 	// Setup services.

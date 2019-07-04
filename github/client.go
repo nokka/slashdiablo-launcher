@@ -17,6 +17,7 @@ type Client interface {
 type client struct {
 	owner      string
 	repository string
+	token      string
 	mutex      sync.Mutex
 	httpClient *github.Client
 	ctx        context.Context
@@ -52,7 +53,7 @@ func (s *client) getHTTPClient() (*github.Client, error) {
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: ""},
+		&oauth2.Token{AccessToken: s.token},
 	)
 
 	tc := oauth2.NewClient(ctx, ts)
@@ -63,10 +64,11 @@ func (s *client) getHTTPClient() (*github.Client, error) {
 }
 
 // NewClient returns a new github client with all dependencies setup.
-func NewClient(owner string, repository string) Client {
+func NewClient(owner string, repository string, token string) Client {
 	return &client{
 		owner:      owner,
 		repository: repository,
+		token:      token,
 		ctx:        context.Background(),
 	}
 }
