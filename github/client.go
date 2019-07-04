@@ -52,7 +52,7 @@ func (s *client) getHTTPClient() (*github.Client, error) {
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: "bd6278282da676ff8ac06a682894abe3660c5cb8"},
+		&oauth2.Token{AccessToken: ""},
 	)
 
 	tc := oauth2.NewClient(ctx, ts)
