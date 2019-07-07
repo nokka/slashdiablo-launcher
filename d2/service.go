@@ -127,6 +127,16 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 				state <- PatchState{Error: err}
 				return
 			}
+
+			if conf.D2Maphack {
+				state <- PatchState{Message: "Installing maphack"}
+				err = s.applyMaphack(conf.D2Location, progress)
+				if err != nil {
+					s.logger.Log("msg", "failed to apply maphack", "err", err)
+					state <- PatchState{Error: err}
+					return
+				}
+			}
 		}
 
 		// Apply patch to HD install if has been set.
@@ -138,25 +148,15 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 				state <- PatchState{Error: err}
 				return
 			}
-		}
 
-		if conf.D2Maphack {
-			state <- PatchState{Message: "Installing maphack"}
-			err = s.applyMaphack(conf.D2Location, progress)
-			if err != nil {
-				s.logger.Log("msg", "failed to apply maphack", "err", err)
-				state <- PatchState{Error: err}
-				return
-			}
-		}
-
-		if conf.HDMaphack {
-			state <- PatchState{Message: "Installing maphack"}
-			err = s.applyMaphack(conf.HDLocation, progress)
-			if err != nil {
-				s.logger.Log("msg", "failed to apply maphack", "err", err)
-				state <- PatchState{Error: err}
-				return
+			if conf.HDMaphack {
+				state <- PatchState{Message: "Installing maphack"}
+				err = s.applyMaphack(conf.HDLocation, progress)
+				if err != nil {
+					s.logger.Log("msg", "failed to apply maphack", "err", err)
+					state <- PatchState{Error: err}
+					return
+				}
 			}
 		}
 
@@ -174,7 +174,7 @@ func (s *Service) apply113c(paths []string, progress chan float32) error {
 	}
 
 	for _, path := range paths {
-		if err := s.doPatch(manifest.Files, path, progress); err != nil {
+		if err := s.doPatch(manifest.Files, "1.13c", path, progress); err != nil {
 			// Make sure we clean up the failed patch.
 			if err := s.cleanUpFailedPatch(path); err != nil {
 				return err
@@ -194,7 +194,7 @@ func (s *Service) applySlashPatch(path string, progress chan float32) error {
 		return err
 	}
 
-	if err = s.doPatch(manifest.Files, path, progress); err != nil {
+	if err = s.doPatch(manifest.Files, "current", path, progress); err != nil {
 		// Make sure we clean up the failed patch.
 		if err := s.cleanUpFailedPatch(path); err != nil {
 			return err
@@ -213,7 +213,7 @@ func (s *Service) applyMaphack(path string, progress chan float32) error {
 		return err
 	}
 
-	if err = s.doPatch(manifest.Files, path, progress); err != nil {
+	if err = s.doPatch(manifest.Files, "maphack", path, progress); err != nil {
 		// Make sure we clean up the failed patch.
 		if err := s.cleanUpFailedPatch(path); err != nil {
 			return err
@@ -225,7 +225,7 @@ func (s *Service) applyMaphack(path string, progress chan float32) error {
 	return nil
 }
 
-func (s *Service) doPatch(files []PatchFile, path string, progress chan float32) error {
+func (s *Service) doPatch(files []PatchFile, remoteDir string, path string, progress chan float32) error {
 	// Figure out which files to patch.
 	patchFiles, patchLength, err := s.getFilesToPatch(files, path)
 	if err != nil {
@@ -252,7 +252,7 @@ func (s *Service) doPatch(files []PatchFile, path string, progress chan float32)
 			// file until it's downloaded, but we'll remove the tmp extension once downloaded.
 			tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, fileName))
 
-			err := s.downloadFile(fileName, tmpPath, counter)
+			err := s.downloadFile(fileName, remoteDir, tmpPath, counter)
 			if err != nil {
 				return err
 			}
@@ -273,7 +273,7 @@ func (s *Service) doPatch(files []PatchFile, path string, progress chan float32)
 	return nil
 }
 
-func (s *Service) downloadFile(fileName string, path string, counter *WriteCounter) error {
+func (s *Service) downloadFile(fileName string, remoteDir string, path string, counter *WriteCounter) error {
 	out, err := os.Create(path)
 	if err != nil {
 		s.logger.Log("msg", "failed to create tmp file", "err", err)
@@ -282,7 +282,7 @@ func (s *Service) downloadFile(fileName string, path string, counter *WriteCount
 
 	defer out.Close()
 
-	f := fmt.Sprintf("%s/%s", "1.13c", fileName)
+	f := fmt.Sprintf("%s/%s", remoteDir, fileName)
 	contents, err := s.githubClient.GetFile(f)
 	if err != nil {
 		s.logger.Log("failed to get file from github", err)
@@ -340,8 +340,6 @@ func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, i
 			return nil, 0, err
 		}
 
-		fmt.Println("LOCAL HASH", hashed)
-		fmt.Println("REMOTE HASH", f.CRC)
 		// File checksum differs from local copy, we need to get a new one.
 		if hashed != f.CRC {
 			shouldPatch = append(shouldPatch, f.Name)
