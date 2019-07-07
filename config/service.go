@@ -31,8 +31,10 @@ func (s *service) Read() (*storage.Config, error) {
 type UpdateConfigRequest struct {
 	D2Location  *string
 	D2Instances *int
+	D2Maphack   *bool
 	HDLocation  *string
 	HDInstances *int
+	HDMaphack   *bool
 }
 
 // Update will update the configuration with the given fields.
@@ -51,12 +53,20 @@ func (s *service) Update(request UpdateConfigRequest) error {
 		conf.D2Instances = *request.D2Instances
 	}
 
+	if request.D2Maphack != nil {
+		conf.D2Maphack = *request.D2Maphack
+	}
+
 	if request.HDLocation != nil {
 		conf.HDLocation = *request.HDLocation
 	}
 
 	if request.HDInstances != nil {
 		conf.HDInstances = *request.HDInstances
+	}
+
+	if request.HDMaphack != nil {
+		conf.HDMaphack = *request.HDMaphack
 	}
 
 	err = s.store.Write(conf)

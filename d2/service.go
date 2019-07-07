@@ -67,14 +67,21 @@ func (s *Service) ValidateGameVersion() (bool, error) {
 
 	d2Valid, err := validate113cVersion(conf.D2Location)
 	if err != nil {
+		s.logger.Log("msg", "failed to validate D2 version", "err", err)
 		return false, err
 	}
 
-	hdValid, err := validate113cVersion(conf.HDLocation)
-	if err != nil {
-		return false, err
+	// Default to true, if it's not set we'll return it as as valid.
+	hdValid := true
+	if conf.HDLocation != "" {
+		hdValid, err = validate113cVersion(conf.HDLocation)
+		if err != nil {
+			s.logger.Log("msg", "failed to validate HD version", "err", err)
+			return false, err
+		}
 	}
 
+	s.logger.Log("msg", "RETURNING VALID", "d2", d2Valid, "hd", hdValid)
 	// Check versions for both D2 and HD version.
 	return (d2Valid && hdValid), nil
 }

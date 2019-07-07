@@ -5,36 +5,28 @@ package d2
 import (
 	"crypto/sha1"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
 	"unicode/utf8"
 )
 
-// This is a sha1 of the 1.13c Game.exe for Windows.
-const gameHash = "hash"
+// SHA1 of the 1.13c Game.exe for Windows.
+const gameHash = "af2b33c90b50ede8d9a8bca9b8d9720c87f78641"
 
 // validate113cVersion will check the given installations Diablo II version.
 func validate113cVersion(path string) (bool, error) {
-	h := sha1.New()
-
-	fmt.Println(localizePath(path) + "\\Game.exe")
-
 	// Open local Game.exe to hash it.
-	content, err := ioutil.ReadFile(localizePath(path) + "\\Game.exe"))
+	content, err := ioutil.ReadFile(localizePath(path) + "\\Game.exe")
 	if err != nil {
 		if os.IsNotExist(err) {
 			return false, nil
 		}
-		return
+		return false, err
 	}
 
-	h.Write(content)
-	sum := h.Sum(nil)
-
-	fmt.Println(sum)
-
-	return false, nil
+	return fmt.Sprintf("%x", sha1.Sum(content)) == gameHash, nil
 }
 
 // Exec will execute the Diablo II.exe in the given directory.

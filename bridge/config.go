@@ -19,7 +19,7 @@ type ConfigBridge struct {
 	_ int    `property:"HDInstances"`
 
 	// Functions.
-	_ func(D2Location string, D2Instances int, HDLocation string, HDInstances int) bool `slot:"update"`
+	_ func(D2Location string, D2Instances int, D2Maphack bool, HDLocation string, HDInstances int, HDMaphack bool) bool `slot:"update"`
 }
 
 // Connect will connect the QML signals to functions in Go.
@@ -27,13 +27,22 @@ func (c *ConfigBridge) Connect() {
 	c.ConnectUpdate(c.update)
 }
 
-func (c *ConfigBridge) update(D2Location string, D2Instances int, HDLocation string, HDInstances int) bool {
+func (c *ConfigBridge) update(
+	D2Location string,
+	D2Instances int,
+	D2Maphack bool,
+	HDLocation string,
+	HDInstances int,
+	HDMaphack bool,
+) bool {
 	// Save updates to the persistant storage.
 	if err := c.Configuration.Update(config.UpdateConfigRequest{
 		D2Location:  &D2Location,
 		D2Instances: &D2Instances,
+		D2Maphack:   &D2Maphack,
 		HDLocation:  &HDLocation,
 		HDInstances: &HDInstances,
+		HDMaphack:   &HDMaphack,
 	}); err != nil {
 		return false
 	}
