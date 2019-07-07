@@ -59,6 +59,7 @@ func (s *Service) Exec() error {
 
 // ValidateGameVersion will check the game version.
 func (s *Service) ValidateGameVersion() (bool, error) {
+	fmt.Println("VALIDATING GAME VERSION")
 	conf, err := s.configService.Read()
 	if err != nil {
 		s.logger.Log("msg", "failed to read config", "err", err)

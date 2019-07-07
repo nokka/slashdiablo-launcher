@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"errors"
+	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/nokka/slash-launcher/bridge"
 	"github.com/nokka/slash-launcher/config"
@@ -24,6 +27,7 @@ func main() {
 		githubRepository = envString("GITHUB_REPO", "")
 		githubToken      = envString("GITHUB_TOKEN", "")
 		ladderAddress    = envString("LADDER_ADDRESS", "")
+		debugMode        = envString("DEBUG_MODE", "false")
 	)
 
 	// Set app context.
@@ -59,6 +63,18 @@ func main() {
 
 	// Setup file logger.
 	logger := log.NewLogger(configPath)
+
+	// Parse debug mode bool.
+	debug, err := strconv.ParseBool(debugMode)
+	if err != nil {
+		os.Exit(0)
+	}
+
+	fmt.Println("DEBUG VALUE", debug)
+
+	if debug {
+		enableDebug(logger)
+	}
 
 	// Setup local storage.
 	store := storage.NewStore(configPath)
@@ -155,6 +171,25 @@ func getConfigPath() (string, error) {
 
 	// Grab the first available location.
 	return locations[0], nil
+}
+
+// enableDebugger will capture stdout and stderr output.
+func enableDebug(logger log.Logger) {
+	r, w, err := os.Pipe()
+	if err != nil {
+		os.Exit(0)
+	}
+
+	os.Stdout = w
+	os.Stderr = w
+
+	go func() {
+		scanner := bufio.NewScanner(r)
+		for scanner.Scan() {
+			line := scanner.Text()
+			logger.Log("msg", line)
+		}
+	}()
 }
 
 // envString extracts a string from os environment.
