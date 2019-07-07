@@ -64,6 +64,10 @@ Rectangle {
                     height: 30
                     width: 60
                 }
+
+                Check{
+                    checked: true
+                }
             }
 
             Row {
@@ -131,6 +135,7 @@ Rectangle {
             }
 
             Column {
+                visible: hdEnabled.checked
                 topPadding: 15
 
                 Header {
@@ -150,7 +155,9 @@ Rectangle {
                     }
                 }
 
-                visible: hdEnabled.checked
+                Check{
+                    checked: true
+                }
             }
 
             // Save button.
@@ -181,7 +188,7 @@ Rectangle {
 
                         if (success) {
                             settingsDialog.visible = false
-                            diablo.checkForUpdates()
+                            diablo.validateVersion()
                         }
                     }
                 }

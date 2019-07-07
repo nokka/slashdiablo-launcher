@@ -57,6 +57,28 @@ func (s *Service) Exec() error {
 	return nil
 }
 
+// ValidateGameVersion will check the game version.
+func (s *Service) ValidateGameVersion() (bool, error) {
+	conf, err := s.configService.Read()
+	if err != nil {
+		s.logger.Log("msg", "failed to read config", "err", err)
+		return false, err
+	}
+
+	d2Valid, err := validate113cVersion(conf.D2Location)
+	if err != nil {
+		return false, err
+	}
+
+	hdValid, err := validate113cVersion(conf.HDLocation)
+	if err != nil {
+		return false, err
+	}
+
+	// Check versions for both D2 and HD version.
+	return (d2Valid && hdValid), nil
+}
+
 // Patch will check for updates and if found, patch the game, both D2 and HD version.
 func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 	progress := make(chan float32)
@@ -70,16 +92,12 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			return
 		}
 
-		// Check versions for both D2 and HD version.
-		correctD2Version := validate113cVersion(conf.D2Location)
-		correctHDVersion := validate113cVersion(conf.HDLocation)
-
 		var pathsToUpdate []string
-		if conf.D2Location != "" && !correctD2Version {
+		if conf.D2Location != "" {
 			pathsToUpdate = append(pathsToUpdate, conf.D2Location)
 		}
 
-		if conf.HDLocation != "" && !correctHDVersion {
+		if conf.HDLocation != "" {
 			pathsToUpdate = append(pathsToUpdate, conf.HDLocation)
 		}
 
@@ -93,10 +111,9 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			}
 		}
 
-		state <- PatchState{Message: "Applying Slashdiablo patch"}
-
 		// Apply latest Slashdiablo patch.
 		if conf.D2Location != "" {
+			state <- PatchState{Message: "Applying Slashdiablo patch"}
 			err = s.applySlashPatch(conf.D2Location, progress)
 			if err != nil {
 				s.logger.Log("msg", "failed to patch slashdiablo patch", "err", err)
@@ -107,9 +124,30 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 
 		// Apply patch to HD install if has been set.
 		if conf.HDLocation != "" {
+			state <- PatchState{Message: "Applying Slashdiablo patch"}
 			err = s.applySlashPatch(conf.HDLocation, progress)
 			if err != nil {
 				s.logger.Log("msg", "failed to patch slashdiablo patch", "err", err)
+				state <- PatchState{Error: err}
+				return
+			}
+		}
+
+		if conf.D2Maphack {
+			state <- PatchState{Message: "Installing maphack"}
+			err = s.applyMaphack(conf.D2Location, progress)
+			if err != nil {
+				s.logger.Log("msg", "failed to apply maphack", "err", err)
+				state <- PatchState{Error: err}
+				return
+			}
+		}
+
+		if conf.HDMaphack {
+			state <- PatchState{Message: "Installing maphack"}
+			err = s.applyMaphack(conf.HDLocation, progress)
+			if err != nil {
+				s.logger.Log("msg", "failed to apply maphack", "err", err)
 				state <- PatchState{Error: err}
 				return
 			}
@@ -161,6 +199,28 @@ func (s *Service) applySlashPatch(path string, progress chan float32) error {
 	return nil
 }
 
+func (s *Service) applyMaphack(path string, progress chan float32) error {
+	// Download manifest from patch repository.
+	manifest, err := s.getManifest("maphack/manifest.json")
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("MAPHACK MANIFEST")
+	fmt.Println(manifest)
+
+	/*if err = s.doPatch(manifest.Files, path, progress); err != nil {
+		// Make sure we clean up the failed patch.
+		if err := s.cleanUpFailedPatch(path); err != nil {
+			return err
+		}
+
+		return err
+	}*/
+
+	return nil
+}
+
 func (s *Service) doPatch(files []PatchFile, path string, progress chan float32) error {
 	// Figure out which files to patch.
 	patchFiles, patchLength, err := s.getFilesToPatch(files, path)
@@ -168,39 +228,41 @@ func (s *Service) doPatch(files []PatchFile, path string, progress chan float32)
 		return err
 	}
 
-	// Reset progress.
-	progress <- 0.00
+	if len(patchFiles) > 0 {
+		// Reset progress.
+		progress <- 0.00
 
-	// Create a write counter that will get bytes written per cycle, pass the
-	// progress channel to report the number of bytes written.
-	counter := &WriteCounter{
-		Total:    float32(patchLength),
-		progress: progress,
-	}
-
-	// Store the downloaded .tmp suffixed files.
-	var tmpFiles []string
-
-	// Patch the files.
-	for _, fileName := range patchFiles {
-		// Create the file, but give it a tmp file extension, this means we won't overwrite a
-		// file until it's downloaded, but we'll remove the tmp extension once downloaded.
-		tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, fileName))
-
-		err := s.downloadFile(fileName, tmpPath, counter)
-		if err != nil {
-			return err
+		// Create a write counter that will get bytes written per cycle, pass the
+		// progress channel to report the number of bytes written.
+		counter := &WriteCounter{
+			Total:    float32(patchLength),
+			progress: progress,
 		}
 
-		tmpFiles = append(tmpFiles, tmpPath)
-	}
+		// Store the downloaded .tmp suffixed files.
+		var tmpFiles []string
 
-	// All the files were successfully downloaded, remove the .tmp suffix
-	// to complete the patch entirely.
-	for _, tmpFile := range tmpFiles {
-		err = os.Rename(tmpFile, tmpFile[:len(tmpFile)-4])
-		if err != nil {
-			return err
+		// Patch the files.
+		for _, fileName := range patchFiles {
+			// Create the file, but give it a tmp file extension, this means we won't overwrite a
+			// file until it's downloaded, but we'll remove the tmp extension once downloaded.
+			tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, fileName))
+
+			err := s.downloadFile(fileName, tmpPath, counter)
+			if err != nil {
+				return err
+			}
+
+			tmpFiles = append(tmpFiles, tmpPath)
+		}
+
+		// All the files were successfully downloaded, remove the .tmp suffix
+		// to complete the patch entirely.
+		for _, tmpFile := range tmpFiles {
+			err = os.Rename(tmpFile, tmpFile[:len(tmpFile)-4])
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -274,6 +336,8 @@ func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, i
 			return nil, 0, err
 		}
 
+		fmt.Println("LOCAL HASH", hashed)
+		fmt.Println("REMOTE HASH", f.CRC)
 		// File checksum differs from local copy, we need to get a new one.
 		if hashed != f.CRC {
 			shouldPatch = append(shouldPatch, f.Name)

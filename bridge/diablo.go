@@ -19,18 +19,21 @@ type DiabloBridge struct {
 	_ bool    `property:"patching"`
 	_ bool    `property:"errored"`
 	_ bool    `property:"playable"`
+	_ bool    `property:"validVersion"`
 	_ float32 `property:"patchProgress"`
 	_ string  `property:"status"`
 
 	// Functions.
 	_ func() `slot:"launchGame"`
-	_ func() `slot:"checkForUpdates"`
+	_ func() `slot:"validateVersion"`
+	_ func() `slot:"applyPatches"`
 }
 
 // Connect will connect the QML signals to functions in Go.
 func (q *DiabloBridge) Connect() {
 	q.ConnectLaunchGame(q.launchGame)
-	q.ConnectCheckForUpdates(q.checkForUpdates)
+	q.ConnectApplyPatches(q.applyPatches)
+	q.ConnectValidateVersion(q.validateVersion)
 }
 
 func (q *DiabloBridge) launchGame() {
@@ -41,7 +44,7 @@ func (q *DiabloBridge) launchGame() {
 	}
 }
 
-func (q *DiabloBridge) checkForUpdates() {
+func (q *DiabloBridge) applyPatches() {
 	// Tell the GUI we've started patching.
 	q.SetPatching(true)
 	q.SetPlayable(false)
@@ -57,10 +60,8 @@ func (q *DiabloBridge) checkForUpdates() {
 		for {
 			select {
 			case percentage := <-progress:
-				fmt.Println("Patching progress", percentage)
 				q.SetPatchProgress(percentage)
 			case current := <-state:
-				fmt.Println("Received state", current)
 				if current.Error != nil {
 					q.SetErrored(true)
 					q.SetPatching(false)
@@ -70,11 +71,24 @@ func (q *DiabloBridge) checkForUpdates() {
 					q.SetStatus(current.Message)
 				}
 			case <-done:
-				fmt.Println("Got done")
 				q.SetPatching(false)
-				q.SetPlayable(true)
+				q.validateVersion()
 				return
 			}
 		}
 	}()
+}
+
+func (q *DiabloBridge) validateVersion() {
+	isValid, err := q.D2service.ValidateGameVersion()
+	if err != nil {
+		q.SetErrored(true)
+		return
+	}
+
+	if isValid {
+		q.SetPlayable(true)
+	}
+
+	q.SetValidVersion(isValid)
 }

@@ -1,8 +1,6 @@
 package config
 
 import (
-	"strings"
-
 	"github.com/nokka/slash-launcher/log"
 	"github.com/nokka/slash-launcher/storage"
 )
@@ -68,18 +66,6 @@ func (s *service) Update(request UpdateConfigRequest) error {
 	}
 
 	return nil
-}
-
-func normalize(request *UpdateConfigRequest) {
-	if request.D2Location != nil {
-		v := strings.Replace(*request.D2Location, "/", "\\", -1)
-		request.D2Location = &v
-	}
-
-	if request.HDLocation != nil {
-		v := strings.Replace(*request.HDLocation, "/", "\\", -1)
-		request.HDLocation = &v
-	}
 }
 
 // NewService returns a service with all the dependencies.

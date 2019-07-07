@@ -97,9 +97,47 @@ Rectangle {
         }
     }
 
+    // Show when the Diablo version is invalid, we're not patching and there's no error.
+    Item {
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        width: 300
+        height: 40
+        visible: (!diablo.validVersion && !diablo.patching && !diablo.errored)
+        
+         Text {
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            color: "#ffffff"
+            text: "Game version isn't 1.13c"
+            font.pointSize: 15
+            font.family: montserrat.name
+        }
+
+        Button {
+            anchors.top: parent.top
+            anchors.right: parent.right
+            width: 100
+            height: 40
+            Text {
+                text: "UPDATE"
+                color: "#f3e6d0"
+                font.family: d2Font.name
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.pointSize: 15;
+            }
+
+            onClicked: {
+                console.log("Apply patches clicked")
+                diablo.applyPatches()
+            }
+        }
+    }
+
     Component.onCompleted: {
-        /*if(settings.D2Location.length > 0) {
-            diablo.checkForUpdates()
-        }*/
+        if(settings.D2Location.length > 0) {
+            diablo.validateVersion()
+        }
     }
 }
