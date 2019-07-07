@@ -15,8 +15,10 @@ type ConfigBridge struct {
 	// Properties.
 	_ string `property:"D2Location"`
 	_ int    `property:"D2Instances"`
+	_ bool   `property:"D2Maphack"`
 	_ string `property:"HDLocation"`
 	_ int    `property:"HDInstances"`
+	_ bool   `property:"HDMaphack"`
 
 	// Functions.
 	_ func(D2Location string, D2Instances int, D2Maphack bool, HDLocation string, HDInstances int, HDMaphack bool) bool `slot:"update"`
@@ -50,8 +52,10 @@ func (c *ConfigBridge) update(
 	// Update was successful, update QML.
 	c.SetD2Location(D2Location)
 	c.SetD2Instances(D2Instances)
+	c.SetD2Maphack(D2Maphack)
 	c.SetHDLocation(HDLocation)
 	c.SetHDInstances(HDInstances)
+	c.SetHDMaphack(HDMaphack)
 
 	return true
 }

@@ -213,17 +213,14 @@ func (s *Service) applyMaphack(path string, progress chan float32) error {
 		return err
 	}
 
-	fmt.Println("MAPHACK MANIFEST")
-	fmt.Println(manifest)
-
-	/*if err = s.doPatch(manifest.Files, path, progress); err != nil {
+	if err = s.doPatch(manifest.Files, path, progress); err != nil {
 		// Make sure we clean up the failed patch.
 		if err := s.cleanUpFailedPatch(path); err != nil {
 			return err
 		}
 
 		return err
-	}*/
+	}
 
 	return nil
 }

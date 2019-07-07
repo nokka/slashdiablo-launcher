@@ -5,6 +5,8 @@ import QtQuick.Dialogs 1.3
 
 Rectangle {
     color: "#080806"
+    property bool d2Maphack: settings.D2Maphack
+    property bool hdMaphack: settings.HDMaphack
     
     ColumnLayout {
         anchors.fill: parent
@@ -66,7 +68,7 @@ Rectangle {
                 }
 
                 Check{
-                    checked: true
+                    checked: settings.D2Maphack
                 }
             }
 
@@ -156,7 +158,7 @@ Rectangle {
                 }
 
                 Check{
-                    checked: true
+                    checked: d2Maphack
                 }
             }
 
@@ -182,8 +184,10 @@ Rectangle {
                         var success = settings.update(
                             d2pathInput.text,
                             d2Instances.currentText,
+                            d2Maphack,
                             hdPath,
-                            hdi
+                            hdi,
+                            hdMaphack,
                         )
 
                         if (success) {

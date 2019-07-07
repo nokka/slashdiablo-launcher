@@ -96,8 +96,10 @@ func main() {
 	configBridge.Configuration = cs
 	configBridge.SetD2Location(conf.D2Location)
 	configBridge.SetD2Instances(conf.D2Instances)
+	configBridge.SetD2Maphack(conf.D2Maphack)
 	configBridge.SetHDLocation(conf.HDLocation)
 	configBridge.SetHDInstances(conf.HDInstances)
+	configBridge.SetHDMaphack(conf.HDMaphack)
 
 	ladderBridge := bridge.NewLadderBridge(nil)
 	ladderBridge.LadderService = ls
