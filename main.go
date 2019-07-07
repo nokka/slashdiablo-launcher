@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"os"
 	"strconv"
 
@@ -27,7 +26,7 @@ func main() {
 		githubRepository = envString("GITHUB_REPO", "")
 		githubToken      = envString("GITHUB_TOKEN", "")
 		ladderAddress    = envString("LADDER_ADDRESS", "")
-		debugMode        = envString("DEBUG_MODE", "false")
+		debugMode        = envBool("DEBUG_MODE", false)
 	)
 
 	// Set app context.
@@ -64,16 +63,9 @@ func main() {
 	// Setup file logger.
 	logger := log.NewLogger(configPath)
 
-	// Parse debug mode bool.
-	debug, err := strconv.ParseBool(debugMode)
-	if err != nil {
-		os.Exit(0)
-	}
-
-	fmt.Println("DEBUG VALUE", debug)
-
-	if debug {
-		enableDebug(logger)
+	// Enable debugger if it was enabled through the env variable.
+	if debugMode {
+		enableDebugger(logger)
 	}
 
 	// Setup local storage.
@@ -174,7 +166,7 @@ func getConfigPath() (string, error) {
 }
 
 // enableDebugger will capture stdout and stderr output.
-func enableDebug(logger log.Logger) {
+func enableDebugger(logger log.Logger) {
 	r, w, err := os.Pipe()
 	if err != nil {
 		os.Exit(0)
@@ -199,4 +191,19 @@ func envString(env, fallback string) string {
 		return fallback
 	}
 	return e
+}
+
+// envBool extracts a bool from os environment.
+func envBool(env string, fallback bool) bool {
+	e := os.Getenv(env)
+	if e == "" {
+		return fallback
+	}
+
+	v, err := strconv.ParseBool(e)
+	if err != nil {
+		return fallback
+	}
+
+	return v
 }
