@@ -68,7 +68,11 @@ Rectangle {
                 }
 
                 Check{
-                    checked: settings.D2Maphack
+                    checked: d2Maphack
+
+                    onClicked: {
+                        d2Maphack = this.checked
+                    }
                 }
             }
 
@@ -158,7 +162,10 @@ Rectangle {
                 }
 
                 Check{
-                    checked: d2Maphack
+                    checked: hdMaphack
+                    onClicked: {
+                        hdMaphack = this.checked
+                    }
                 }
             }
 
