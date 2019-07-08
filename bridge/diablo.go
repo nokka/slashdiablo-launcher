@@ -27,6 +27,7 @@ type DiabloBridge struct {
 	_ func() `slot:"launchGame"`
 	_ func() `slot:"validateVersion"`
 	_ func() `slot:"applyPatches"`
+	_ func() `slot:"runDEPFix"`
 }
 
 // Connect will connect the QML signals to functions in Go.
@@ -34,6 +35,7 @@ func (q *DiabloBridge) Connect() {
 	q.ConnectLaunchGame(q.launchGame)
 	q.ConnectApplyPatches(q.applyPatches)
 	q.ConnectValidateVersion(q.validateVersion)
+	q.ConnectRunDEPFix(q.runDEPFix)
 }
 
 func (q *DiabloBridge) launchGame() {
@@ -91,4 +93,12 @@ func (q *DiabloBridge) validateVersion() {
 	}
 
 	q.SetValidVersion(isValid)
+}
+
+func (q *DiabloBridge) runDEPFix() {
+	err := q.D2service.RunDEPFix()
+	if err != nil {
+		fmt.Println(err)
+		// @TODO: Add QML signal.
+	}
 }

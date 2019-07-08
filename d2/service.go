@@ -33,7 +33,7 @@ func (s *Service) Exec() error {
 			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
 			time.Sleep(500 * time.Millisecond)
 			go func() {
-				if err := Exec(conf.D2Location); err != nil {
+				if err := launch(conf.D2Location); err != nil {
 					s.logger.Log("msg", "failed to exec Diablo II", "err", err)
 					return
 				}
@@ -46,7 +46,7 @@ func (s *Service) Exec() error {
 			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
 			time.Sleep(500 * time.Millisecond)
 			go func() {
-				if err := Exec(conf.HDLocation); err != nil {
+				if err := launch(conf.HDLocation); err != nil {
 					s.logger.Log("msg", "failed to exec HD Diablo II", "err", err)
 					return
 				}
@@ -59,7 +59,6 @@ func (s *Service) Exec() error {
 
 // ValidateGameVersion will check the game version.
 func (s *Service) ValidateGameVersion() (bool, error) {
-	fmt.Println("VALIDATING GAME VERSION")
 	conf, err := s.configService.Read()
 	if err != nil {
 		s.logger.Log("msg", "failed to read config", "err", err)
@@ -82,9 +81,42 @@ func (s *Service) ValidateGameVersion() (bool, error) {
 		}
 	}
 
-	s.logger.Log("msg", "RETURNING VALID", "d2", d2Valid, "hd", hdValid)
+	// Also have to make sure the Slash patch is at the latest.
+	slashUpToDate := false
+
+	manifest, err := s.getManifest("current/manifest.json")
+	if err != nil {
+		return false, err
+	}
+
+	// Figure out which files to patch.
+	patchFiles, _, err := s.getFilesToPatch(manifest.Files, conf.D2Location)
+	if err != nil {
+		return false, err
+	}
+
+	if len(patchFiles) == 0 {
+		slashUpToDate = true
+	}
+
 	// Check versions for both D2 and HD version.
-	return (d2Valid && hdValid), nil
+	return (d2Valid && hdValid && slashUpToDate), nil
+}
+
+// RunDEPFix will run a specific fix to disable DEP.
+func (s *Service) RunDEPFix() error {
+	conf, err := s.configService.Read()
+	if err != nil {
+		return err
+	}
+
+	// Run OS specific fix.
+	err = runDEPFix(conf.D2Location)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Patch will check for updates and if found, patch the game, both D2 and HD version.

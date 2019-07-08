@@ -3,9 +3,12 @@
 package d2
 
 import (
+	"bufio"
 	"crypto/sha1"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -29,8 +32,8 @@ func validate113cVersion(path string) (bool, error) {
 	return fmt.Sprintf("%x", sha1.Sum(content)) == gameHash, nil
 }
 
-// Exec will execute the Diablo II.exe in the given directory.
-func Exec(path string) error {
+// launch will execute the Diablo II.exe in the given directory.
+func launch(path string) error {
 	// Localize the path.
 	localized := localizePath(path)
 
@@ -54,4 +57,116 @@ func localizePath(path string) string {
 	_, i := utf8.DecodeRuneInString(reversed)
 
 	return reversed[i:]
+}
+
+// runDEPFix will run a fix to disable DEP.
+/*func runDEPFix(path string) error {
+	// Localize the path.
+	//localized := localizePath(path)
+	go func() {
+		cmd := exec.Command("cmd.exe", "/C", "call", `DEP_fix.bat`)
+		cmd.Dir = `D:\Testing\Diablo II`
+
+		var out bytes.Buffer
+		var stderr bytes.Buffer
+		var stdin io.Reader
+		cmd.Stdout = &out
+		cmd.Stderr = &stderr
+		cmd.Stdin = stdin
+
+		err := cmd.Run()
+		if err != nil {
+			fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+		}
+
+		buf, err := ioutil.ReadAll(stdin)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(buf)
+	}()
+
+	return nil
+}*/
+
+/*func runDEPFix(path string) error {
+	// Localize the path.
+	//localized := localizePath(path)
+	go func() {
+		cmd := exec.Command("cmd.exe", "/C", "call", `DEP_fix.bat`)
+		cmd.Dir = `D:\Testing\Diablo II`
+
+		r, w, err := os.Pipe()
+		if err != nil {
+			return
+		}
+
+		cmd.Stdout = w
+		cmd.Stderr = w
+
+		go func() {
+			scanner := bufio.NewScanner(r)
+			for scanner.Scan() {
+				line := scanner.Text()
+				fmt.Println("READING LINE")
+				fmt.Println(line)
+			}
+		}()
+
+		err = cmd.Run()
+		if err != nil {
+			fmt.Println("ERROR", err)
+			return
+		}
+	}()
+
+	return nil
+}*/
+
+func runDEPFix(path string) error {
+	go func() {
+		cmd := exec.Command("cmd.exe", "/C", "call", `DEP_fix.bat`)
+		cmd.Dir = localizePath(path)
+
+		// Capture stdin for the command, so we can send data on it.
+		stdin, err := cmd.StdinPipe()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		r, w, err := os.Pipe()
+		if err != nil {
+			return
+		}
+
+		cmd.Stdout = w
+		cmd.Stderr = w
+
+		err = cmd.Start()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		go func() {
+			scanner := bufio.NewScanner(r)
+			for scanner.Scan() {
+				line := scanner.Text()
+				fmt.Println(line)
+			}
+		}()
+
+		fmt.Println("DONE READING")
+		_, err = io.WriteString(stdin, "Yes")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		_, err = io.WriteString(stdin, "")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	}()
+
+	return nil
 }

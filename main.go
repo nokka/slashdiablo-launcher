@@ -26,7 +26,7 @@ func main() {
 		githubRepository = envString("GITHUB_REPO", "")
 		githubToken      = envString("GITHUB_TOKEN", "")
 		ladderAddress    = envString("LADDER_ADDRESS", "")
-		debugMode        = envBool("DEBUG_MODE", false)
+		debugMode        = envBool("DEBUG_MODE", true)
 	)
 
 	// Set app context.
@@ -179,7 +179,7 @@ func enableDebugger(logger log.Logger) {
 		scanner := bufio.NewScanner(r)
 		for scanner.Scan() {
 			line := scanner.Text()
-			logger.Log("msg", line)
+			logger.Debug(line+ "\n")
 		}
 	}()
 }

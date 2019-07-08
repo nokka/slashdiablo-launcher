@@ -9,8 +9,8 @@ func validate113cVersion(dir string) (bool, error) {
 	return false, nil
 }
 
-// Exec will execute the Diablo II.exe in the given directory.
-func Exec(path string) error {
+// launch will execute the Diablo II.exe in the given directory.
+func launch(path string) error {
 	fmt.Println(path)
 	return nil
 }
@@ -18,4 +18,9 @@ func Exec(path string) error {
 // localizePath will localize the path for the OS.
 func localizePath(path string) string {
 	return path
+}
+
+// runDEPFix will run a fix to disable DEP.
+func runDEPFix(path string) error {
+	return nil
 }
