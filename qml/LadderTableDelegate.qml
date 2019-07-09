@@ -3,22 +3,16 @@ import QtQuick 2.12
 Rectangle {
     property int fontSize: 12
 
-    width: parent.width - 15
+    width: parent.width
     height: 32
-    color: "#00000000"
-    
-    Rectangle {
-		anchors.fill: parent
-        height: parent.height
-        radius: 5
-        opacity: 0.7
-		color: "#1f1b16"
-	}
+    radius: 5
+    opacity: 0.7
+    color: "#1f1b16"
 
     Text {
         id: rankItem
         width: 15
-        font.family: montserrat.name
+        font.family: roboto.name
         font.pixelSize: fontSize
         color: "#ffffff"
         text: model.rank
@@ -30,7 +24,7 @@ Rectangle {
     Text {
         id: classItem 
         width: 30
-        font.family: montserrat.name
+        font.family: roboto.name
         font.pixelSize: fontSize
         color: "#f3e6d0"
         text: model.class
@@ -41,7 +35,7 @@ Rectangle {
 
     Text {
         color: "#f3e6d0"
-        font.family: montserrat.name
+        font.family: roboto.name
         font.pixelSize: fontSize
         text: model.name
         anchors.verticalCenter: parent.verticalCenter
@@ -52,7 +46,7 @@ Rectangle {
 
     Text {
         color: "#517d8a"
-        font.family: montserrat.name
+        font.family: roboto.name
         font.pixelSize: fontSize
         text: "lvl " + model.level
         anchors.verticalCenter: parent.verticalCenter

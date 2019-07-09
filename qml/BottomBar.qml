@@ -1,12 +1,12 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 
-Rectangle {
+import "componentCreator.js" as ComponentCreator
+
+Item {
         id: bottombar
         anchors.bottom: parent.bottom;
-        width: parent.width
-        height: 100
-        color: "#00000000"
+        width: parent.width; height: 80
 
         // Patcher including progress bar.
         Patcher{
@@ -31,7 +31,7 @@ Rectangle {
                 Text {
                     text: "PLAY"
                     color: "#f3e6d0"
-                    font.family: d2Font.name
+                    font.family: roboto.name
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
                     font.pointSize: 16;
@@ -75,7 +75,7 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: settingsDialog.visible = true
+                    onClicked: stack.push(ComponentCreator.createSettingsView(this, null))
                 }
             }
 

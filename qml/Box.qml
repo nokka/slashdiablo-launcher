@@ -26,7 +26,7 @@ Rectangle {
 
     Text {
         color: "#ffffff"
-        font.family: montserrat.name
+        font.family: roboto.name
         font.pixelSize: 20
         text: title
         anchors.left: parent.left

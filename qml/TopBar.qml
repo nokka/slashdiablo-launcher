@@ -1,20 +1,18 @@
-import QtQuick 2.12
-//import QtQuick.Controls 2.5
-import QtQuick.Layouts 1.3
+import QtQuick 2.12                 // Item
+import QtQuick.Layouts 1.3          // RowLayout
 
 Item {
-    // Background
+    // Background.
     Rectangle {
-        id: topbar_bg
         anchors.fill: parent
-        color: "#000000"
-        opacity: 0.2
+        color: "#1F1109"
+        opacity: 0.5
     }
 
     // Main menu.
     Item {
         width: 300
-        height: 50
+        height: parent.height
 
         RowLayout {
             id: mainMenu
@@ -27,15 +25,9 @@ Item {
                 height: parent.height
                 width: 100
                 
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    id: redditItem
-                    font.family: montserrat.name
-                    font.pixelSize: 14
-                    color: "#ffffff"
-                    text: "REDDIT"
-                } 
+                MenuItem {
+                    text: "HOME"
+                }
             }
 
             Item {
@@ -43,15 +35,9 @@ Item {
                 height: parent.height
                 width: 100
                 
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    id: armoryItem
-                    font.family: montserrat.name
-                    font.pixelSize: 14
-                    color: "#ffffff"
-                    text: "ARMORY"
-                } 
+                MenuItem {
+                    text: "COMMUNITY"
+                }
             }
 
             Item {
@@ -59,62 +45,21 @@ Item {
                 height: parent.height
                 width: 100
                 
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    id: ladderItem
-                    font.family: montserrat.name
-                    font.pixelSize: 14
-                    color: "#ffffff"
+                MenuItem {
                     text: "LADDER"
-                } 
+                }
+            }
+
+            Item {
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                height: parent.height
+                width: 100
+                
+                MenuItem {
+                    text: "ARMORY"
+                }
             }
         }
     }
-    
-    // Repeated background image for the top bar.
-    /*Row {
-        Repeater {
-            model: 12
-            Image {
-                source: "assets/top_border_repeat_darker.png";
-            }
-        }
-    }
 
-    // Crackled top bar to the left.
-    Rectangle {
-        width: 100
-        height: 39
-        anchors.top: parent.top
-        anchors.left: parent.left
-
-        Image {
-            source: "assets/top_left_darker.png"
-        }
-    }
-    
-    // The skull in the middle.
-    Rectangle {
-        width: 442
-        height: 71
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        
-        Image {
-            source: "assets/top_skull_eyes.png"
-        }
-    }
-
-    // Crackled top bar to the right.
-    Rectangle {
-        width: 100
-        height: 39
-        anchors.top: parent.top
-        anchors.right: parent.right
-
-        Image {
-            source: "assets/top_right_darker.png"
-        }
-    }*/
 }

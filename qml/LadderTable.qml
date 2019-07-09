@@ -1,13 +1,11 @@
 import QtQuick 2.12				//Item
-import QtQuick.Controls 1.4		//TableView
-import QtQuick.Controls 2.3		//Button
+import QtQuick.Controls 2.3		//TableView, Button
 import QtQuick.Layouts 1.3		//ColumnLayout
 
-Rectangle {
+Item {
     id: ladderTableBox
-	width: mainWindow.width * 0.30
-    height: parent.height - 100
-	color: "#00000000"
+	width: parent.width * 0.30
+    height: parent.height - 80
 
     anchors.top: parent.top
     anchors.right: parent.right
@@ -69,7 +67,7 @@ Rectangle {
 					color: "#ffffff"
 					topPadding: 30
 					text: "Couldn't get ladder characters"
-					font.family: montserrat.name
+					font.family: roboto.name
 					font.pixelSize: 11
 					anchors.horizontalCenter: parent.horizontalCenter
 				}
@@ -78,6 +76,6 @@ Rectangle {
 	}
 
 	Component.onCompleted: {
-		//ladder.getLadder("exp")
+		ladder.getLadder("exp")
 	}
 }

@@ -2,16 +2,13 @@ import QtQuick 2.12
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
-Rectangle {
+Item {
     id: patcher
-    height: 60
+    height: 80
     x: 20 
 
     // Anchors
     anchors.verticalCenter: parent.verticalCenter
-
-    // Transparent background
-    color: "#00000000" 
 
     // Show when we're patching and no error has occurred.
     Item {
@@ -45,7 +42,7 @@ Rectangle {
             color: "#ffffff"
             text: diablo.status
             font.pointSize: 12
-            font.family: montserrat.name
+            font.family: roboto.name
         }
     }
 
@@ -68,7 +65,7 @@ Rectangle {
             color: "#ffffff"
             topPadding: 30
             text: "Couldn't patch game files"
-            font.family: montserrat.name
+            font.family: roboto.name
             font.pixelSize: 11
             anchors.horizontalCenter: parent.horizontalCenter
         }
@@ -77,7 +74,7 @@ Rectangle {
             color: "#ffffff"
             topPadding: 30
             text: "Couldn't patch game files"
-            font.family: montserrat.name
+            font.family: roboto.name
             font.pixelSize: 11
             anchors.horizontalCenter: parent.horizontalCenter
         }
@@ -93,7 +90,7 @@ Rectangle {
             color: "#ffffff"
             text: "Game is up to date"
             font.pointSize: 15
-            font.family: montserrat.name
+            font.family: roboto.name
         }
     }
 
@@ -111,7 +108,7 @@ Rectangle {
             color: "#ffffff"
             text: "Game version isn't 1.13c"
             font.pointSize: 15
-            font.family: montserrat.name
+            font.family: roboto.name
         }
 
         Button {
@@ -119,10 +116,11 @@ Rectangle {
             anchors.right: parent.right
             width: 100
             height: 40
+            
             Text {
                 text: "UPDATE"
                 color: "#f3e6d0"
-                font.family: d2Font.name
+                font.family: roboto.name
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pointSize: 15;
