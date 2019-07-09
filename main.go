@@ -26,7 +26,7 @@ func main() {
 		githubRepository = envString("GITHUB_REPO", "")
 		githubToken      = envString("GITHUB_TOKEN", "")
 		ladderAddress    = envString("LADDER_ADDRESS", "")
-		debugMode        = envBool("DEBUG_MODE", true)
+		debugMode        = envBool("DEBUG_MODE", false)
 	)
 
 	// Set app context.
@@ -100,14 +100,7 @@ func main() {
 	diabloBridge.SetErrored(false)
 	diabloBridge.SetPlayable(false)
 
-	configBridge := bridge.NewConfigBridge(nil)
-	configBridge.Configuration = cs
-	configBridge.SetD2Location(conf.D2Location)
-	configBridge.SetD2Instances(conf.D2Instances)
-	configBridge.SetD2Maphack(conf.D2Maphack)
-	configBridge.SetHDLocation(conf.HDLocation)
-	configBridge.SetHDInstances(conf.HDInstances)
-	configBridge.SetHDMaphack(conf.HDMaphack)
+	configBridge := newConfigBridge(cs, conf)
 
 	ladderBridge := bridge.NewLadderBridge(nil)
 	ladderBridge.LadderService = ls
@@ -165,6 +158,20 @@ func getConfigPath() (string, error) {
 	return locations[0], nil
 }
 
+func newConfigBridge(cs config.Service, conf *storage.Config) *bridge.ConfigBridge {
+	configBridge := bridge.NewConfigBridge(nil)
+	configBridge.Configuration = cs
+	configBridge.SetD2Location(conf.D2Location)
+	configBridge.SetD2Instances(conf.D2Instances)
+	configBridge.SetD2Maphack(conf.D2Maphack)
+	configBridge.SetHDLocation(conf.HDLocation)
+	configBridge.SetHDInstances(conf.HDInstances)
+	configBridge.SetHDMaphack(conf.HDMaphack)
+	configBridge.SetNrOfGames(len(conf.Games))
+
+	return configBridge
+}
+
 // enableDebugger will capture stdout and stderr output.
 func enableDebugger(logger log.Logger) {
 	r, w, err := os.Pipe()
@@ -179,7 +186,7 @@ func enableDebugger(logger log.Logger) {
 		scanner := bufio.NewScanner(r)
 		for scanner.Scan() {
 			line := scanner.Text()
-			logger.Debug(line+ "\n")
+			logger.Debug(line + "\n")
 		}
 	}()
 }

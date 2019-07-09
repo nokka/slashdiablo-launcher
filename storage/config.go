@@ -8,4 +8,13 @@ type Config struct {
 	HDLocation  string `json:"hd_location"`
 	HDInstances int    `json:"hd_instances"`
 	HDMaphack   bool   `json:"hd_maphack"`
+	Games       []Game `json:"games"`
+}
+
+// Game represents a game setup by the user.
+type Game struct {
+	Location  string `json:"location"`
+	Instances int    `json:"instances"`
+	Maphack   bool   `json:"maphack"`
+	HD        bool   `json:"hd"`
 }

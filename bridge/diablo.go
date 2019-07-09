@@ -82,17 +82,19 @@ func (q *DiabloBridge) applyPatches() {
 }
 
 func (q *DiabloBridge) validateVersion() {
-	isValid, err := q.D2service.ValidateGameVersion()
+	valid, err := q.D2service.ValidateGameVersions()
 	if err != nil {
 		q.SetErrored(true)
 		return
 	}
 
-	if isValid {
+	fmt.Println("IS VALID", valid)
+
+	if valid {
 		q.SetPlayable(true)
 	}
 
-	q.SetValidVersion(isValid)
+	q.SetValidVersion(valid)
 }
 
 func (q *DiabloBridge) runDEPFix() {

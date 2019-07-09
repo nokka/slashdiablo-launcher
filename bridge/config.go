@@ -1,6 +1,8 @@
 package bridge
 
 import (
+	"fmt"
+
 	"github.com/nokka/slash-launcher/config"
 	"github.com/therecipe/qt/core"
 )
@@ -19,14 +21,17 @@ type ConfigBridge struct {
 	_ string `property:"HDLocation"`
 	_ int    `property:"HDInstances"`
 	_ bool   `property:"HDMaphack"`
+	_ int    `property:"NrOfGames"`
 
 	// Functions.
 	_ func(D2Location string, D2Instances int, D2Maphack bool, HDLocation string, HDInstances int, HDMaphack bool) bool `slot:"update"`
+	_ func(game string) bool                                                                                            `slot:"updateNew"`
 }
 
 // Connect will connect the QML signals to functions in Go.
 func (c *ConfigBridge) Connect() {
 	c.ConnectUpdate(c.update)
+	c.ConnectUpdateNew(c.updateNew)
 }
 
 func (c *ConfigBridge) update(
@@ -56,6 +61,13 @@ func (c *ConfigBridge) update(
 	c.SetHDLocation(HDLocation)
 	c.SetHDInstances(HDInstances)
 	c.SetHDMaphack(HDMaphack)
+
+	return true
+}
+
+func (c *ConfigBridge) updateNew(game string) bool {
+	fmt.Println("PRINT NEW RUNNING")
+	fmt.Println(game)
 
 	return true
 }

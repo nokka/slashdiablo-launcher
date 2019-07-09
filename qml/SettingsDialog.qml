@@ -188,14 +188,23 @@ Rectangle {
                         }
 
                         // Update settings in the backend.
-                        var success = settings.update(
+                        /*var success = settings.update(
                             d2pathInput.text,
                             d2Instances.currentText,
                             d2Maphack,
                             hdPath,
                             hdi,
                             hdMaphack,
-                        )
+                        )*/
+
+                        /*var game = {
+                            "location": "derp",
+                            "instances": 1,
+                            "maphack": true,
+                            "hd": true
+                        }*/
+
+                        var success = settings.updateNew("DERP")
 
                         if (success) {
                             settingsDialog.visible = false

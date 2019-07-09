@@ -54,7 +54,7 @@ Rectangle {
     }
 
     Component.onCompleted: {
-        if(settings.D2Location.length === 0) {
+        if(settings.NrOfGames == 0) {
             settingsDialog.visible = true
         }
     }

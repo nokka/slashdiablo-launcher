@@ -28,26 +28,12 @@ func (s *Service) Exec() error {
 		return err
 	}
 
-	if conf.D2Instances > 0 {
-		for i := 0; i < conf.D2Instances; i++ {
+	for _, game := range conf.Games {
+		for i := 0; i < game.Instances; i++ {
 			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
 			time.Sleep(500 * time.Millisecond)
 			go func() {
-				if err := launch(conf.D2Location); err != nil {
-					s.logger.Log("msg", "failed to exec Diablo II", "err", err)
-					return
-				}
-			}()
-		}
-	}
-
-	if conf.HDInstances > 0 {
-		for i := 0; i < conf.HDInstances; i++ {
-			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
-			time.Sleep(500 * time.Millisecond)
-			go func() {
-				if err := launch(conf.HDLocation); err != nil {
-					s.logger.Log("msg", "failed to exec HD Diablo II", "err", err)
+				if err := launch(game.Location); err != nil {
 					return
 				}
 			}()
@@ -57,50 +43,86 @@ func (s *Service) Exec() error {
 	return nil
 }
 
-// ValidateGameVersion will check the game version.
-func (s *Service) ValidateGameVersion() (bool, error) {
+// ValidateGameVersions will check if the games are up to date.
+func (s *Service) ValidateGameVersions() (bool, error) {
 	conf, err := s.configService.Read()
 	if err != nil {
-		s.logger.Log("msg", "failed to read config", "err", err)
 		return false, err
 	}
 
-	d2Valid, err := validate113cVersion(conf.D2Location)
-	if err != nil {
-		s.logger.Log("msg", "failed to validate D2 version", "err", err)
-		return false, err
-	}
-
-	// Default to true, if it's not set we'll return it as as valid.
-	hdValid := true
-	if conf.HDLocation != "" {
-		hdValid, err = validate113cVersion(conf.HDLocation)
-		if err != nil {
-			s.logger.Log("msg", "failed to validate HD version", "err", err)
-			return false, err
-		}
-	}
-
-	// Also have to make sure the Slash patch is at the latest.
-	slashUpToDate := false
-
+	// Get current slash patch and compare.
 	manifest, err := s.getManifest("current/manifest.json")
 	if err != nil {
 		return false, err
 	}
 
-	// Figure out which files to patch.
-	patchFiles, _, err := s.getFilesToPatch(manifest.Files, conf.D2Location)
-	if err != nil {
-		return false, err
+	if len(conf.Games) > 0 {
+		for _, game := range conf.Games {
+			ok, err := validate113cVersion(game.Location)
+			if err != nil {
+				return false, err
+			}
+
+			// Game wasn't 1.13c, needs to be updated.
+			if !ok {
+				return false, nil
+			}
+
+			// Check if the current game install is up to date with the slash patch.
+			patchFiles, _, err := s.getFilesToPatch(manifest.Files, game.Location)
+			if err != nil {
+				return false, err
+			}
+
+			if len(patchFiles) > 0 {
+				return false, nil
+			}
+		}
 	}
 
-	if len(patchFiles) == 0 {
-		slashUpToDate = true
-	}
+	return true, nil
+}
 
-	// Check versions for both D2 and HD version.
-	return (d2Valid && hdValid && slashUpToDate), nil
+// Patch will check for updates and if found, patch the game, both D2 and HD version.
+func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
+	progress := make(chan float32)
+	state := make(chan PatchState)
+
+	go func() {
+		conf, err := s.configService.Read()
+		if err != nil {
+			state <- PatchState{Error: err}
+			return
+		}
+
+		for _, game := range conf.Games {
+			state <- PatchState{Message: "Updating Diablo II to 1.13c"}
+			if err := s.apply113c(game.Location, progress); err != nil {
+				state <- PatchState{Error: err}
+				return
+			}
+
+			state <- PatchState{Message: "Updating Diablo II Slash patch"}
+			err = s.applySlashPatch(game.Location, progress)
+			if err != nil {
+				state <- PatchState{Error: err}
+				return
+			}
+
+			if game.Maphack {
+				state <- PatchState{Message: "Installing maphack"}
+				err = s.applyMaphack(game.Location, progress)
+				if err != nil {
+					state <- PatchState{Error: err}
+					return
+				}
+			}
+		}
+
+		done <- true
+	}()
+
+	return progress, state
 }
 
 // RunDEPFix will run a specific fix to disable DEP.
@@ -119,102 +141,20 @@ func (s *Service) RunDEPFix() error {
 	return nil
 }
 
-// Patch will check for updates and if found, patch the game, both D2 and HD version.
-func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
-	progress := make(chan float32)
-	state := make(chan PatchState)
-
-	go func() {
-		conf, err := s.configService.Read()
-		if err != nil {
-			s.logger.Log("msg", "failed to read config", "err", err)
-			state <- PatchState{Error: err}
-			return
-		}
-
-		var pathsToUpdate []string
-		if conf.D2Location != "" {
-			pathsToUpdate = append(pathsToUpdate, conf.D2Location)
-		}
-
-		if conf.HDLocation != "" {
-			pathsToUpdate = append(pathsToUpdate, conf.HDLocation)
-		}
-
-		// Update Diablo installs to 1.13c if any of them are on the wrong version.
-		if len(pathsToUpdate) > 0 {
-			state <- PatchState{Message: "Updating Diablo II to 1.13c"}
-			if err := s.apply113c(pathsToUpdate, progress); err != nil {
-				s.logger.Log("msg", "failed to apply 1.13c", "err", err)
-				state <- PatchState{Error: err}
-				return
-			}
-		}
-
-		// Apply latest Slashdiablo patch.
-		if conf.D2Location != "" {
-			state <- PatchState{Message: "Applying Slashdiablo patch"}
-			err = s.applySlashPatch(conf.D2Location, progress)
-			if err != nil {
-				s.logger.Log("msg", "failed to patch slashdiablo patch", "err", err)
-				state <- PatchState{Error: err}
-				return
-			}
-
-			if conf.D2Maphack {
-				state <- PatchState{Message: "Installing maphack"}
-				err = s.applyMaphack(conf.D2Location, progress)
-				if err != nil {
-					s.logger.Log("msg", "failed to apply maphack", "err", err)
-					state <- PatchState{Error: err}
-					return
-				}
-			}
-		}
-
-		// Apply patch to HD install if has been set.
-		if conf.HDLocation != "" {
-			state <- PatchState{Message: "Applying Slashdiablo patch"}
-			err = s.applySlashPatch(conf.HDLocation, progress)
-			if err != nil {
-				s.logger.Log("msg", "failed to patch slashdiablo patch", "err", err)
-				state <- PatchState{Error: err}
-				return
-			}
-
-			if conf.HDMaphack {
-				state <- PatchState{Message: "Installing maphack"}
-				err = s.applyMaphack(conf.HDLocation, progress)
-				if err != nil {
-					s.logger.Log("msg", "failed to apply maphack", "err", err)
-					state <- PatchState{Error: err}
-					return
-				}
-			}
-		}
-
-		done <- true
-	}()
-
-	return progress, state
-}
-
-func (s *Service) apply113c(paths []string, progress chan float32) error {
+func (s *Service) apply113c(path string, progress chan float32) error {
 	// Download manifest from patch repository.
 	manifest, err := s.getManifest("1.13c/manifest.json")
 	if err != nil {
 		return err
 	}
 
-	for _, path := range paths {
-		if err := s.doPatch(manifest.Files, "1.13c", path, progress); err != nil {
-			// Make sure we clean up the failed patch.
-			if err := s.cleanUpFailedPatch(path); err != nil {
-				return err
-			}
-
+	if err := s.doPatch(manifest.Files, "1.13c", path, progress); err != nil {
+		// Make sure we clean up the failed patch.
+		if err := s.cleanUpFailedPatch(path); err != nil {
 			return err
 		}
+
+		return err
 	}
 
 	return nil
@@ -309,7 +249,6 @@ func (s *Service) doPatch(files []PatchFile, remoteDir string, path string, prog
 func (s *Service) downloadFile(fileName string, remoteDir string, path string, counter *WriteCounter) error {
 	out, err := os.Create(path)
 	if err != nil {
-		s.logger.Log("msg", "failed to create tmp file", "err", err)
 		return err
 	}
 
@@ -318,13 +257,11 @@ func (s *Service) downloadFile(fileName string, remoteDir string, path string, c
 	f := fmt.Sprintf("%s/%s", remoteDir, fileName)
 	contents, err := s.githubClient.GetFile(f)
 	if err != nil {
-		s.logger.Log("failed to get file from github", err)
 		return err
 	}
 
 	_, err = io.Copy(out, io.TeeReader(contents, counter))
 	if err != nil {
-		s.logger.Log("failed to write file locally", err)
 		return err
 	}
 
@@ -386,7 +323,6 @@ func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, i
 func (s *Service) getManifest(path string) (*Manifest, error) {
 	contents, err := s.githubClient.GetFile(path)
 	if err != nil {
-		s.logger.Log("failed to get manifest from github", err)
 		return nil, err
 	}
 

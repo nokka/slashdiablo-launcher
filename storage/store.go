@@ -77,8 +77,9 @@ func (s *store) Load() error {
 
 	if !configExists {
 		c := &Config{
-			D2Instances: 1,
+			Games: make([]Game, 0),
 		}
+
 		// Write a new config with default settings.
 		return s.Write(c)
 	}
