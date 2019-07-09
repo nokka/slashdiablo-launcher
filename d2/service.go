@@ -77,10 +77,13 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 			if len(patchFiles) > 0 {
 				return false, nil
 			}
+
+			// Game is both 1.13c and up to date with Slash patches.
+			return true, nil
 		}
 	}
 
-	return true, nil
+	return false, nil
 }
 
 // Patch will check for updates and if found, patch the game, both D2 and HD version.
