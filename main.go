@@ -41,19 +41,12 @@ func main() {
 
 	// Create new frameless window.
 	fw := goqmlframeless.NewWindow(goqmlframeless.Options{
-<<<<<<< Updated upstream
-		Width:  1024,
-		Height: 600,
-		Alpha:  1.0,
-		Color:  goqmlframeless.RGB{R: 0, G: 0, B: 0},
-=======
 		Width:        1024,
 		Height:       600,
 		Alpha:        1.0,
 		Color:        goqmlframeless.RGB{R: 19, G: 3, B: 26},
 		BorderRadius: 5,
 		ShadowSize:   0,
->>>>>>> Stashed changes
 	})
 
 	// QML Widget that will be used to draw on.
