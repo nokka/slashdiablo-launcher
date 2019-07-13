@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/nokka/goqmlframeless"
 	"github.com/nokka/slash-launcher/bridge"
 	"github.com/nokka/slash-launcher/config"
 	"github.com/nokka/slash-launcher/d2"
@@ -16,7 +17,6 @@ import (
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/quick"
 	"github.com/therecipe/qt/widgets"
-	"github.com/nokka/goqmlframeless"
 )
 
 func main() {
@@ -41,12 +41,10 @@ func main() {
 
 	// Create new frameless window.
 	fw := goqmlframeless.NewWindow(goqmlframeless.Options{
-		Width:        1024,
-		Height:       600,
-		Alpha:        1.0,
-		Color:        goqmlframeless.RGB{R: 0, G: 0, B: 0},
-		BorderRadius: 5,
-		ShadowSize:   0,
+		Width:  1024,
+		Height: 600,
+		Alpha:  1.0,
+		Color:  goqmlframeless.RGB{R: 0, G: 0, B: 0},
 	})
 
 	// QML Widget that will be used to draw on.
