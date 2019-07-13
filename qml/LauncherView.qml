@@ -12,7 +12,7 @@ Rectangle {
     Item {
         id: background
         anchors.fill: parent;
-        Image { source: "assets/tmp/bg.png"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
+        Image { source: "assets/bg.png"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
     }
     
     // Top bar for the entire app.
@@ -34,28 +34,6 @@ Rectangle {
         Item {
             width: parent.width * 0.70
             height: parent.height - 80
-
-            Text {
-                color: "#ffffff"
-                text: "Slashdiablo"
-                font.pointSize: 30
-                font.family: roboto.name
-                anchors.top: parent.top
-                anchors.left: parent.left
-                elide: Text.ElideRight
-                anchors.topMargin: 20
-                anchors.leftMargin: 30
-            }
-
-            // News box.
-            Box {
-                title: "Ladder reset 8PM EST, 12 July"
-                width: 350
-                height: 200
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                anchors.leftMargin: 30
-            }
         }
 
         // Top ladder table.
