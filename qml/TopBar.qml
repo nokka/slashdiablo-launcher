@@ -5,8 +5,8 @@ Item {
     // Background.
     Rectangle {
         anchors.fill: parent
-        color: "#1F1109"
-        opacity: 0.5
+        color: "#13031a"
+        opacity: 0.7
     }
 
     // Main menu.
@@ -62,4 +62,66 @@ Item {
         }
     }
 
+    // Status panel.
+    Rectangle {
+        height: parent.height
+        width: parent.width * 0.30
+        anchors.right: parent.right
+        color: "blue"
+
+        RowLayout {
+            id: statusMenu
+            anchors.fill: parent
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            spacing: 6
+
+            // Server status.
+            Item {
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                height: parent.height
+                
+                SText {
+                    text: "SERVER STATUS"
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.rightMargin: 20
+                }
+
+                // Status circle.
+                Rectangle {
+                    width: 15
+                    height: 15
+                    color: "#0B8A9F"
+                    radius: width*0.5
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                }
+            }
+
+            // Users online.
+            Item {
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                height: parent.height
+                
+                SText {
+                    text: "129"
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.rightMargin: 20
+                }
+
+                // Status circle.
+                Rectangle {
+                    width: 15
+                    height: 15
+                    color: "#0B8A9F"
+                    radius: width*0.5
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                }
+            }
+        }
+    }
 }
