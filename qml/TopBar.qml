@@ -63,63 +63,107 @@ Item {
     }
 
     // Status panel.
-    Rectangle {
+    Item {
         height: parent.height
         width: parent.width * 0.30
         anchors.right: parent.right
-        color: "blue"
 
         RowLayout {
             id: statusMenu
             anchors.fill: parent
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            spacing: 6
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            spacing: 0
 
             // Server status.
             Item {
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                width: 120
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 height: parent.height
                 
-                SText {
-                    text: "SERVER STATUS"
-                    font.bold: true
+                Item {
+                    width: 110
+                    height: 20
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
-                    anchors.rightMargin: 20
-                }
+                    anchors.horizontalCenter: parent.horizontalCenter
 
-                // Status circle.
-                Rectangle {
-                    width: 15
-                    height: 15
-                    color: "#0B8A9F"
-                    radius: width*0.5
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
+                    SText {
+                        text: "SERVER STATUS"
+                        font.bold: true      
+                        anchors.verticalCenter: parent.verticalCenter                  
+                    }
+
+                    // Status circle.
+                    Rectangle {
+                        width: 12
+                        height: 12
+                        color: "#0B8A0F"
+                        radius: width*0.5
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        
+                    }
                 }
             }
 
             // Users online.
             Item {
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                width: 80
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 height: parent.height
-                
-                SText {
-                    text: "129"
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
-                    anchors.rightMargin: 20
-                }
 
-                // Status circle.
-                Rectangle {
-                    width: 15
-                    height: 15
-                    color: "#0B8A9F"
-                    radius: width*0.5
+                Item {
+                    width: 50
+                    height: 20
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    SText {
+                        text: "520"
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Image {
+                        id: usersIcon
+                        fillMode: Image.PreserveAspectFit
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        width: 20
+                        height: 20
+                        source: "assets/svg/users.svg"
+                    }
+                }
+            }
+
+             // Options.
+            Item {
+                width: 90
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                height: parent.height
+
+                Item {
+                    width: 90
+                    height: 20
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    Image {
+                        id: optionsIcon
+                        fillMode: Image.PreserveAspectFit
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        width: 13
+                        height: 13
+                        source: "assets/svg/options.svg"
+                    }
+
+                    SText {
+                        text: "OPTIONS"
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        anchors.rightMargin: 20
+                    }
                 }
             }
         }

@@ -58,7 +58,7 @@ Item {
             anchors.top: parent.top
             width: 20
             height: 20
-            source: "assets/error.svg"
+            source: "assets/svg/error.svg"
         }
 
         Text {

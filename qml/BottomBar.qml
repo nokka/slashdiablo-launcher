@@ -63,15 +63,6 @@ Item {
                     radius: 2
                 }
 
-                Image {
-                    id: settingsIcon
-                    fillMode: Image.PreserveAspectFit
-                    anchors.centerIn: parent
-                    width: 20
-                    height: 20
-                    source: "assets/settings.svg"
-                }
-
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
