@@ -13,10 +13,10 @@ import (
 	"github.com/nokka/slash-launcher/ladder"
 	"github.com/nokka/slash-launcher/log"
 	"github.com/nokka/slash-launcher/storage"
-	"github.com/nokka/slash-launcher/window"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/quick"
 	"github.com/therecipe/qt/widgets"
+	"github.com/nokka/goqmlframeless"
 )
 
 func main() {
@@ -37,20 +37,24 @@ func main() {
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
 
 	// Create base application.
-	app := widgets.NewQApplication(0, nil)
+	app := widgets.NewQApplication(len(os.Args), os.Args)
 
-	// Create a new frameless window, this is the root window.
-	fw := window.NewFramelessWindow(1.0, 1024, 600)
+	// Create new frameless window.
+	fw := goqmlframeless.NewWindow(goqmlframeless.Options{
+		Width:        1024,
+		Height:       600,
+		Alpha:        1.0,
+		Color:        goqmlframeless.RGB{R: 0, G: 0, B: 0},
+		BorderRadius: 5,
+		ShadowSize:   0,
+	})
 
-	// Create a new QML widget, this is what we will draw the application on.
-	qmlWidget := newQmlWidget()
+	// QML Widget that will be used to draw on.
+	qmlWidget := quick.NewQQuickWidget(nil)
+	qmlWidget.SetResizeMode(quick.QQuickWidget__SizeRootObjectToView)
 
-	// Setup layout that will be added to the root window.
-	layout := newLayout()
-	layout.AddWidget(qmlWidget, 0, 0)
-
-	// Add the layout to the window, this is the only item on the base window.
-	fw.SetupContent(layout)
+	// Add QML widget to layout.
+	fw.Layout.AddWidget(qmlWidget, 0, 0)
 
 	configPath, err := getConfigPath()
 	if err != nil {
@@ -119,30 +123,14 @@ func main() {
 	ladderBridge.Connect()
 
 	// Make sure the window is allowed to minimize.
-	window.AllowMinimize(fw.WinId())
+	goqmlframeless.AllowMinimize(fw.WinId())
 
 	// Set the source for our drawable widget to our qml entrypoint.
 	qmlWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
 	//qmlWidget.SetSource(core.NewQUrl3("qrc:/qml/main.qml", 0))
 
 	fw.Show()
-	fw.Widget.SetFocus2()
-
 	app.Exec()
-}
-
-// newQmlWidget returns a configured QML widget.
-func newQmlWidget() *quick.QQuickWidget {
-	var qwidget = quick.NewQQuickWidget(nil)
-	qwidget.SetResizeMode(quick.QQuickWidget__SizeRootObjectToView)
-	return qwidget
-}
-
-// newLayout returns a configured layout.
-func newLayout() *widgets.QVBoxLayout {
-	layout := widgets.NewQVBoxLayout()
-	layout.SetContentsMargins(0, 0, 0, 0)
-	return layout
 }
 
 // getConfigPath returns the target specific application data directory.
