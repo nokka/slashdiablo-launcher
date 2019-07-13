@@ -9,6 +9,7 @@ Item {
 
     anchors.top: parent.top
     anchors.right: parent.right
+	anchors.rightMargin: 20
 
 	ColumnLayout {
 		anchors.fill: parent

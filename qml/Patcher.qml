@@ -5,9 +5,8 @@ import QtQuick.Controls.Styles 1.4
 Item {
     id: patcher
     height: 80
-    x: 20 
-
-    // Anchors
+    anchors.left: parent.left
+    anchors.leftMargin: 20
     anchors.verticalCenter: parent.verticalCenter
 
     // Show when we're patching and no error has occurred.
@@ -16,33 +15,29 @@ Item {
         visible: (diablo.patching && !diablo.errored)
 
         ProgressBar {
+            height: 7
             value: diablo.patchProgress
             width: parent.width
-            height: 10
-
-            // Anchors
             anchors.verticalCenter: parent.verticalCenter
             
             style: ProgressBarStyle {
                 background: Rectangle {
-                    radius: 2
-                    color: "#381612"
-                    border.color: "#141009"
-                    border.width: 1
+                    radius: 5
+                    color: "#1C0336"
+                    border.color: "#6E3E87"
+                    border.width: 2
                 }
                 
                 progress: Rectangle {
-                    color: "#873d29"
+                    color: "#CE82F5"
                 }
             }
         }
 
-        Text {
+        SText {
             anchors.bottom: parent.bottom;
-            color: "#ffffff"
             text: diablo.status
-            font.pointSize: 12
-            font.family: roboto.name
+            font.pixelSize: 12
         }
     }
 
@@ -61,22 +56,11 @@ Item {
             source: "assets/svg/error.svg"
         }
 
-        Text {
-            color: "#ffffff"
+        SText {
+            anchors.horizontalCenter: parent.horizontalCenter
             topPadding: 30
             text: "Couldn't patch game files"
-            font.family: roboto.name
             font.pixelSize: 11
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
-
-        Text {
-            color: "#ffffff"
-            topPadding: 30
-            text: "Couldn't patch game files"
-            font.family: roboto.name
-            font.pixelSize: 11
-            anchors.horizontalCenter: parent.horizontalCenter
         }
     }
 
@@ -84,13 +68,11 @@ Item {
     Item {
         anchors.fill:parent 
         visible: (!diablo.patching && !diablo.errored && diablo.playable)
-        
-         Text {
+
+        SText {
             anchors.bottom: parent.bottom;
-            color: "#ffffff"
             text: "Game is up to date"
-            font.pointSize: 15
-            font.family: roboto.name
+            font.pixelSize: 15
         }
     }
 
@@ -98,37 +80,40 @@ Item {
     Item {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        width: 300
+        width: 320
         height: 40
-        visible: (!diablo.validVersion && !diablo.patching && !diablo.errored)
-        
-         Text {
-            anchors.left: parent.left
+        visible: true//(!diablo.validVersion && !diablo.patching && !diablo.errored)
+
+        Image {
+            id: versionError
+            fillMode: Image.PreserveAspectFit
             anchors.verticalCenter: parent.verticalCenter
-            color: "#ffffff"
-            text: "Game version isn't 1.13c"
-            font.pointSize: 15
-            font.family: roboto.name
+            anchors.left: parent.left
+            width: 20
+            height: 20
+            source: "assets/svg/error.svg"
         }
 
-        Button {
-            anchors.top: parent.top
-            anchors.right: parent.right
+        SText {
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: 30
+            text: "Game version isn't 1.13c"
+            font.pixelSize: 15
+        }
+
+        SButton {
             width: 100
             height: 40
-            
-            Text {
-                text: "UPDATE"
-                color: "#f3e6d0"
-                font.family: roboto.name
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                font.pointSize: 15;
-            }
+            label: "UPDATE"
+            fontSize: 12
+            anchors.top: parent.top
+            anchors.right: parent.right
+            cursorShape: Qt.PointingHandCursor
 
             onClicked: {
                 console.log("Apply patches clicked")
-                diablo.applyPatches()
+                //diablo.applyPatches()
             }
         }
     }

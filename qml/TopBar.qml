@@ -1,6 +1,9 @@
 import QtQuick 2.12                 // Item
 import QtQuick.Layouts 1.3          // RowLayout
 
+import "componentCreator.js" as ComponentCreator
+
+
 Item {
     // Background.
     Rectangle {
@@ -97,7 +100,7 @@ Item {
                         width: 12
                         height: 12
                         color: "#0B8A0F"
-                        radius: width*0.5
+                        radius: (width * 0.5)
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
                         
@@ -163,6 +166,12 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
                         anchors.rightMargin: 20
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: stack.push(ComponentCreator.createSettingsView(this, null))
+                        }
                     }
                 }
             }
