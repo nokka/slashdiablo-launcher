@@ -82,7 +82,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         width: 320
         height: 40
-        visible: true//(!diablo.validVersion && !diablo.patching && !diablo.errored)
+        visible: (!diablo.validVersion && !diablo.patching && !diablo.errored)
 
         Image {
             id: versionError
@@ -112,8 +112,7 @@ Item {
             cursorShape: Qt.PointingHandCursor
 
             onClicked: {
-                console.log("Apply patches clicked")
-                //diablo.applyPatches()
+                diablo.applyPatches()
             }
         }
     }
