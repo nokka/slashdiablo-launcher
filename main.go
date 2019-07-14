@@ -26,7 +26,7 @@ func main() {
 		githubRepository = envString("GITHUB_REPO", "")
 		githubToken      = envString("GITHUB_TOKEN", "")
 		ladderAddress    = envString("LADDER_ADDRESS", "")
-		debugMode        = envBool("DEBUG_MODE", false)
+		debugMode        = envBool("DEBUG_MODE", true)
 	)
 
 	// Set app context.
@@ -44,7 +44,7 @@ func main() {
 		Width:        1024,
 		Height:       600,
 		Alpha:        1.0,
-		Color:        goqmlframeless.RGB{R: 19, G: 3, B: 26},
+		Color:        goqmlframeless.RGB{R: 11, G: 3, B: 13},
 		BorderRadius: 5,
 		ShadowSize:   0,
 	})

@@ -8,7 +8,7 @@ Item {
     // Background.
     Rectangle {
         anchors.fill: parent
-        color: "#13031a"
+        color: "#000000"
         opacity: 0.4
     }
 
