@@ -44,7 +44,7 @@ Rectangle {
     }
 
     Text {
-        color: "#517d8a"
+        color: "#ffe6a1"
         font.family: roboto.name
         font.pixelSize: fontSize
         text: "lvl " + model.level

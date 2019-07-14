@@ -16,22 +16,14 @@ Item {
     Item {
         width: 300
         height: parent.height
-
+        anchors.left: parent.left
+        anchors.leftMargin: 20
+        
         RowLayout {
             id: mainMenu
             anchors.fill: parent
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             spacing: 6
-            
-            Item {
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                height: parent.height
-                width: 100
-                
-                MenuItem {
-                    text: "HOME"
-                }
-            }
 
             Item {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -40,6 +32,10 @@ Item {
                 
                 MenuItem {
                     text: "COMMUNITY"
+
+                    onClicked: function() {
+                        stack.push(ComponentCreator.createCommunityView())
+                    }
                 }
             }
 
@@ -49,7 +45,11 @@ Item {
                 width: 100
                 
                 MenuItem {
-                    text: "LADDER"
+                    text: "RULES"
+
+                    onClicked: function() {
+                        stack.push(ComponentCreator.createRulesView())
+                    }
                 }
             }
 
@@ -57,9 +57,13 @@ Item {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 height: parent.height
                 width: 100
-                
+            
                 MenuItem {
                     text: "ARMORY"
+
+                    onClicked: function() {
+                        stack.push(ComponentCreator.createArmoryView())
+                    }
                 }
             }
         }

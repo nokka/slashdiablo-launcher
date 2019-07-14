@@ -5,10 +5,10 @@ import "componentCreator.js" as ComponentCreator
 
 Rectangle {
     id: launchView
-    color: "#080806"
+    color: "#09030a"
     width: parent.width; height: parent.height
 
-     // Background image.
+    // Background image.
     Item {
         id: background
         anchors.fill: parent;
