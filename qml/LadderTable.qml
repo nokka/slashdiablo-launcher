@@ -7,6 +7,13 @@ Item {
 	width: parent.width * 0.30
     height: parent.height - 80
 
+	Rectangle {
+		anchors.fill: parent
+		color: "#000000"
+		opacity: 0.5
+		radius: 5
+	}
+
     anchors.top: parent.top
     anchors.right: parent.right
 	anchors.rightMargin: 20
@@ -15,14 +22,21 @@ Item {
 		anchors.fill: parent
 
 		// Shown when there's characters to show.
-		Header {
-			Layout.alignment: Qt.AlignTop
-			text: "LADDER TOP 10"
-			font.pointSize: 16
-			topPadding: 20
-			bottomPadding: 15
+		Item {
 			visible: (!ladder.loading && !ladder.error)
+			Layout.alignment: Qt.AlignHCenter
+			height: 40
+			width: 285
+			
+			SText {
+				text: "LADDER TOP 10"
+				font.pixelSize: 13
+				font.bold: true
+				topPadding: 15
+				bottomPadding: 15
+			}
 		}
+		
 
 		ListView {
 			id: ladderList

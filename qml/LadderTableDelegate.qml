@@ -6,8 +6,7 @@ Rectangle {
     width: parent.width
     height: 32
     radius: 5
-    opacity: 0.7
-    color: "#1f1b16"
+    color: "#00000000"
 
     Text {
         id: rankItem

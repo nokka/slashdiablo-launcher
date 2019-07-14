@@ -9,7 +9,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         color: "#13031a"
-        opacity: 0.7
+        opacity: 0.4
     }
 
     // Main menu.
