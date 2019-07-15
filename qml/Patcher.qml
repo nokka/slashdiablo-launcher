@@ -106,7 +106,7 @@ Item {
             width: 100
             height: 40
             label: "UPDATE"
-            fontSize: 12
+            fontSize: 10
             anchors.top: parent.top
             anchors.right: parent.right
             cursorShape: Qt.PointingHandCursor

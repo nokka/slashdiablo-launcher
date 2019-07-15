@@ -4,7 +4,7 @@ import QtQuick.Controls 2.5     // Button
 Button {
     id: sbutton
 
-    property int fontSize: 15
+    property int fontSize: 12
     property string label: ""
     property alias cursorShape: mouseArea.cursorShape
     
@@ -14,7 +14,7 @@ Button {
         font.family: roboto.name
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        font.pointSize: fontSize;
+        font.pixelSize: fontSize;
     }
 
     background: Rectangle {
