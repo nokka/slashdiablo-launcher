@@ -16,6 +16,7 @@ Item {
 
     anchors.top: parent.top
     anchors.right: parent.right
+	anchors.topMargin: 5
 	anchors.rightMargin: 20
 
 	ColumnLayout {
@@ -25,22 +26,20 @@ Item {
 		Item {
 			visible: (!ladder.loading && !ladder.error)
 			Layout.alignment: Qt.AlignHCenter
-			height: 40
+			height: 50
 			width: 285
 			
 			SText {
 				text: "LADDER TOP 10"
 				font.pixelSize: 13
 				font.bold: true
-				topPadding: 15
-				bottomPadding: 15
+				topPadding: 20
 			}
 		}
 		
-
 		ListView {
 			id: ladderList
-			spacing: 3
+			spacing: 2
 			visible: (!ladder.loading && !ladder.error)
 
 			Layout.fillWidth: true

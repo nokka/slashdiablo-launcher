@@ -29,7 +29,7 @@ Item {
                 }
                 
                 progress: Rectangle {
-                    color: "#CE82F5"
+                    color: "#8d49b8"
                 }
             }
         }
