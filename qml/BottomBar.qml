@@ -19,6 +19,7 @@ Item {
              // Launch button.
             SButton {
                 label: "PLAY"
+                fontSize: 15
                 enabled: diablo.playable
                 width: parent.width; height: 50
                 anchors.verticalCenter: parent.verticalCenter
