@@ -1,6 +1,6 @@
 function createSettingsView(parent) {
     var component = Qt.createComponent("SettingsView.qml")
-    var view = component.createObject(null)
+    var view = component.createObject(parent)
 
     if (view == null) {
         console.log("failed to create settings view")
@@ -9,9 +9,9 @@ function createSettingsView(parent) {
     return view
 }
 
-function createArmoryView() {
+function createArmoryView(parent) {
     var component = Qt.createComponent("ArmoryView.qml")
-    var view = component.createObject(null)
+    var view = component.createObject(parent)
 
     if (view == null) {
         console.log("failed to create armory view")
@@ -20,9 +20,9 @@ function createArmoryView() {
     return view
 }
 
-function createRulesView() {
+function createRulesView(parent) {
     var component = Qt.createComponent("RulesView.qml")
-    var view = component.createObject(null)
+    var view = component.createObject(parent)
 
     if (view == null) {
         console.log("failed to create rules view")
@@ -31,9 +31,9 @@ function createRulesView() {
     return view
 }
 
-function createCommunityView() {
+function createCommunityView(parent) {
     var component = Qt.createComponent("CommunityView.qml")
-    var view = component.createObject(null)
+    var view = component.createObject(parent)
 
     if (view == null) {
         console.log("failed to create community view")

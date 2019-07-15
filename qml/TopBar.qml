@@ -34,7 +34,7 @@ Item {
                     text: "COMMUNITY"
 
                     onClicked: function() {
-                        stack.push(ComponentCreator.createCommunityView())
+                        stack.push(ComponentCreator.createCommunityView(stack))
                     }
                 }
             }
@@ -48,7 +48,7 @@ Item {
                     text: "RULES"
 
                     onClicked: function() {
-                        stack.push(ComponentCreator.createRulesView())
+                        stack.push(ComponentCreator.createRulesView(stack))
                     }
                 }
             }
@@ -62,7 +62,7 @@ Item {
                     text: "ARMORY"
 
                     onClicked: function() {
-                        stack.push(ComponentCreator.createArmoryView())
+                        stack.push(ComponentCreator.createArmoryView(stack))
                     }
                 }
             }
@@ -174,7 +174,7 @@ Item {
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: stack.push(ComponentCreator.createSettingsView(this, null))
+                            onClicked: stack.push(ComponentCreator.createSettingsView(stack, null))
                         }
                     }
                 }
