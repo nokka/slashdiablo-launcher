@@ -3,8 +3,7 @@ import QtQuick 2.12     // MouseArea
 SText {
     property var onClicked: function () {}
 
-    anchors.verticalCenter: parent.verticalCenter
-    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.centerIn: parent
     font.bold: true
     
     MouseArea {

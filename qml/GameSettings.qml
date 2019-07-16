@@ -8,16 +8,18 @@ Item {
 
     Rectangle {
         id: currentGame
-        width: parent.width * 0.90
+        width: parent.width * 0.95
         height: 400
         color: "#0d0a08"
         radius: 5
+        border.color: "#343434"
+        border.width: 1
 
         anchors.horizontalCenter: parent.horizontalCenter
 
         ColumnLayout {
             id: settingsLayout
-            width: (currentGame.width * 0.90)
+            width: (currentGame.width * 0.95)
             spacing: 2
             
             anchors.horizontalCenter: parent.horizontalCenter
@@ -197,7 +199,7 @@ Item {
 
                 Row {
                     topPadding: 15
-                    
+
                     SButton {
                         id: saveSettings
                         label: "SAVE"

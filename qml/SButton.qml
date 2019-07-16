@@ -30,7 +30,7 @@ Button {
         target: sbutton
         properties: "background.border.color";
         to: "#CE82F5";
-        duration: 500
+        duration: 200
     }
 
     PropertyAnimation {

@@ -13,7 +13,7 @@ Rectangle {
         fillMode: Image.PreserveAspectFit
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
-        source: "assets/svg/vectorpaint.svg"
+        source: "assets/svg/chevron-right.svg"
     }
 
     // Name and location.
