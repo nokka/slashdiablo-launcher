@@ -6,6 +6,7 @@ Button {
 
     property int fontSize: 12
     property string label: ""
+    property int borderRadius: (parent.width * 0.5)
     property alias cursorShape: mouseArea.cursorShape
     
     Text {
@@ -19,7 +20,7 @@ Button {
 
     background: Rectangle {
         color: "#00000000"
-        radius: (parent.width * 0.5)
+        radius: borderRadius
         border.width: 2
         border.color: "#6E3E87"
     }

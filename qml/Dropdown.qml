@@ -3,11 +3,18 @@ import QtQuick.Controls 2.1
 
 ComboBox {
     id: dropdown
-    model: [ 1, 2, 3, 4 ]
+
+    contentItem: Text {
+        text: dropdown.displayText
+        font: dropdown.font
+        color: dropdown.pressed ? "#969696" : "#ffffff"
+        topPadding: 7
+        leftPadding: 12
+    }
 
     background: Rectangle {
         color: "#1d1924"
-        border.color: "#f0681f"
+        border.color: "#6E3E87"
         radius: height/2
     }
 

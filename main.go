@@ -32,6 +32,7 @@ func main() {
 	// Set app context.
 	core.QCoreApplication_SetApplicationName("slashdiablo.launcher")
 	core.QCoreApplication_SetOrganizationName("slashdiablo.com")
+	core.QCoreApplication_SetOrganizationDomain("slashdiablo.com")
 
 	// Enable high dpi scaling, useful for devices with high pixel density displays.
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
