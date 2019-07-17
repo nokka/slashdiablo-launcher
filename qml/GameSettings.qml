@@ -6,6 +6,15 @@ import QtQuick.Dialogs 1.3      // FileDialog
 Item {
     property var game: {}
 
+    function setGame(current) {
+        // Set current game instance to the view.
+        this.game = current
+
+        // Update the switches initial state without triggering an animation.
+        maphackSwitch.update()
+        hdSwitch.update()
+    }
+
     Rectangle {
         id: currentGame
         width: parent.width * 0.95
@@ -56,7 +65,7 @@ Item {
                         id: d2pathInput
                         width: fileDialogBox.width * 0.80; height: 40
                         readOnly: true
-                        text: settings.D2Location
+                        text: game.location
 
                         background: Rectangle {
                             color: "#1d1924"
@@ -116,7 +125,8 @@ Item {
                         id: instancesDropdown
                         width: 60
                         Dropdown{
-                            id: d2Instances
+                            id: gameInstances
+                            currentIndex: (game.instances-1)
                             model: [ 1, 2, 3, 4 ]
                             height: 30
                             width: 60
@@ -137,7 +147,7 @@ Item {
                     topPadding: 10
 
                     Column {
-                        width: (settingsLayout.width - includeMaphackSwitch.width)
+                        width: (settingsLayout.width - includeMaphack.width)
                         SText {
                             text: "Include maphack"
                             font.pixelSize: 13
@@ -151,9 +161,12 @@ Item {
                         }
                     }
                     Column {
-                        id: includeMaphackSwitch
+                        id: includeMaphack
                         width: 60
-                        SSwitch{}
+                        SSwitch{
+                            id: maphackSwitch
+                            checked: game.maphack
+                        }
                     } 
                 }
                 
@@ -169,7 +182,7 @@ Item {
                     topPadding: 10
 
                     Column {
-                        width: (settingsLayout.width - includeMaphackSwitch.width)
+                        width: (settingsLayout.width - includeHD.width)
                         SText {
                             text: "Include HD mod"
                             font.pixelSize: 13
@@ -183,9 +196,12 @@ Item {
                         }
                     }
                     Column {
-                        id: includeHDSwitch
+                        id: includeHD
                         width: 60
-                        SSwitch{}
+                        SSwitch{
+                            id: hdSwitch
+                            checked: game.hd
+                        }
                     }
                 }
                 
@@ -208,6 +224,10 @@ Item {
 
                         onClicked: {
                             console.log("Saving settings")
+                            console.log("location: " + game.location)
+                            console.log("instances: "+ gameInstances.currentText)
+                            console.log("maphack: " + maphackSwitch.checked)
+                            console.log("hd: " + hdSwitch.checked)
                         }
                     }
                 }

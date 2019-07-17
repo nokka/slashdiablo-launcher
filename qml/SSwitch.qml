@@ -23,6 +23,7 @@ Switch {
         }
     }
 
+    // Animation that runs when the switch is turned "on".
     PropertyAnimation {
         id: animateOn
         target: circle
@@ -31,6 +32,7 @@ Switch {
         duration: 100
     }
 
+    // Animation that runs when the switch is turned "off".
     PropertyAnimation {
         id: animateOff
         target: circle
@@ -40,4 +42,13 @@ Switch {
     }
 
     onClicked: control.checked ? animateOn.start() : animateOff.start();
+
+    // Update updates the state of the switch without triggering an animation.
+    function update() {
+        if(control.checked) {
+            circle.x = (indicator.width-circle.width)
+        } else {
+            circle.x = 0
+        }
+    }
 }

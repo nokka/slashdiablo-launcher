@@ -38,7 +38,7 @@ Rectangle {
                 delegate: SettingsDelegate{}
 
                 onCurrentItemChanged: {
-                    gameSettings.game = model.get(this.currentIndex)
+                    gameSettings.setGame(model.get(this.currentIndex))
                 }
             }
         }

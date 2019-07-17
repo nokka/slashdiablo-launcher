@@ -6,13 +6,13 @@ ListModel {
         location: "D:/Games/Diablo II"
         instances: 2
         maphack: true
-        hd: false
+        hd: true
     }
     ListElement {
         gameId: 1
         location: "D:/Games/Diablo II-HD"
-        instances: 2
-        maphack: true
-        hd: true
+        instances: 4
+        maphack: false
+        hd: false
     }
 }
