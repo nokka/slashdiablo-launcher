@@ -39,8 +39,7 @@ Rectangle {
                 delegate: SettingsDelegate{}
 
                 onCurrentItemChanged: {
-                    console.log("DATA")
-                    console.log(ladder.characters.data(0))
+                    console.log(settings.games.data(0))
                     //gameSettings.setGame(model.get(this.currentIndex))
                     //gameSettings.setGame(settings.games.get(0).location)
                 }
