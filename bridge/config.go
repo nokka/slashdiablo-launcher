@@ -1,6 +1,7 @@
 package bridge
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/nokka/slash-launcher/config"
@@ -23,17 +24,21 @@ type ConfigBridge struct {
 	_ bool   `property:"HDMaphack"`
 	_ int    `property:"NrOfGames"`
 
+	// Models.
+	GameModel *core.QAbstractListModel `property:"games"`
+
 	// Functions.
-	_ func(D2Location string, D2Instances int, D2Maphack bool, HDLocation string, HDInstances int, HDMaphack bool) bool `slot:"update"`
-	_ func(game string) bool                                                                                            `slot:"updateNew"`
+	//_ func(D2Location string, D2Instances int, D2Maphack bool, HDLocation string, HDInstances int, HDMaphack bool) bool `slot:"update"`
+	_ func(body string) bool `slot:"updateNew"`
 }
 
 // Connect will connect the QML signals to functions in Go.
 func (c *ConfigBridge) Connect() {
-	c.ConnectUpdate(c.update)
+	//c.ConnectUpdate(c.update)
 	c.ConnectUpdateNew(c.updateNew)
 }
 
+/*
 func (c *ConfigBridge) update(
 	D2Location string,
 	D2Instances int,
@@ -63,11 +68,21 @@ func (c *ConfigBridge) update(
 	c.SetHDMaphack(HDMaphack)
 
 	return true
-}
+}*/
 
-func (c *ConfigBridge) updateNew(game string) bool {
-	fmt.Println("PRINT NEW RUNNING")
-	fmt.Println(game)
+func (c *ConfigBridge) updateNew(body string) bool {
+	var request config.UpdateGameRequest
+	if err := json.Unmarshal([]byte(body), &request); err != nil {
+		fmt.Println(err)
+		// TODO: Add logger for the error.
+		return false
+	}
+
+	err := c.Configuration.UpdateGame(request)
+	if err != nil {
+		// TODO: Add logger for the error.
+		return false
+	}
 
 	return true
 }

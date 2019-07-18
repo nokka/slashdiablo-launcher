@@ -2,17 +2,17 @@ import QtQuick 2.0
 
 ListModel {
     ListElement {
-        gameId: 1
-        location: "D:/Games/Diablo II"
-        instances: 2
+        gid: 1
+        location: "/Users/stekon/d2_test"
+        instances: 3
         maphack: true
-        hd: true
+        hd: false
     }
     ListElement {
-        gameId: 1
-        location: "D:/Games/Diablo II-HD"
-        instances: 4
-        maphack: false
-        hd: false
+        gid: 2
+        location: "/Users/stekon/d2_hd_test"
+        instances: 1
+        maphack: true
+        hd: true
     }
 }

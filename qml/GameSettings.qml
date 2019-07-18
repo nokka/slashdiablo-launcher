@@ -224,10 +224,18 @@ Item {
 
                         onClicked: {
                             console.log("Saving settings")
-                            console.log("location: " + game.location)
-                            console.log("instances: "+ gameInstances.currentText)
-                            console.log("maphack: " + maphackSwitch.checked)
-                            console.log("hd: " + hdSwitch.checked)
+
+                            var body = {
+                                id: game.gid,
+                                location: game.location,
+                                instances: parseInt(gameInstances.currentText, 10),
+                                maphack: maphackSwitch.checked,
+                                hd: hdSwitch.checked
+                            }
+
+                            var success = settings.updateNew(JSON.stringify(body))
+                            
+                            console.log(success)
                         }
                     }
                 }

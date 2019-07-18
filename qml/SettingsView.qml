@@ -35,10 +35,14 @@ Rectangle {
                 anchors.topMargin: 50
 
                 model: GameModel {}
+                //model: settings.games
                 delegate: SettingsDelegate{}
 
                 onCurrentItemChanged: {
-                    gameSettings.setGame(model.get(this.currentIndex))
+                    console.log("DATA")
+                    console.log(ladder.characters.data(0))
+                    //gameSettings.setGame(model.get(this.currentIndex))
+                    //gameSettings.setGame(settings.games.get(0).location)
                 }
             }
         }

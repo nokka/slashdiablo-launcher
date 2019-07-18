@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
 
@@ -26,7 +27,7 @@ func main() {
 		githubRepository = envString("GITHUB_REPO", "")
 		githubToken      = envString("GITHUB_TOKEN", "")
 		ladderAddress    = envString("LADDER_ADDRESS", "")
-		debugMode        = envBool("DEBUG_MODE", true)
+		debugMode        = envBool("DEBUG_MODE", false)
 	)
 
 	// Set app context.
@@ -88,13 +89,14 @@ func main() {
 
 	// Models.
 	lm := ladder.NewTopLadderModel(nil)
+	gm := config.NewGameModel(nil)
 
 	// Setup clients.
 	gc := github.NewClient(githubOwner, githubRepository, githubToken)
 	lc := ladder.NewClient(ladderAddress)
 
 	// Setup services.
-	cs := config.NewService(store, logger)
+	cs := config.NewService(store, gm, logger)
 	d2s := d2.NewService(gc, cs, logger)
 	ls := ladder.NewService(lc, lm, logger)
 
@@ -105,7 +107,7 @@ func main() {
 	diabloBridge.SetErrored(false)
 	diabloBridge.SetPlayable(false)
 
-	configBridge := newConfigBridge(cs, conf)
+	configBridge := newConfigBridge(cs, conf, gm)
 
 	ladderBridge := bridge.NewLadderBridge(nil)
 	ladderBridge.LadderService = ls
@@ -147,8 +149,21 @@ func getConfigPath() (string, error) {
 	return locations[0], nil
 }
 
-func newConfigBridge(cs config.Service, conf *storage.Config) *bridge.ConfigBridge {
+func newConfigBridge(cs config.Service, conf *storage.Config, gm *config.GameModel) *bridge.ConfigBridge {
 	configBridge := bridge.NewConfigBridge(nil)
+
+	for _, game := range conf.Games {
+		g := config.NewGame(nil)
+		g.Location = game.Location
+		g.Instances = game.Instances
+		g.Maphack = game.Maphack
+		g.HD = game.HD
+
+		fmt.Println("ADDING GAME")
+		fmt.Println(g)
+		gm.AddGame(g)
+	}
+
 	configBridge.Configuration = cs
 	configBridge.SetD2Location(conf.D2Location)
 	configBridge.SetD2Instances(conf.D2Instances)
@@ -157,6 +172,7 @@ func newConfigBridge(cs config.Service, conf *storage.Config) *bridge.ConfigBrid
 	configBridge.SetHDInstances(conf.HDInstances)
 	configBridge.SetHDMaphack(conf.HDMaphack)
 	configBridge.SetNrOfGames(len(conf.Games))
+	configBridge.SetGames(gm)
 
 	return configBridge
 }
