@@ -66,17 +66,29 @@ func (m *GameModel) data(index *core.QModelIndex, role int) *core.QVariant {
 
 	switch role {
 	case ID:
-		return core.NewQVariant1(item.ID)
+		{
+			return core.NewQVariant1(item.ID)
+		}
 	case Location:
-		return core.NewQVariant1(item.Location)
+		{
+			return core.NewQVariant1(item.Location)
+		}
 	case Instances:
-		return core.NewQVariant1(item.Instances)
+		{
+			return core.NewQVariant1(item.Instances)
+		}
 	case Maphack:
-		return core.NewQVariant1(item.Maphack)
+		{
+			return core.NewQVariant1(item.Maphack)
+		}
 	case HD:
-		return core.NewQVariant1(item.HD)
+		{
+			return core.NewQVariant1(item.HD)
+		}
 	default:
-		return core.NewQVariant()
+		{
+			return core.NewQVariant()
+		}
 	}
 }
 
