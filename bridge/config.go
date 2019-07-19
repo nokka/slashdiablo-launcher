@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/nokka/slash-launcher/config"
+	"github.com/nokka/slashdiablo-launcher/config"
 	"github.com/therecipe/qt/core"
 )
 

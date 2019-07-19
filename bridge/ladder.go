@@ -1,7 +1,7 @@
 package bridge
 
 import (
-	"github.com/nokka/slash-launcher/ladder"
+	"github.com/nokka/slashdiablo-launcher/ladder"
 	"github.com/therecipe/qt/core"
 )
 

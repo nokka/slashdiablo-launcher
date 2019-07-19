@@ -1,4 +1,4 @@
-# Slash launcher
+# Slashdiablo launcher
 
 Work in progress, gets updated frequently.
 
@@ -16,5 +16,5 @@ $ qtdeploy -docker build windows_64_static
 ### MacOS (from MacOS only)
 
 ```bash
-$ qtdeploy build darwin github.com/nokka/slash-launcher
+$ qtdeploy build darwin github.com/nokka/slashdiablo-launcher
 ```

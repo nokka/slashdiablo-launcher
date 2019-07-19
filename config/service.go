@@ -3,8 +3,8 @@ package config
 import (
 	"fmt"
 
-	"github.com/nokka/slash-launcher/log"
-	"github.com/nokka/slash-launcher/storage"
+	"github.com/nokka/slashdiablo-launcher/log"
+	"github.com/nokka/slashdiablo-launcher/storage"
 )
 
 // Service is responsible for all things related to configuration.

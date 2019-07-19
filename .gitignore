@@ -17,7 +17,7 @@ moc*.*
 rcc*.*
 
 # binaries
-slash-launcher
+slashdiablo-launcher
 
 # Diablo II files
 BnetLog.txt

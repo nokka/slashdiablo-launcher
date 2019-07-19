@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nokka/slash-launcher/config"
-	"github.com/nokka/slash-launcher/github"
-	"github.com/nokka/slash-launcher/log"
+	"github.com/nokka/slashdiablo-launcher/config"
+	"github.com/nokka/slashdiablo-launcher/github"
+	"github.com/nokka/slashdiablo-launcher/log"
 )
 
 // Service is responsible for all things related to Diablo II.

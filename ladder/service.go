@@ -3,7 +3,7 @@ package ladder
 import (
 	"errors"
 
-	"github.com/nokka/slash-launcher/log"
+	"github.com/nokka/slashdiablo-launcher/log"
 )
 
 // Service is responsible for all things related to the Slashdiablo ladder.

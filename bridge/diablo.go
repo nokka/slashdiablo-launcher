@@ -3,7 +3,7 @@ package bridge
 import (
 	"fmt"
 
-	"github.com/nokka/slash-launcher/d2"
+	"github.com/nokka/slashdiablo-launcher/d2"
 	"github.com/therecipe/qt/core"
 )
 
