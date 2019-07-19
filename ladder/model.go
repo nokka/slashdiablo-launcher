@@ -64,27 +64,15 @@ func (m *TopLadderModel) data(index *core.QModelIndex, role int) *core.QVariant 
 
 	switch role {
 	case Rank:
-		{
-			return core.NewQVariant1(item.Rank)
-		}
+		return core.NewQVariant1(item.Rank)
 	case Name:
-		{
-			return core.NewQVariant1(item.Name)
-		}
-
+		return core.NewQVariant1(item.Name)
 	case Class:
-		{
-			return core.NewQVariant1(item.Class[:3])
-		}
+		return core.NewQVariant1(item.Class[:3])
 	case Level:
-		{
-			return core.NewQVariant1(item.Level)
-		}
-
+		return core.NewQVariant1(item.Level)
 	default:
-		{
-			return core.NewQVariant()
-		}
+		return core.NewQVariant()
 	}
 }
 

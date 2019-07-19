@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/therecipe/qt/core"
 )
 
@@ -89,20 +87,11 @@ func (m *GameModel) addGame(g *Game) {
 	m.EndInsertRows()
 }
 
-// updateGame updates the game at the given index.
-func (m *GameModel) updateGame(id int) {
-	games := m.Games()
-	for i := 0; i < len(games); i++ {
-		fmt.Println("COMPARING", games[i].ID, id)
-		if games[i].ID == id {
-			fmt.Println("FOUND ITEM TO UDPATE")
-			games[i].Location = "derp"
-		}
-	}
-
+// updateGame will notify the UI of the updated model item.
+func (m *GameModel) updateGame(index int) {
 	var fIndex = m.Index(0, 0, core.NewQModelIndex())
-	var lIndex = m.Index(len(games)-1, 0, core.NewQModelIndex())
-	m.DataChanged(fIndex, lIndex, []int{Location})
+	var lIndex = m.Index(index, 0, core.NewQModelIndex())
+	m.DataChanged(fIndex, lIndex, []int{Location, Instances, Maphack, HD})
 }
 
 func init() {

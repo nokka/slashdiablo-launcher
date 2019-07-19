@@ -36,6 +36,7 @@ func (s *service) AddGame() {
 	g := NewGame(nil)
 
 	// Generate ID next in the sequence.
+	// TODO: Generate a stronger id.
 	g.ID = len(s.gameModel.Games()) + 1
 
 	fmt.Println("GENERATED ID", g.ID)
@@ -61,7 +62,7 @@ func (s *service) UpsertGame(request UpdateGameRequest) error {
 		return err
 	}
 
-	// If the item isn't found to be updated, we'll create a new one.
+	// If the item to be updated isn't found, create a new one.
 	var found bool
 
 	// Look for game to update, and mutate if found.
@@ -98,15 +99,20 @@ func (s *service) UpsertGame(request UpdateGameRequest) error {
 	}
 
 	// Updates game model with the new information.
-	/*games := s.gameModel.Games()
+	var updatedIndex int
+	games := s.gameModel.Games()
 	for i := 0; i < len(games); i++ {
-		if games[i].ID == id {
-			fmt.Println("FOUND ITEM TO UDPATE")
-			games[i].Location = "derp"
+		if games[i].ID == request.ID {
+			updatedIndex = i
+			games[i].Location = request.Location
+			games[i].Instances = request.Instances
+			games[i].Maphack = request.Maphack
+			games[i].HD = request.HD
 		}
 	}
 
-	s.gameModel.updateGame(5)*/
+	// Notify the UI of the change.
+	s.gameModel.updateGame(updatedIndex)
 
 	return nil
 }
