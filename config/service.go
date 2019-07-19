@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/nokka/slashdiablo-launcher/log"
 	"github.com/nokka/slashdiablo-launcher/storage"
@@ -18,6 +19,7 @@ type service struct {
 	store     storage.Store
 	gameModel *GameModel
 	logger    log.Logger
+	mutex     sync.Mutex
 }
 
 // Read will read the configuration and return it.
@@ -33,6 +35,12 @@ func (s *service) Read() (*storage.Config, error) {
 
 // AddGame adds a new game to the game model.
 func (s *service) AddGame() {
+	// Lock before we update the model preventing race conditions.
+	s.mutex.Lock()
+
+	// Unlock when we're done.
+	defer s.mutex.Unlock()
+
 	g := NewGame(nil)
 
 	// Generate ID next in the sequence.
@@ -61,6 +69,12 @@ func (s *service) UpsertGame(request UpdateGameRequest) error {
 		s.logger.Log("failed to read config", err)
 		return err
 	}
+
+	// Lock before we update the model preventing race conditions.
+	s.mutex.Lock()
+
+	// Unlock when we're done.
+	defer s.mutex.Unlock()
 
 	// If the item to be updated isn't found, create a new one.
 	var found bool
