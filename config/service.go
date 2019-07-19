@@ -33,14 +33,15 @@ func (s *service) Read() (*storage.Config, error) {
 
 // AddGame adds a new game to the game model.
 func (s *service) AddGame() {
-	// Create intial QObject.
 	g := NewGame(nil)
-	g.ID = 5
-	g.Location = "new"
+
+	// Generate ID next in the sequence.
+	g.ID = len(s.gameModel.Games()) + 1
+
+	fmt.Println("GENERATED ID", g.ID)
 	g.Instances = 1
 
 	s.gameModel.AddGame(g)
-
 }
 
 // UpdateGameRequest ...

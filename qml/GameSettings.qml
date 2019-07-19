@@ -226,7 +226,7 @@ Item {
                             console.log("Saving settings")
 
                             var body = {
-                                id: game.gid,
+                                id: game.id,
                                 location: d2pathInput.text,
                                 instances: parseInt(gameInstances.currentText, 10),
                                 maphack: maphackSwitch.checked,

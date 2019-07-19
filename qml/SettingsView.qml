@@ -50,6 +50,7 @@ Rectangle {
 
                 onCurrentItemChanged: {
                     gameSettings.setGame({
+                        "id": model.data(model.index(this.currentIndex, 0), gameRoles.id),
                         "location": model.data(model.index(this.currentIndex, 0), gameRoles.location),
                         "instances": model.data(model.index(this.currentIndex, 0), gameRoles.instances),
                         "maphack": model.data(model.index(this.currentIndex, 0), gameRoles.maphack),
