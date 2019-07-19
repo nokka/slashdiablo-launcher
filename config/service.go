@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"github.com/nokka/slash-launcher/log"
 	"github.com/nokka/slash-launcher/storage"
 )
@@ -8,7 +10,8 @@ import (
 // Service is responsible for all things related to configuration.
 type Service interface {
 	Read() (*storage.Config, error)
-	UpdateGame(request UpdateGameRequest) error
+	AddGame()
+	UpsertGame(request UpdateGameRequest) error
 }
 
 type service struct {
@@ -28,6 +31,18 @@ func (s *service) Read() (*storage.Config, error) {
 	return conf, err
 }
 
+// AddGame adds a new game to the game model.
+func (s *service) AddGame() {
+	// Create intial QObject.
+	g := NewGame(nil)
+	g.ID = 5
+	g.Location = "new"
+	g.Instances = 1
+
+	s.gameModel.AddGame(g)
+
+}
+
 // UpdateGameRequest ...
 type UpdateGameRequest struct {
 	ID        int    `json:"id"`
@@ -37,17 +52,21 @@ type UpdateGameRequest struct {
 	HD        bool   `json:"hd"`
 }
 
-// UpdateGame will update the configuration with the given game.
-func (s *service) UpdateGame(request UpdateGameRequest) error {
+// UpsertGame will upsert the game to the config.
+func (s *service) UpsertGame(request UpdateGameRequest) error {
 	conf, err := s.store.Read()
 	if err != nil {
 		s.logger.Log("failed to read config", err)
 		return err
 	}
 
+	// If the item isn't found to be updated, we'll create a new one.
+	var found bool
+
 	// Look for game to update, and mutate if found.
 	for i := 0; i < len(conf.Games); i++ {
-		if request.ID == conf.Games[i].ID {
+		if conf.Games[i].ID == request.ID {
+			found = true
 			conf.Games[i].Location = request.Location
 			conf.Games[i].Instances = request.Instances
 			conf.Games[i].Maphack = request.Maphack
@@ -55,11 +74,38 @@ func (s *service) UpdateGame(request UpdateGameRequest) error {
 		}
 	}
 
+	// Game wasn't found, append a new one.
+	if !found {
+		fmt.Println("WASNT FOUND, APPEND")
+		fmt.Println(request)
+		g := storage.Game{
+			ID:        request.ID,
+			Location:  request.Location,
+			Instances: request.Instances,
+			Maphack:   request.Maphack,
+			HD:        request.HD,
+		}
+
+		// Add game to the config.
+		conf.Games = append(conf.Games, g)
+	}
+
 	err = s.store.Write(conf)
 	if err != nil {
 		s.logger.Log("failed to write config", err)
 		return err
 	}
+
+	// Updates game model with the new information.
+	/*games := s.gameModel.Games()
+	for i := 0; i < len(games); i++ {
+		if games[i].ID == id {
+			fmt.Println("FOUND ITEM TO UDPATE")
+			games[i].Location = "derp"
+		}
+	}
+
+	s.gameModel.updateGame(5)*/
 
 	return nil
 }

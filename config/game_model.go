@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"github.com/therecipe/qt/core"
 )
 
@@ -66,29 +68,17 @@ func (m *GameModel) data(index *core.QModelIndex, role int) *core.QVariant {
 
 	switch role {
 	case ID:
-		{
-			return core.NewQVariant1(item.ID)
-		}
+		return core.NewQVariant1(item.ID)
 	case Location:
-		{
-			return core.NewQVariant1(item.Location)
-		}
+		return core.NewQVariant1(item.Location)
 	case Instances:
-		{
-			return core.NewQVariant1(item.Instances)
-		}
+		return core.NewQVariant1(item.Instances)
 	case Maphack:
-		{
-			return core.NewQVariant1(item.Maphack)
-		}
+		return core.NewQVariant1(item.Maphack)
 	case HD:
-		{
-			return core.NewQVariant1(item.HD)
-		}
+		return core.NewQVariant1(item.HD)
 	default:
-		{
-			return core.NewQVariant()
-		}
+		return core.NewQVariant()
 	}
 }
 
@@ -97,6 +87,22 @@ func (m *GameModel) addGame(g *Game) {
 	m.BeginInsertRows(core.NewQModelIndex(), len(m.Games()), len(m.Games()))
 	m.SetGames(append(m.Games(), g))
 	m.EndInsertRows()
+}
+
+// updateGame updates the game at the given index.
+func (m *GameModel) updateGame(id int) {
+	games := m.Games()
+	for i := 0; i < len(games); i++ {
+		fmt.Println("COMPARING", games[i].ID, id)
+		if games[i].ID == id {
+			fmt.Println("FOUND ITEM TO UDPATE")
+			games[i].Location = "derp"
+		}
+	}
+
+	var fIndex = m.Index(0, 0, core.NewQModelIndex())
+	var lIndex = m.Index(len(games)-1, 0, core.NewQModelIndex())
+	m.DataChanged(fIndex, lIndex, []int{Location})
 }
 
 func init() {

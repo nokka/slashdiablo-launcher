@@ -227,13 +227,13 @@ Item {
 
                             var body = {
                                 id: game.gid,
-                                location: game.location,
+                                location: d2pathInput.text,
                                 instances: parseInt(gameInstances.currentText, 10),
                                 maphack: maphackSwitch.checked,
                                 hd: hdSwitch.checked
                             }
 
-                            var success = settings.updateNew(JSON.stringify(body))
+                            var success = settings.upsertGame(JSON.stringify(body))
                             
                             console.log(success)
                         }

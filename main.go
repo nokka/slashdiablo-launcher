@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"os"
 	"strconv"
 
@@ -154,13 +153,12 @@ func newConfigBridge(cs config.Service, conf *storage.Config, gm *config.GameMod
 
 	for _, game := range conf.Games {
 		g := config.NewGame(nil)
+		g.ID = game.ID
 		g.Location = game.Location
 		g.Instances = game.Instances
 		g.Maphack = game.Maphack
 		g.HD = game.HD
 
-		fmt.Println("ADDING GAME")
-		fmt.Println(g)
 		gm.AddGame(g)
 	}
 

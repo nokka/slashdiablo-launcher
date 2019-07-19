@@ -2,6 +2,16 @@ import QtQuick 2.12
 import QtQuick.Layouts 1.3          // RowLayout
 
 Rectangle {
+    property int itemHeight: 50
+    property int gameListHeight: settings.games.rowCount() * itemHeight
+    property var gameRoles: { 
+        "id": 257,
+        "location": 258,
+        "instances": 260,
+        "maphack": 264,
+        "hd": 272
+    }
+
     color: "#09030a"
 
     RowLayout {
@@ -28,20 +38,45 @@ Rectangle {
             }
             
             ListView {
+                id: gamesList
                 width: parent.width - 15;
-                height: 500
+                height: gameListHeight
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.topMargin: 50
 
-                model: GameModel {}
-                //model: settings.games
+                model: settings.games
                 delegate: SettingsDelegate{}
 
                 onCurrentItemChanged: {
-                    console.log(settings.games.data(0))
-                    //gameSettings.setGame(model.get(this.currentIndex))
-                    //gameSettings.setGame(settings.games.get(0).location)
+                    gameSettings.setGame({
+                        "location": model.data(model.index(this.currentIndex, 0), gameRoles.location),
+                        "instances": model.data(model.index(this.currentIndex, 0), gameRoles.instances),
+                        "maphack": model.data(model.index(this.currentIndex, 0), gameRoles.maphack),
+                        "hd": model.data(model.index(this.currentIndex, 0), gameRoles.hd)
+                    })
+                }
+            }
+
+            SText {
+                text: "+ Add new game"
+                anchors.top: gamesList.bottom
+                anchors.left: parent.left
+                anchors.topMargin: 20
+                font.bold: true
+                leftPadding: 25
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        // Add the game to the model, without persisting it to the store.
+                        settings.addGame()
+
+                        var rows = settings.games.rowCount()
+                        gameListHeight = rows * itemHeight
+                        gamesList.currentIndex = (rows-1)
+                    }
                 }
             }
         }
