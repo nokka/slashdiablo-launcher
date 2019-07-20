@@ -29,7 +29,7 @@ Rectangle {
             Layout.fillHeight: true
 
             SText {
-                text: "GAMES"
+                text: "MY GAMES"
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.topMargin: 20
@@ -134,20 +134,18 @@ Rectangle {
 
     // Close button.
     Item {
-        width: 30
+        width: 100
         height: 30
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.rightMargin: 20
-
-        Image {
-            id: closeSettings
-            fillMode: Image.PreserveAspectFit
+        
+        SText {
             anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            width: 30
-            height: 30
-            source: "assets/svg/close.svg"
+            anchors.right: parent.right
+            text: "CLOSE SETTINGS"
+            font.pixelSize: 12
+            font.bold: true
         }
 
         MouseArea {
