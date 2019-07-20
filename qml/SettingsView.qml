@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.3          // RowLayout
 Rectangle {
     property int itemHeight: 50
     property int gameListHeight: settings.games.rowCount() * itemHeight
+    property bool gameLocationSet: settings.games.rowCount() > 0
     property var gameRoles: { 
         "id": 257,
         "location": 258,
@@ -77,6 +78,9 @@ Rectangle {
                         var rows = settings.games.rowCount()
                         gameListHeight = rows * itemHeight
                         gamesList.currentIndex = (rows-1)
+
+                        // Update if any games has been set yet.
+                        gameLocationSet = rows > 0
                     }
                 }
             }
@@ -86,23 +90,44 @@ Rectangle {
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            
-            SText {
-                text: "SETTINGS"
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.topMargin: 20
-                font.pixelSize: 15
-                font.bold: true
-                leftPadding: 20
+
+            Item {
+                visible: !gameLocationSet
+                anchors.centerIn: parent
+                width: (parent.width * 0.80)
+
+                SText {
+                    text: "Before you can play, you need to setup your game location in the menu to the left."
+                    width: parent.width
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    font.pixelSize: 15
+                    wrapMode: Text.WordWrap 
+                }
             }
 
-            GameSettings {
-                id: gameSettings
-                anchors.left: parent.left
-                anchors.top: parent.top
-                anchors.topMargin: 49
-                anchors.horizontalCenter: parent.horizontalCenter
+            // Settings shown if there are games already setup    
+            Item {
+                visible: gameLocationSet
+                anchors.fill: parent
+
+                SText {
+                    text: "SETTINGS"
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.topMargin: 20
+                    font.pixelSize: 15
+                    font.bold: true
+                    leftPadding: 20
+                }
+
+                GameSettings {
+                    id: gameSettings
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.topMargin: 49
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
             }
         }
     }

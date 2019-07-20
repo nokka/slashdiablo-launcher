@@ -13,8 +13,8 @@ Item {
 
     StackView {
         id: stack
-        //initialItem: LauncherView{}
-        initialItem: SettingsView{}
+        initialItem: LauncherView{}
+        //initialItem: SettingsView{}
         anchors.fill: parent
 
         pushEnter: Transition {
@@ -43,6 +43,9 @@ Item {
     }
 
     Component.onCompleted: {
-        //stack.push(ComponentCreator.createSettingsView(stack))
+        console.log(settings.games.rowCount())
+        if(settings.games.rowCount() == 0) {
+            stack.push(ComponentCreator.createSettingsView(stack))
+        }
     }
 }
