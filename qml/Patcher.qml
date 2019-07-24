@@ -30,6 +30,7 @@ Item {
                 
                 progress: Rectangle {
                     color: "#8d49b8"
+                    radius: 5
                 }
             }
         }
