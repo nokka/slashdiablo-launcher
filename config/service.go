@@ -13,6 +13,7 @@ type Service interface {
 	Read() (*storage.Config, error)
 	AddGame()
 	UpsertGame(request UpdateGameRequest) error
+	DeleteGame(id int) error
 }
 
 type service struct {
@@ -92,8 +93,6 @@ func (s *service) UpsertGame(request UpdateGameRequest) error {
 
 	// Game wasn't found, append a new one.
 	if !found {
-		fmt.Println("WASNT FOUND, APPEND")
-		fmt.Println(request)
 		g := storage.Game{
 			ID:        request.ID,
 			Location:  request.Location,
@@ -127,6 +126,47 @@ func (s *service) UpsertGame(request UpdateGameRequest) error {
 
 	// Notify the UI of the change.
 	s.gameModel.updateGame(updatedIndex)
+
+	return nil
+}
+
+// DeleteGame will delete the game from the config.
+func (s *service) DeleteGame(id int) error {
+	// Lock before we update the model preventing race conditions.
+	s.mutex.Lock()
+
+	// Unlock when we're done.
+	defer s.mutex.Unlock()
+
+	// Read the config in order to update it.
+	conf, err := s.store.Read()
+	if err != nil {
+		s.logger.Log("failed to read config", err)
+		return err
+	}
+
+	// Delete game from the config.
+	for i := 0; i < len(conf.Games); i++ {
+		if conf.Games[i].ID == id {
+			// Remove the index from the game slice.
+			conf.Games = append(conf.Games[:i], conf.Games[i+1:]...)
+		}
+	}
+
+	// Write the new games slice to the config.
+	err = s.store.Write(conf)
+	if err != nil {
+		s.logger.Log("failed to write config", err)
+		return err
+	}
+
+	// Delete from the game model too.
+	games := s.gameModel.Games()
+	for i := 0; i < len(games); i++ {
+		if games[i].ID == id {
+			s.gameModel.removeGame(i)
+		}
+	}
 
 	return nil
 }

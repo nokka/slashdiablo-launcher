@@ -101,7 +101,7 @@ Rectangle {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
             onClicked: {
-                console.log("delete")
+                settings.deleteGame(model.id)
             }
         }
     }

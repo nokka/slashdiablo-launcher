@@ -94,6 +94,12 @@ func (m *GameModel) updateGame(index int) {
 	m.DataChanged(fIndex, lIndex, []int{Location, Instances, Maphack, HD})
 }
 
+func (m *GameModel) removeGame(index int) {
+	m.BeginRemoveRows(core.NewQModelIndex(), index, index)
+	m.SetGames(append(m.Games()[:index], m.Games()[index+1:]...))
+	m.EndRemoveRows()
+}
+
 func init() {
 	GameModel_QRegisterMetaType()
 	Game_QRegisterMetaType()

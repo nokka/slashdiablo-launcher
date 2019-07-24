@@ -30,12 +30,14 @@ type ConfigBridge struct {
 	// Functions.
 	_ func(body string) bool `slot:"upsertGame"`
 	_ func()                 `slot:"addGame"`
+	_ func(id int)           `slot:"deleteGame"`
 }
 
 // Connect will connect the QML signals to functions in Go.
 func (c *ConfigBridge) Connect() {
 	c.ConnectUpsertGame(c.upsertGame)
 	c.ConnectAddGame(c.addGame)
+	c.ConnectDeleteGame(c.deleteGame)
 }
 
 func (c *ConfigBridge) upsertGame(body string) bool {
@@ -57,4 +59,8 @@ func (c *ConfigBridge) upsertGame(body string) bool {
 
 func (c *ConfigBridge) addGame() {
 	c.Configuration.AddGame()
+}
+
+func (c *ConfigBridge) deleteGame(id int) {
+	c.Configuration.DeleteGame(id)
 }
