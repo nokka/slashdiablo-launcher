@@ -45,7 +45,7 @@ func main() {
 		Width:        1024,
 		Height:       600,
 		Alpha:        1.0,
-		Color:        goqmlframeless.RGB{R: 11, G: 3, B: 13},
+		Color:        goqmlframeless.RGB{R: 0, G: 0, B: 0},
 		BorderRadius: 5,
 		ShadowSize:   0,
 	})

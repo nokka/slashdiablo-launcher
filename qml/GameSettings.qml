@@ -65,7 +65,7 @@ Item {
                         id: d2pathInput
                         width: fileDialogBox.width * 0.80; height: 40
                         readOnly: true
-                        text: game.location
+                        text: (game != undefined ? game.location : "")
 
                         background: Rectangle {
                             color: "#1d1924"
@@ -126,7 +126,7 @@ Item {
                         width: 60
                         Dropdown{
                             id: gameInstances
-                            currentIndex: (game.instances-1)
+                            currentIndex: (game != undefined ? (game.instances-1) : 0)
                             model: [ 1, 2, 3, 4 ]
                             height: 30
                             width: 60
@@ -165,7 +165,7 @@ Item {
                         width: 60
                         SSwitch{
                             id: maphackSwitch
-                            checked: game.maphack
+                            checked: (game != undefined ? game.maphack : false)
                         }
                     } 
                 }
@@ -200,7 +200,7 @@ Item {
                         width: 60
                         SSwitch{
                             id: hdSwitch
-                            checked: game.hd
+                            checked: (game != undefined ? game.hd : false)
                         }
                     }
                 }

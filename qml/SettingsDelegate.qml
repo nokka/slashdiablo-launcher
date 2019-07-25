@@ -107,7 +107,7 @@ Rectangle {
     }
 
     Separator{
-        color: "#6E3E87"
+        color: "#630000"
     }
 
     MouseArea {

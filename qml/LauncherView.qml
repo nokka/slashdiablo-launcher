@@ -12,7 +12,7 @@ Rectangle {
     Item {
         id: background
         anchors.fill: parent;
-        Image { source: "assets/bg.png"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
+        Image { source: "assets/bg_red.png"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
     }
     
     // Top bar for the entire app.

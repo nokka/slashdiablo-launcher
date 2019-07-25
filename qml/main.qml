@@ -14,7 +14,6 @@ Item {
     StackView {
         id: stack
         initialItem: LauncherView{}
-        //initialItem: SettingsView{}
         anchors.fill: parent
 
         pushEnter: Transition {

@@ -22,23 +22,23 @@ Button {
         color: "#00000000"
         radius: borderRadius
         border.width: 2
-        border.color: "#6E3E87"
+        border.color: "#800507"
     }
 
     PropertyAnimation {
         id: animateIn
         target: sbutton
         properties: "background.border.color";
-        to: "#CE82F5";
-        duration: 200
+        to: "#ba4141";
+        duration: 100
     }
 
     PropertyAnimation {
         id: animateOut
         target: sbutton
         properties: "background.border.color";
-        to: "#6E3E87";
-        duration: 300
+        to: "#800507";
+        duration: 200
     }
 
     MouseArea {

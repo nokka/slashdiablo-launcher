@@ -3,7 +3,6 @@ import QtQuick.Layouts 1.3          // RowLayout
 
 Rectangle {
     property int itemHeight: 50
-    property bool gameLocationSet: settings.games.rowCount() > 0
     property var gameRoles: { 
         "id": 257,
         "location": 258,
@@ -12,7 +11,7 @@ Rectangle {
         "hd": 272
     }
 
-    color: "#09030a"
+    color: "#050000"
 
     RowLayout {
         id: settingsLayout
@@ -40,7 +39,7 @@ Rectangle {
             ListView {
                 id: gamesList
                 width: parent.width - 15;
-                height: gamesList.count * 50
+                height: gamesList.count * itemHeight
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.topMargin: 50
@@ -48,14 +47,16 @@ Rectangle {
                 model: settings.games
                 delegate: SettingsDelegate{}
 
-                onCurrentItemChanged: {
-                    gameSettings.setGame({
-                        "id": model.data(model.index(this.currentIndex, 0), gameRoles.id),
-                        "location": model.data(model.index(this.currentIndex, 0), gameRoles.location),
-                        "instances": model.data(model.index(this.currentIndex, 0), gameRoles.instances),
-                        "maphack": model.data(model.index(this.currentIndex, 0), gameRoles.maphack),
-                        "hd": model.data(model.index(this.currentIndex, 0), gameRoles.hd)
-                    })
+                onCurrentItemChanged: {   
+                    if(gamesList.count > 0) {
+                        gameSettings.setGame({
+                            "id": model.data(model.index(this.currentIndex, 0), gameRoles.id),
+                            "location": model.data(model.index(this.currentIndex, 0), gameRoles.location),
+                            "instances": model.data(model.index(this.currentIndex, 0), gameRoles.instances),
+                            "maphack": model.data(model.index(this.currentIndex, 0), gameRoles.maphack),
+                            "hd": model.data(model.index(this.currentIndex, 0), gameRoles.hd)
+                        })
+                    }
                 }
             }
 
@@ -76,9 +77,6 @@ Rectangle {
 
                         // Set last index as current.
                         gamesList.currentIndex = (gamesList.count-1)
-
-                        // Update if any games has been set yet.
-                        gameLocationSet = rows > 0
                     }
                 }
             }
@@ -90,7 +88,7 @@ Rectangle {
             Layout.fillHeight: true
 
             Item {
-                visible: !gameLocationSet
+                visible: (gamesList.count == 0)
                 anchors.centerIn: parent
                 width: (parent.width * 0.80)
 
@@ -106,7 +104,7 @@ Rectangle {
 
             // Settings shown if there are games already setup    
             Item {
-                visible: gameLocationSet
+                visible: (gamesList.count > 0)
                 anchors.fill: parent
 
                 SText {
