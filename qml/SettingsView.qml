@@ -3,7 +3,6 @@ import QtQuick.Layouts 1.3          // RowLayout
 
 Rectangle {
     property int itemHeight: 50
-    property int gameListHeight: settings.games.rowCount() * itemHeight
     property bool gameLocationSet: settings.games.rowCount() > 0
     property var gameRoles: { 
         "id": 257,
@@ -41,7 +40,7 @@ Rectangle {
             ListView {
                 id: gamesList
                 width: parent.width - 15;
-                height: gameListHeight
+                height: gamesList.count * 50
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.topMargin: 50
@@ -75,9 +74,8 @@ Rectangle {
                         // Add the game to the model, without persisting it to the store.
                         settings.addGame()
 
-                        var rows = settings.games.rowCount()
-                        gameListHeight = rows * itemHeight
-                        gamesList.currentIndex = (rows-1)
+                        // Set last index as current.
+                        gamesList.currentIndex = (gamesList.count-1)
 
                         // Update if any games has been set yet.
                         gameLocationSet = rows > 0
