@@ -23,7 +23,7 @@ Popup {
     padding: 0
     
     anchors.centerIn: root
-    //closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+    closePolicy: Popup.NoAutoClose
 
     Rectangle {
         color: "#050000"
@@ -136,7 +136,6 @@ Popup {
 
                 // Close button.
                 Item {
-                    visible: (gamesList.count > 0)
                     width: 35
                     height: 35
                     anchors.top: parent.top
@@ -155,13 +154,10 @@ Popup {
                    
                     MouseArea {
                         anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
+                        cursorShape: containsMouse ? Qt.ArrowCursor : Qt.PointingHandCursor
                         onClicked: settingsPopup.close()
                     }
                 }
-
-
-
             }
         }
     }
