@@ -15,14 +15,10 @@ Item {
         hdSwitch.update()
     }
 
-    Rectangle {
+    Item {
         id: currentGame
         width: parent.width * 0.95
         height: 400
-        color: "#0d0a08"
-        radius: 5
-        border.color: "#343434"
-        border.width: 1
 
         anchors.horizontalCenter: parent.horizontalCenter
 
