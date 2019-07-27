@@ -22,6 +22,7 @@ type TopLadderModel struct {
 	_ []*Character             `property:"characters"`
 
 	_ func(*Character) `slot:"addCharacter"`
+	_ func()           `slot:"clear"`
 }
 
 func (m *TopLadderModel) init() {
@@ -37,6 +38,7 @@ func (m *TopLadderModel) init() {
 	m.ConnectColumnCount(m.columnCount)
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectAddCharacter(m.addCharacter)
+	m.ConnectClear(m.clear)
 }
 
 func (m *TopLadderModel) rowCount(*core.QModelIndex) int {

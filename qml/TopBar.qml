@@ -1,9 +1,6 @@
 import QtQuick 2.12                 // Item
 import QtQuick.Layouts 1.3          // RowLayout
 
-import "componentCreator.js" as ComponentCreator
-
-
 Item {
     property var menuSources: { 
         "launch": "LauncherView.qml",
@@ -193,7 +190,7 @@ Item {
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: ComponentCreator.createSettingsPopup(root).open();
+                            onClicked: settingsPopup.open()
                         }
                     }
                 }

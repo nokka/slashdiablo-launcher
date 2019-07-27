@@ -91,6 +91,7 @@ Item {
 	}
 
 	Component.onCompleted: {
+		ladder.characters.clear()
 		ladder.getLadder("exp")
 	}
 }
