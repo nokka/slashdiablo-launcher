@@ -46,7 +46,7 @@ func main() {
 		Height:      600,
 		Alpha:       1.0,
 		Color:       goqmlframeless.RGB{R: 0, G: 0, B: 0},
-		BorderColor: &goqmlframeless.RGB{R: 96, G: 3, B: 3},
+		BorderColor: &goqmlframeless.RGB{R: 120, G: 90, B: 41},
 		ShadowSize:  0,
 	})
 

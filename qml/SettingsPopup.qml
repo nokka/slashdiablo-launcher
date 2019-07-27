@@ -27,6 +27,8 @@ Popup {
 
     Rectangle {
         color: "#050000"
+        border.color: "#785A29"
+        border.width: 2
         anchors.fill: parent
 
         RowLayout {
