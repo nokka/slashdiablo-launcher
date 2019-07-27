@@ -5,11 +5,17 @@ import "componentCreator.js" as ComponentCreator
 
 
 Item {
+    property var menuSources: { 
+        "launch": "LauncherView.qml",
+        "rules": "RulesView.qml",
+        "community": "CommunityView.qml",
+        "armory": "ArmoryView.qml"
+    }
+
     // Background.
     Rectangle {
         anchors.fill: parent
         color: "#000000"
-        opacity: 0.4
     }
 
     // Main menu.
@@ -31,10 +37,24 @@ Item {
                 width: 100
                 
                 MenuItem {
+                    text: "LAUNCH"
+
+                    onClicked: function() {
+                        contentLoader.source = menuSources.launch
+                    }
+                }
+            }
+
+            Item {
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                height: parent.height
+                width: 100
+                
+                MenuItem {
                     text: "COMMUNITY"
 
                     onClicked: function() {
-                        stack.push(ComponentCreator.createCommunityView(stack))
+                        contentLoader.source = menuSources.community
                     }
                 }
             }
@@ -48,7 +68,7 @@ Item {
                     text: "RULES"
 
                     onClicked: function() {
-                        stack.push(ComponentCreator.createRulesView(stack))
+                        contentLoader.source = menuSources.rules
                     }
                 }
             }
@@ -62,7 +82,7 @@ Item {
                     text: "ARMORY"
 
                     onClicked: function() {
-                        stack.push(ComponentCreator.createArmoryView(stack))
+                        contentLoader.source = menuSources.armory
                     }
                 }
             }
@@ -106,8 +126,7 @@ Item {
                         color: "#0B8A0F"
                         radius: (width * 0.5)
                         anchors.verticalCenter: parent.verticalCenter
-                        anchors.right: parent.right
-                        
+                        anchors.right: parent.right 
                     }
                 }
             }
@@ -174,7 +193,7 @@ Item {
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: stack.push(ComponentCreator.createSettingsView(stack, null))
+                            onClicked: ComponentCreator.createSettingsPopup(root).open();
                         }
                     }
                 }

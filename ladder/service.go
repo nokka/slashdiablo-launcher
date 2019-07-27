@@ -26,6 +26,9 @@ func (s *service) SetLadderCharacters(mode string) error {
 	}
 
 	if len(characters) >= 10 {
+		// Clear existing data.
+		s.ladderModel.clear()
+
 		// Set the top 10 ladder positions.
 		topChars := characters[:10]
 

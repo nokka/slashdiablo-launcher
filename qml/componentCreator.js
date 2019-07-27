@@ -41,3 +41,13 @@ function createCommunityView(parent) {
     
     return view
 }
+
+function createSettingsPopup(parent) {
+    var component = Qt.createComponent("SettingsPopup.qml")
+    var popup = component.createObject(parent)
+
+    if (popup == null) {
+        console.log("Error creating settings popup")
+    }
+    return popup
+}

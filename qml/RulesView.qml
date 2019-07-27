@@ -1,8 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 
-import "componentCreator.js" as ComponentCreator
-
 Rectangle {
     id: rulesView
     color: "#09030a"
@@ -16,16 +14,6 @@ Rectangle {
             text: "RULES VIEW"
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
-        }
-
-        SButton {
-            label: "Close"
-            width: 100; height: 50
-            anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-            cursorShape: Qt.PointingHandCursor
-
-            onClicked: stack.pop()
         }
     }
 }

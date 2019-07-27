@@ -41,6 +41,7 @@ Item {
 			id: ladderList
 			spacing: 2
 			visible: (!ladder.loading && !ladder.error)
+			height: 320
 
 			Layout.fillWidth: true
 			Layout.fillHeight: true

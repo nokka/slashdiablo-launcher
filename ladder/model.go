@@ -83,6 +83,12 @@ func (m *TopLadderModel) addCharacter(c *Character) {
 	m.EndInsertRows()
 }
 
+func (m *TopLadderModel) clear() {
+	m.BeginResetModel()
+	m.SetCharacters([]*Character{})
+	m.EndResetModel()
+}
+
 func init() {
 	TopLadderModel_QRegisterMetaType()
 	Character_QRegisterMetaType()
