@@ -155,7 +155,12 @@ Popup {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: containsMouse ? Qt.ArrowCursor : Qt.PointingHandCursor
-                        onClicked: settingsPopup.close()
+                        onClicked: {
+                            settingsPopup.close()
+
+                            // Validate the game versions after we've made updates.
+                            diablo.validateVersion()
+                        }
                     }
                 }
             }
