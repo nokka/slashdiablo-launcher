@@ -15,15 +15,6 @@ type ConfigBridge struct {
 	// Services.
 	Configuration config.Service
 
-	// Properties.
-	_ string `property:"D2Location"`
-	_ int    `property:"D2Instances"`
-	_ bool   `property:"D2Maphack"`
-	_ string `property:"HDLocation"`
-	_ int    `property:"HDInstances"`
-	_ bool   `property:"HDMaphack"`
-	_ int    `property:"NrOfGames"`
-
 	// Models.
 	GameModel *core.QAbstractListModel `property:"games"`
 

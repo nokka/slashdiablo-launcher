@@ -22,15 +22,17 @@ Item {
             
             style: ProgressBarStyle {
                 background: Rectangle {
-                    radius: 5
-                    color: "#1C0336"
-                    border.color: "#6E3E87"
+                    radius: 3
+                    color: "#262626"
+                    border.color: "#191919"
                     border.width: 2
                 }
                 
                 progress: Rectangle {
-                    color: "#8d49b8"
-                    radius: 5
+                    radius: 3
+                    color: "#600303"
+                    border.color: "#191919"
+                    border.width: 2
                 }
             }
         }
@@ -119,7 +121,7 @@ Item {
     }
 
     Component.onCompleted: {
-        if(settings.NrOfGames > 0) {
+        if(settings.games.rowCount() > 0) {
             diablo.validateVersion()
         }
     }

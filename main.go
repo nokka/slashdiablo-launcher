@@ -46,7 +46,7 @@ func main() {
 		Height:      600,
 		Alpha:       1.0,
 		Color:       goqmlframeless.RGB{R: 0, G: 0, B: 0},
-		BorderColor: &goqmlframeless.RGB{R: 198, G: 154, B: 31},
+		BorderColor: &goqmlframeless.RGB{R: 96, G: 3, B: 3},
 		ShadowSize:  0,
 	})
 
@@ -163,13 +163,6 @@ func newConfigBridge(cs config.Service, conf *storage.Config, gm *config.GameMod
 	}
 
 	configBridge.Configuration = cs
-	configBridge.SetD2Location(conf.D2Location)
-	configBridge.SetD2Instances(conf.D2Instances)
-	configBridge.SetD2Maphack(conf.D2Maphack)
-	configBridge.SetHDLocation(conf.HDLocation)
-	configBridge.SetHDInstances(conf.HDInstances)
-	configBridge.SetHDMaphack(conf.HDMaphack)
-	configBridge.SetNrOfGames(len(conf.Games))
 	configBridge.SetGames(gm)
 
 	return configBridge

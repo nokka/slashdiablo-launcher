@@ -1,17 +1,9 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 
-Rectangle {
+Item {
     id: launchView
-    color: "#09030a"
     width: parent.width; height: parent.height
-
-    // Background image.
-    Item {
-        id: background
-        anchors.fill: parent;
-        Image { source: "assets/bg_red.png"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
-    }
     
     Item {
         width: parent.width * 0.65

@@ -1,14 +1,22 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 
-Item {
+Rectangle {
     id: root
     width: 1024; height: 600
+    color: "#000000"
 
     // Load fonts.
     FontLoader { id: roboto; source: "assets/fonts/Roboto-Regular.ttf" }
     FontLoader { id: robotobold; source: "assets/fonts/Roboto-Bold.ttf" }
     
+    // Background image.
+    Item {
+        id: background
+        anchors.fill: parent;
+        Image { source: "assets/bg_red.png"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
+    }
+
     // Top bar for the entire app.
     TopBar {
         id: topbar
@@ -23,7 +31,7 @@ Item {
         height: (parent.height - topbar.height)
         anchors.top: topbar.bottom
        
-        // Loads pages dynamically.
+        // Loads pages dynamically, launcher view is default.
         Loader {
             id: contentLoader
             anchors.fill: parent

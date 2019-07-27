@@ -130,16 +130,16 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 
 // RunDEPFix will run a specific fix to disable DEP.
 func (s *Service) RunDEPFix() error {
-	conf, err := s.configService.Read()
+	/*conf, err := s.configService.Read()
 	if err != nil {
 		return err
 	}
 
 	// Run OS specific fix.
-	err = runDEPFix(conf.D2Location)
+	err = runDEPFix("")
 	if err != nil {
 		return err
-	}
+	}*/
 
 	return nil
 }
