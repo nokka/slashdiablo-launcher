@@ -15,7 +15,7 @@ Item {
         visible: (diablo.patching && !diablo.errored)
 
         ProgressBar {
-            height: 7
+            height: 2
             value: diablo.patchProgress
             width: parent.width
             anchors.verticalCenter: parent.verticalCenter
@@ -23,16 +23,12 @@ Item {
             style: ProgressBarStyle {
                 background: Rectangle {
                     radius: 3
-                    color: "#262626"
-                    border.color: "#191919"
-                    border.width: 2
+                    color: "#0d0d0d"
                 }
                 
                 progress: Rectangle {
                     radius: 3
                     color: "#600303"
-                    border.color: "#191919"
-                    border.width: 2
                 }
             }
         }
@@ -52,18 +48,20 @@ Item {
         Image {
             id: patcherError
             fillMode: Image.PreserveAspectFit
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            width: 20
-            height: 20
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            width: 25
+            height: 25
             source: "assets/svg/error.svg"
         }
 
         SText {
-            anchors.horizontalCenter: parent.horizontalCenter
-            topPadding: 30
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
             text: "Couldn't patch game files"
-            font.pixelSize: 11
+            font.pixelSize: 15
+            anchors.leftMargin: 30
+            topPadding: 5
         }
     }
 
@@ -73,7 +71,9 @@ Item {
         visible: (!diablo.patching && !diablo.errored && diablo.playable)
 
         SText {
-            anchors.bottom: parent.bottom;
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: 30
             text: "Game is up to date"
             font.pixelSize: 15
         }
