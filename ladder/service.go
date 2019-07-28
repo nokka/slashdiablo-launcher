@@ -2,8 +2,6 @@ package ladder
 
 import (
 	"errors"
-
-	"github.com/nokka/slashdiablo-launcher/log"
 )
 
 // Service is responsible for all things related to the Slashdiablo ladder.
@@ -14,19 +12,17 @@ type Service interface {
 type service struct {
 	sdClient    Client
 	ladderModel *TopLadderModel
-	logger      log.Logger
 }
 
 // GetLadder will fetch the ladder from the Slashdiablo API.
 func (s *service) SetLadderCharacters(mode string) error {
 	characters, err := s.sdClient.GetLadder(mode)
 	if err != nil {
-		s.logger.Log("msg", "failed to get top ladder", "err", err)
 		return err
 	}
 
 	if len(characters) >= 10 {
-		// Set the top 10 ladder positions.
+		// Just grab the top 10 characters.
 		topChars := characters[:10]
 
 		for _, char := range topChars {
@@ -53,11 +49,9 @@ func newCharacter(char ladderCharacter) *Character {
 func NewService(
 	sdClient Client,
 	ladderModel *TopLadderModel,
-	logger log.Logger,
 ) Service {
 	return &service{
 		sdClient:    sdClient,
 		ladderModel: ladderModel,
-		logger:      logger,
 	}
 }

@@ -1,7 +1,6 @@
 package log
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"sync"
@@ -9,13 +8,19 @@ import (
 )
 
 const (
-	errorLog = "errors.json"
+	errorLog = "errors.log"
 )
 
 // Logger represents the logger interface while hiding the implementation.
 type Logger interface {
-	Log(keyvals ...interface{}) error
+	// Info is used to log any kind of information.
+	Info(string) error
+
+	// Debug is used by the debugger when enabled.
 	Debug(string) error
+
+	// Error is used to log errors.
+	Error(error) error
 }
 
 type logger struct {
@@ -23,51 +28,19 @@ type logger struct {
 	writeMutex sync.Mutex
 }
 
-func (l *logger) Debug(entry string) error {
-	return l.write([]byte(entry))
+func (l *logger) Info(entry string) error {
+	msg := fmt.Sprintf("[INFO] %v: %s\n", time.Now().Format(time.RFC3339), entry)
+	return l.write([]byte(msg))
 }
 
-// Log will log the given keyvals.
-func (l *logger) Log(keyvals ...interface{}) error {
-	data := map[string]interface{}{
-		"timestamp": time.Now(),
-	}
-	written := make(map[string]struct{})
+func (l *logger) Debug(entry string) error {
+	msg := fmt.Sprintf("[DEBUG] %v: %s\n", time.Now().Format(time.RFC3339), entry)
+	return l.write([]byte(msg))
+}
 
-	for i, l := 0, len(keyvals); i < l; i += 2 {
-		if k, ok := keyvals[i].(string); ok {
-			if _, ok := written[k]; ok {
-				continue
-			}
-			written[k] = struct{}{}
-
-			v := keyvals[i+1]
-			switch t := v.(type) {
-			case func() interface{}:
-				v = t()
-			case time.Duration:
-				v = t.Seconds()
-			case error:
-				v = map[string]interface{}{
-					"error": t.Error(),
-				}
-			}
-			data[k] = v
-		}
-	}
-
-	// Indent to readable JSON.
-	formatted, err := json.MarshalIndent(data, "", "\t")
-	if err != nil {
-		return err
-	}
-
-	// Write to file on disk.
-	if err := l.write(formatted); err != nil {
-		return err
-	}
-
-	return err
+func (l *logger) Error(err error) error {
+	msg := fmt.Sprintf("[ERROR] %v: %s\n", time.Now().Format(time.RFC3339), err.Error())
+	return l.write([]byte(msg))
 }
 
 func (l *logger) write(logEntry []byte) error {

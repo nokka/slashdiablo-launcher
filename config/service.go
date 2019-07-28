@@ -1,25 +1,29 @@
 package config
 
 import (
-	"fmt"
 	"sync"
 
-	"github.com/nokka/slashdiablo-launcher/log"
 	"github.com/nokka/slashdiablo-launcher/storage"
 )
 
 // Service is responsible for all things related to configuration.
 type Service interface {
+	// Read will read the configuration and return it.
 	Read() (*storage.Config, error)
+
+	// AddGame adds a new game to the game model.
 	AddGame()
+
+	// UpsertGame updates or creates a new game to the persistant store.
 	UpsertGame(request UpdateGameRequest) error
+
+	// DeleteGame will delete a game from the game model and the persistant store.
 	DeleteGame(id int) error
 }
 
 type service struct {
 	store     storage.Store
 	gameModel *GameModel
-	logger    log.Logger
 	mutex     sync.Mutex
 }
 
@@ -27,7 +31,6 @@ type service struct {
 func (s *service) Read() (*storage.Config, error) {
 	conf, err := s.store.Read()
 	if err != nil {
-		s.logger.Log("failed to read config", err)
 		return nil, err
 	}
 
@@ -47,14 +50,12 @@ func (s *service) AddGame() {
 	// Generate ID next in the sequence.
 	// TODO: Generate a stronger id.
 	g.ID = len(s.gameModel.Games()) + 1
-
-	fmt.Println("GENERATED ID", g.ID)
 	g.Instances = 1
 
 	s.gameModel.AddGame(g)
 }
 
-// UpdateGameRequest ...
+// UpdateGameRequest is the data used to update a game in the game model.
 type UpdateGameRequest struct {
 	ID        int    `json:"id"`
 	Location  string `json:"location"`
@@ -67,7 +68,6 @@ type UpdateGameRequest struct {
 func (s *service) UpsertGame(request UpdateGameRequest) error {
 	conf, err := s.store.Read()
 	if err != nil {
-		s.logger.Log("failed to read config", err)
 		return err
 	}
 
@@ -107,7 +107,6 @@ func (s *service) UpsertGame(request UpdateGameRequest) error {
 
 	err = s.store.Write(conf)
 	if err != nil {
-		s.logger.Log("failed to write config", err)
 		return err
 	}
 
@@ -141,7 +140,6 @@ func (s *service) DeleteGame(id int) error {
 	// Read the config in order to update it.
 	conf, err := s.store.Read()
 	if err != nil {
-		s.logger.Log("failed to read config", err)
 		return err
 	}
 
@@ -156,7 +154,6 @@ func (s *service) DeleteGame(id int) error {
 	// Write the new games slice to the config.
 	err = s.store.Write(conf)
 	if err != nil {
-		s.logger.Log("failed to write config", err)
 		return err
 	}
 
@@ -175,11 +172,9 @@ func (s *service) DeleteGame(id int) error {
 func NewService(
 	store storage.Store,
 	gameModel *GameModel,
-	logger log.Logger,
 ) Service {
 	return &service{
 		store:     store,
 		gameModel: gameModel,
-		logger:    logger,
 	}
 }

@@ -76,13 +76,13 @@ func main() {
 	// Setup local storage.
 	store := storage.NewStore(configPath)
 	if err := store.Load(); err != nil {
-		logger.Log("unable to load config", err)
+		logger.Error(errors.New("unable to load config"))
 		os.Exit(0)
 	}
 
 	conf, err := store.Read()
 	if err != nil {
-		logger.Log("unable to read config", err)
+		logger.Error(errors.New("unable to read config"))
 		os.Exit(0)
 	}
 
@@ -95,24 +95,18 @@ func main() {
 	lc := ladder.NewClient(ladderAddress)
 
 	// Setup services.
-	cs := config.NewService(store, gm, logger)
-	d2s := d2.NewService(gc, cs, logger)
-	ls := ladder.NewService(lc, lm, logger)
+	cs := config.NewService(store, gm)
+	d2s := d2.NewService(gc, cs)
+	ls := ladder.NewService(lc, lm)
+
+	// Populate the game model with the game config
+	// before passing it to the config bridge.
+	populateGameModel(conf, gm)
 
 	// Setup QML bridges with all dependencies.
-	diabloBridge := bridge.NewDiabloBridge(nil)
-	diabloBridge.D2service = d2s
-	diabloBridge.SetPatching(false)
-	diabloBridge.SetErrored(false)
-	diabloBridge.SetPlayable(false)
-
-	configBridge := newConfigBridge(cs, conf, gm)
-
-	ladderBridge := bridge.NewLadderBridge(nil)
-	ladderBridge.LadderService = ls
-	ladderBridge.SetCharacters(lm)
-	ladderBridge.SetLoading(false)
-	ladderBridge.SetError(false)
+	diabloBridge := bridge.NewDiablo(d2s, logger)
+	configBridge := bridge.NewConfig(cs, gm, logger)
+	ladderBridge := bridge.NewLadder(ls, lm, logger)
 
 	// Add bridges to QML.
 	qmlWidget.RootContext().SetContextProperty("diablo", diabloBridge)
@@ -148,9 +142,7 @@ func getConfigPath() (string, error) {
 	return locations[0], nil
 }
 
-func newConfigBridge(cs config.Service, conf *storage.Config, gm *config.GameModel) *bridge.ConfigBridge {
-	configBridge := bridge.NewConfigBridge(nil)
-
+func populateGameModel(conf *storage.Config, gm *config.GameModel) {
 	for _, game := range conf.Games {
 		g := config.NewGame(nil)
 		g.ID = game.ID
@@ -161,11 +153,6 @@ func newConfigBridge(cs config.Service, conf *storage.Config, gm *config.GameMod
 
 		gm.AddGame(g)
 	}
-
-	configBridge.Configuration = cs
-	configBridge.SetGames(gm)
-
-	return configBridge
 }
 
 // enableDebugger will capture stdout and stderr output.
@@ -182,7 +169,7 @@ func enableDebugger(logger log.Logger) {
 		scanner := bufio.NewScanner(r)
 		for scanner.Scan() {
 			line := scanner.Text()
-			logger.Debug(line + "\n")
+			logger.Debug(line)
 		}
 	}()
 }

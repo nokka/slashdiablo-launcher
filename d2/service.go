@@ -11,14 +11,12 @@ import (
 
 	"github.com/nokka/slashdiablo-launcher/config"
 	"github.com/nokka/slashdiablo-launcher/github"
-	"github.com/nokka/slashdiablo-launcher/log"
 )
 
 // Service is responsible for all things related to Diablo II.
 type Service struct {
 	githubClient  github.Client
 	configService config.Service
-	logger        log.Logger
 }
 
 // Exec will exec the Diablo 2.
@@ -365,11 +363,9 @@ type PatchFile struct {
 func NewService(
 	githubClient github.Client,
 	configuration config.Service,
-	logger log.Logger,
 ) *Service {
 	return &Service{
 		githubClient:  githubClient,
 		configService: configuration,
-		logger:        logger,
 	}
 }

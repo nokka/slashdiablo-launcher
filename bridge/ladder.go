@@ -2,6 +2,7 @@ package bridge
 
 import (
 	"github.com/nokka/slashdiablo-launcher/ladder"
+	"github.com/nokka/slashdiablo-launcher/log"
 	"github.com/therecipe/qt/core"
 )
 
@@ -9,18 +10,19 @@ import (
 type LadderBridge struct {
 	core.QObject
 
-	// Services.
-	LadderService ladder.Service
+	// Dependencies.
+	ladderService ladder.Service
+	logger        log.Logger
 
 	// Properties.
 	_ bool `property:"loading"`
 	_ bool `property:"error"`
 
-	// Slots.
-	_ func(mode string) `slot:"getLadder"`
-
 	// Models.
 	LadderModel *core.QAbstractListModel `property:"characters"`
+
+	// Slots.
+	_ func(mode string) `slot:"getLadder"`
 }
 
 // Connect will connect the QML signals to functions in Go.
@@ -34,15 +36,35 @@ func (b *LadderBridge) getLadder(mode string) {
 		b.SetLoading(true)
 
 		// Set the ladder characters on the model.
-		err := b.LadderService.SetLadderCharacters(mode)
-		if err != nil {
-			b.SetError(true)
-			return
-		}
+		err := b.ladderService.SetLadderCharacters(mode)
 
 		// Stop loading when we're done fetching ladder data.
 		b.SetLoading(false)
+
+		if err != nil {
+			b.logger.Error(err)
+			b.SetError(true)
+			return
+		}
 	}()
 
 	return
+}
+
+// NewLadder ...
+func NewLadder(ls ladder.Service, lm *ladder.TopLadderModel, logger log.Logger) *LadderBridge {
+	l := NewLadderBridge(nil)
+
+	// Setup dependencies.
+	l.ladderService = ls
+	l.logger = logger
+
+	// Setup model.
+	l.SetCharacters(lm)
+
+	// Set initial state.
+	l.SetLoading(false)
+	l.SetError(false)
+
+	return l
 }

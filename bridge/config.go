@@ -2,9 +2,9 @@ package bridge
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/nokka/slashdiablo-launcher/config"
+	"github.com/nokka/slashdiablo-launcher/log"
 	"github.com/therecipe/qt/core"
 )
 
@@ -12,13 +12,14 @@ import (
 type ConfigBridge struct {
 	core.QObject
 
-	// Services.
-	Configuration config.Service
+	// Depedencies.
+	config config.Service
+	logger log.Logger
 
 	// Models.
 	GameModel *core.QAbstractListModel `property:"games"`
 
-	// Functions.
+	// Slots.
 	_ func(body string) bool `slot:"upsertGame"`
 	_ func()                 `slot:"addGame"`
 	_ func(id int)           `slot:"deleteGame"`
@@ -34,14 +35,13 @@ func (c *ConfigBridge) Connect() {
 func (c *ConfigBridge) upsertGame(body string) bool {
 	var request config.UpdateGameRequest
 	if err := json.Unmarshal([]byte(body), &request); err != nil {
-		fmt.Println(err)
-		// TODO: Add logger for the error.
+		c.logger.Error(err)
 		return false
 	}
 
-	err := c.Configuration.UpsertGame(request)
+	err := c.config.UpsertGame(request)
 	if err != nil {
-		// TODO: Add logger for the error.
+		c.logger.Error(err)
 		return false
 	}
 
@@ -49,9 +49,26 @@ func (c *ConfigBridge) upsertGame(body string) bool {
 }
 
 func (c *ConfigBridge) addGame() {
-	c.Configuration.AddGame()
+	c.config.AddGame()
 }
 
 func (c *ConfigBridge) deleteGame(id int) {
-	c.Configuration.DeleteGame(id)
+	err := c.config.DeleteGame(id)
+	if err != nil {
+		c.logger.Error(err)
+	}
+}
+
+// NewConfig ...
+func NewConfig(cs config.Service, gm *config.GameModel, logger log.Logger) *ConfigBridge {
+	configBridge := NewConfigBridge(nil)
+
+	// Setup dependencies.
+	configBridge.config = cs
+	configBridge.logger = logger
+
+	// Setup model.
+	configBridge.SetGames(gm)
+
+	return configBridge
 }
