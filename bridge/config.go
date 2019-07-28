@@ -12,7 +12,7 @@ import (
 type ConfigBridge struct {
 	core.QObject
 
-	// Depedencies.
+	// Dependencies.
 	config config.Service
 	logger log.Logger
 
