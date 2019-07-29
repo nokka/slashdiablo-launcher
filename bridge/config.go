@@ -2,7 +2,6 @@ package bridge
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/nokka/slashdiablo-launcher/config"
 	"github.com/nokka/slashdiablo-launcher/log"
@@ -67,8 +66,6 @@ func (c *ConfigBridge) deleteGame(id int) {
 
 // persistGameModel will persist the current game model to the config.
 func (c *ConfigBridge) persistGameModel() bool {
-	fmt.Println("persisting game model")
-
 	if err := c.config.PersistGameModel(); err != nil {
 		c.logger.Error(err)
 		return false
