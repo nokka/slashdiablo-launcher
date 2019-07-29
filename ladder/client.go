@@ -8,14 +8,16 @@ import (
 	"net/http"
 )
 
+const (
+	ladderAddress = "https://ladder.slashdiablo.net"
+)
+
 // Client encapsulates the details of the Slashdiablo API.
 type Client interface {
 	GetLadder(mode string) ([]ladderCharacter, error)
 }
 
-type client struct {
-	address string
-}
+type client struct{}
 
 type ladderResponse struct {
 	Characters []ladderCharacter `json:"characters"`
@@ -29,7 +31,7 @@ type ladderCharacter struct {
 }
 
 func (c *client) GetLadder(mode string) ([]ladderCharacter, error) {
-	response, err := c.do(http.MethodGet, c.address+"/ladder/rankings/"+mode+"?class=overall", nil)
+	response, err := c.do(http.MethodGet, ladderAddress+"/ladder/rankings/"+mode+"?class=overall", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -76,8 +78,6 @@ func (c *client) do(method string, addr string, payload []byte) ([]byte, error) 
 }
 
 // NewClient returns a new bigbank client with all dependencies.
-func NewClient(addr string) Client {
-	return &client{
-		address: addr,
-	}
+func NewClient() Client {
+	return &client{}
 }

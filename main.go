@@ -25,7 +25,6 @@ func main() {
 		githubOwner      = envString("GITHUB_OWNER", "")
 		githubRepository = envString("GITHUB_REPO", "")
 		githubToken      = envString("GITHUB_TOKEN", "")
-		ladderAddress    = envString("LADDER_ADDRESS", "")
 		debugMode        = envBool("DEBUG_MODE", false)
 	)
 
@@ -92,7 +91,7 @@ func main() {
 
 	// Setup clients.
 	gc := github.NewClient(githubOwner, githubRepository, githubToken)
-	lc := ladder.NewClient(ladderAddress)
+	lc := ladder.NewClient()
 
 	// Setup services.
 	cs := config.NewService(store, gm)
