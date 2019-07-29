@@ -19,6 +19,9 @@ type Service interface {
 
 	// DeleteGame will delete a game from the game model and the persistant store.
 	DeleteGame(id int) error
+
+	// PersistGameModel will persist the current game model to the persistant store.
+	PersistGameModel() error
 }
 
 type service struct {
@@ -66,49 +69,11 @@ type UpdateGameRequest struct {
 
 // UpsertGame will upsert the game to the config.
 func (s *service) UpsertGame(request UpdateGameRequest) error {
-	conf, err := s.store.Read()
-	if err != nil {
-		return err
-	}
-
 	// Lock before we update the model preventing race conditions.
 	s.mutex.Lock()
 
 	// Unlock when we're done.
 	defer s.mutex.Unlock()
-
-	// If the item to be updated isn't found, create a new one.
-	var found bool
-
-	// Look for game to update, and mutate if found.
-	for i := 0; i < len(conf.Games); i++ {
-		if conf.Games[i].ID == request.ID {
-			found = true
-			conf.Games[i].Location = request.Location
-			conf.Games[i].Instances = request.Instances
-			conf.Games[i].Maphack = request.Maphack
-			conf.Games[i].HD = request.HD
-		}
-	}
-
-	// Game wasn't found, append a new one.
-	if !found {
-		g := storage.Game{
-			ID:        request.ID,
-			Location:  request.Location,
-			Instances: request.Instances,
-			Maphack:   request.Maphack,
-			HD:        request.HD,
-		}
-
-		// Add game to the config.
-		conf.Games = append(conf.Games, g)
-	}
-
-	err = s.store.Write(conf)
-	if err != nil {
-		return err
-	}
 
 	// Updates game model with the new information.
 	var updatedIndex int
@@ -163,6 +128,38 @@ func (s *service) DeleteGame(id int) error {
 		if games[i].ID == id {
 			s.gameModel.removeGame(i)
 		}
+	}
+
+	return nil
+}
+
+// PersistGameModel will persist the current game model to the persistant store.
+func (s *service) PersistGameModel() error {
+	conf, err := s.store.Read()
+	if err != nil {
+		return err
+	}
+
+	// Fetch the current game model.
+	games := s.gameModel.Games()
+
+	// Reset the games in the config.
+	conf.Games = make([]storage.Game, 0)
+
+	// Go through all games and populate a config slice.
+	for i := 0; i < len(games); i++ {
+		conf.Games = append(conf.Games, storage.Game{
+			ID:        games[i].ID,
+			Location:  games[i].Location,
+			Instances: games[i].Instances,
+			Maphack:   games[i].Maphack,
+			HD:        games[i].HD,
+		})
+	}
+
+	err = s.store.Write(conf)
+	if err != nil {
+		return err
 	}
 
 	return nil

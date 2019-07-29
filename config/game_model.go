@@ -4,7 +4,7 @@ import (
 	"github.com/therecipe/qt/core"
 )
 
-// Model Roles
+// Model Roles.
 const (
 	ID = int(core.Qt__UserRole) + 1<<iota
 	Location

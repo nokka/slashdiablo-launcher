@@ -1,5 +1,5 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.1
+import QtQuick.Controls 2.2
 
 ComboBox {
     id: dropdown
@@ -14,7 +14,7 @@ ComboBox {
 
     background: Rectangle {
         color: "#1d1924"
-        border.color: "#800507"
+        border.color: "#373737"
         radius: height/2
     }
 

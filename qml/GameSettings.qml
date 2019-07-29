@@ -15,6 +15,22 @@ Item {
         hdSwitch.update()
     }
 
+    function updateGameModel() {
+        if(game != undefined) {
+            var body = {
+                id: game.id,
+                location: d2pathInput.text,
+                instances: (gameInstances.currentIndex+1),
+                maphack: maphackSwitch.checked,
+                hd: hdSwitch.checked
+            }
+
+            var success = settings.upsertGame(JSON.stringify(body))
+            
+            // TODO: Implement error handling.
+        }
+    }
+
     Item {
         id: currentGame
         width: parent.width * 0.95
@@ -72,6 +88,7 @@ Item {
                         id: chooseD2Path
                         label: "Open"
                         borderRadius: 0
+                        borderColor: "#373737"
                         width: fileDialogBox.width * 0.20; height: 40
                         cursorShape: Qt.PointingHandCursor
 
@@ -88,6 +105,9 @@ Item {
                             var path = d2PathDialog.fileUrl.toString()
                             path = path.replace(/^(file:\/{2})/,"")
                             d2pathInput.text = path
+                            
+                            // Update the game model.
+                            updateGameModel()
                         }
                     }
                 }
@@ -126,9 +146,10 @@ Item {
                             model: [ 1, 2, 3, 4 ]
                             height: 30
                             width: 60
+
+                            onActivated: updateGameModel()
                         }
                     }
-                    
                 }
                 
                 Separator{}
@@ -162,6 +183,7 @@ Item {
                         SSwitch{
                             id: maphackSwitch
                             checked: (game != undefined ? game.maphack : false)
+                            onToggled: updateGameModel()
                         }
                     } 
                 }
@@ -197,44 +219,12 @@ Item {
                         SSwitch{
                             id: hdSwitch
                             checked: (game != undefined ? game.hd : false)
+                            onToggled: updateGameModel()
                         }
                     }
                 }
                 
                 Separator{}
-            }
-
-            // Save button.
-            Item {
-                Layout.preferredWidth: settingsLayout.width
-                Layout.preferredHeight: 60
-
-                Row {
-                    topPadding: 15
-
-                    SButton {
-                        id: saveSettings
-                        label: "SAVE"
-                        width: 100; height: 40
-                        cursorShape: Qt.PointingHandCursor
-
-                        onClicked: {
-                            console.log("Saving settings")
-
-                            var body = {
-                                id: game.id,
-                                location: d2pathInput.text,
-                                instances: parseInt(gameInstances.currentText, 10),
-                                maphack: maphackSwitch.checked,
-                                hd: hdSwitch.checked
-                            }
-
-                            var success = settings.upsertGame(JSON.stringify(body))
-                            
-                            console.log(success)
-                        }
-                    }
-                }
             }
         }
     }

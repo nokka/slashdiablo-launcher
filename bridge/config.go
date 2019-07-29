@@ -2,6 +2,7 @@ package bridge
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/nokka/slashdiablo-launcher/config"
 	"github.com/nokka/slashdiablo-launcher/log"
@@ -20,9 +21,10 @@ type ConfigBridge struct {
 	GameModel *core.QAbstractListModel `property:"games"`
 
 	// Slots.
-	_ func(body string) bool `slot:"upsertGame"`
 	_ func()                 `slot:"addGame"`
+	_ func(body string) bool `slot:"upsertGame"`
 	_ func(id int)           `slot:"deleteGame"`
+	_ func() bool            `slot:"persistGameModel"`
 }
 
 // Connect will connect the QML signals to functions in Go.
@@ -30,8 +32,15 @@ func (c *ConfigBridge) Connect() {
 	c.ConnectUpsertGame(c.upsertGame)
 	c.ConnectAddGame(c.addGame)
 	c.ConnectDeleteGame(c.deleteGame)
+	c.ConnectPersistGameModel(c.persistGameModel)
 }
 
+// addGame will add a game to the game model.
+func (c *ConfigBridge) addGame() {
+	c.config.AddGame()
+}
+
+// upsertGame will update the game model.
 func (c *ConfigBridge) upsertGame(body string) bool {
 	var request config.UpdateGameRequest
 	if err := json.Unmarshal([]byte(body), &request); err != nil {
@@ -48,15 +57,23 @@ func (c *ConfigBridge) upsertGame(body string) bool {
 	return true
 }
 
-func (c *ConfigBridge) addGame() {
-	c.config.AddGame()
-}
-
+// deleteGame will delete the given id from the game model.
 func (c *ConfigBridge) deleteGame(id int) {
 	err := c.config.DeleteGame(id)
 	if err != nil {
 		c.logger.Error(err)
 	}
+}
+
+// persistGameModel will persist the current game model to the config.
+func (c *ConfigBridge) persistGameModel() bool {
+	fmt.Println("persisting game model")
+
+	if err := c.config.PersistGameModel(); err != nil {
+		c.logger.Error(err)
+		return false
+	}
+	return true
 }
 
 // NewConfig ...

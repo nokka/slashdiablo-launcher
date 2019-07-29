@@ -135,34 +135,28 @@ Popup {
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                 }
+                
+                SButton {
+                    label: "DONE"
+                    borderRadius: 0
+                    backgroundColor: "#000000"
+                    borderColor: "#785A29"
+                    width: 100
+                    height: 50
+                    cursorShape: Qt.PointingHandCursor
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.bottomMargin: -25
+                    anchors.leftMargin: 50
 
-                // Close button.
-                Item {
-                    width: 35
-                    height: 35
-                    anchors.top: parent.top
-                    anchors.right: parent.right
-                    anchors.rightMargin: 10
-                    anchors.topMargin: 5
-
-                    Image {
-                        fillMode: Image.PreserveAspectFit
-                        anchors.centerIn: parent
-                        width: 35
-                        height: 35
-                        source: "assets/svg/close.svg"
-				    }
-                    
-                   
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: containsMouse ? Qt.ArrowCursor : Qt.PointingHandCursor
-                        onClicked: {
+                    onClicked: {
+                        var success = settings.persistGameModel()
+                        if(success) {
                             settingsPopup.close()
-
-                            // Validate the game versions after we've made updates.
-                            diablo.validateVersion()
+                            return
                         }
+
+                        // TODO: Add error handling.
                     }
                 }
             }

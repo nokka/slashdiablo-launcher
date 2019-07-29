@@ -7,6 +7,8 @@ Button {
     property int fontSize: 12
     property string label: ""
     property int borderRadius: (parent.width * 0.5)
+    property string backgroundColor: "#00000000"
+    property string borderColor: "#800507"
     property alias cursorShape: mouseArea.cursorShape
     
     Text {
@@ -19,10 +21,10 @@ Button {
     }
 
     background: Rectangle {
-        color: "#00000000"
+        color: backgroundColor
         radius: borderRadius
         border.width: 2
-        border.color: "#800507"
+        border.color: borderColor
     }
 
     PropertyAnimation {
@@ -37,7 +39,7 @@ Button {
         id: animateOut
         target: sbutton
         properties: "background.border.color";
-        to: "#800507";
+        to: borderColor;
         duration: 200
     }
 
@@ -46,7 +48,8 @@ Button {
         anchors.fill: parent
 
         // Disable click on mouse area, making the event propagate
-        // to the parent button.
+        // to the parent button. We need the mouse area to override
+        // the button mouse cursor property.
         onPressed:  mouse.accepted = false
     }
 

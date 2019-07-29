@@ -50,9 +50,10 @@ Rectangle {
     Timer {
         interval: 0; running: true; repeat: false
         onTriggered: {
-            if(settings.games.rowCount() == 0) {
+            /*if(settings.games.rowCount() == 0) {
                 settingsPopup.open()
-            }
+            }*/
+            settingsPopup.open()
         }
     }
 }
