@@ -198,4 +198,6 @@ Item {
             }
         }
     }
+
+    Separator{}
 }

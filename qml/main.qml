@@ -9,6 +9,9 @@ Rectangle {
     // Load fonts.
     FontLoader { id: roboto; source: "assets/fonts/Roboto-Regular.ttf" }
     FontLoader { id: robotobold; source: "assets/fonts/Roboto-Bold.ttf" }
+
+    FontLoader { id: beaufort; source: "assets/fonts/Beaufort-Regular.ttf" }
+    FontLoader { id: beaufortbold; source: "assets/fonts/Beaufort-Bold.ttf" }
     
     // Background image.
     Item {

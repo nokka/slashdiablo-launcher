@@ -53,34 +53,35 @@ Item {
 
                 Column {
                     anchors.top: parent.top
-                    topPadding: 10
+                    topPadding: 0
                     spacing: 5
 
-                    SText {
-                        text: "Set Diablo II directory"
+                    Title {
+                        text: "SET DIABLO II DIRECTORY"
                         font.pixelSize: 13
-                        font.bold: true
                     }
 
                     SText {
                         text: "Specify your Diablo II game directory in order for the launcher to use it."
-                        font.pixelSize: 12
-                        color: "#505050"
+                        font.pixelSize: 11
+                        color: "#454545"
                     }
                 }
 
                 Row {
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 10
+                    anchors.bottomMargin: 15
 
                     TextField {
                         id: d2pathInput
-                        width: fileDialogBox.width * 0.80; height: 40
+                        width: fileDialogBox.width * 0.80; height: 35
+                        font.pixelSize: 11
+                        color: "#454545"
                         readOnly: true
                         text: (game != undefined ? game.location : "")
 
                         background: Rectangle {
-                            color: "#1d1924"
+                            color: "#0d0d0d"
                         }
                     }
 
@@ -89,7 +90,7 @@ Item {
                         label: "Open"
                         borderRadius: 0
                         borderColor: "#373737"
-                        width: fileDialogBox.width * 0.20; height: 40
+                        width: fileDialogBox.width * 0.20; height: 35
                         cursorShape: Qt.PointingHandCursor
 
                         onClicked: d2PathDialog.open()
@@ -125,16 +126,17 @@ Item {
 
                     Column {
                         width: (settingsLayout.width - instancesDropdown.width)
-                        SText {
-                            text: "Instances to launch"
+                        
+                        Title {
+                            text: "INSTANCES TO LAUNCH"
                             font.pixelSize: 13
-                            font.bold: true
                         }
 
                         SText {
                             text: "Number of this specific install that will launch when playing the game."
-                            font.pixelSize: 12
-                            color: "#505050"
+                            font.pixelSize: 11
+                            topPadding: 5
+                            color: "#454545"
                         }
                     }
                     Column {
@@ -165,16 +167,16 @@ Item {
 
                     Column {
                         width: (settingsLayout.width - includeMaphack.width)
-                        SText {
-                            text: "Include maphack"
+                        Title {
+                            text: "INCLUDE MAPHACK"
                             font.pixelSize: 13
-                            font.bold: true
                         }
 
                         SText {
                             text: "Maphack will be downloaded automatically for this specific install."
-                            font.pixelSize: 12
-                            color: "#505050"
+                            font.pixelSize: 11
+                            topPadding: 5
+                            color: "#454545"
                         }
                     }
                     Column {
@@ -201,16 +203,16 @@ Item {
 
                     Column {
                         width: (settingsLayout.width - includeHD.width)
-                        SText {
-                            text: "Include HD mod"
+                        Title {
+                            text: "INCLUDE HD MOD"
                             font.pixelSize: 13
-                            font.bold: true
                         }
 
                         SText {
                             text: "HD mod will be installed automatically for this specific install."
-                            font.pixelSize: 12
-                            color: "#505050"
+                            font.pixelSize: 11
+                            topPadding: 5
+                            color: "#454545"
                         }
                     }
                     Column {

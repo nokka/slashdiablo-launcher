@@ -11,8 +11,8 @@ Switch {
         x: control.leftPadding
         y: parent.height / 2 - height / 2
         radius: 13
-        color: control.checked ? "#800507" : "#1f1f1f"
-        border.color: control.checked ? "#800507" : "#1f1f1f"
+        color: control.checked ? "#038a66" : "#1f1f1f"
+        border.color: control.checked ? "#038a66" : "#1f1f1f"
 
         Rectangle {
             id: circle

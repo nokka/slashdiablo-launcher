@@ -26,11 +26,10 @@ Rectangle {
         anchors.leftMargin: 20
         anchors.topMargin: 10
 
-        SText {
+        Title {
             anchors.top: parent.top
             text: getName()
             font.pixelSize: 12
-            font.bold: true
         }
 
         SText {
@@ -55,9 +54,10 @@ Rectangle {
             layoutDirection: Qt.RightToLeft
             width: parent.width
 
+            // HD circle.
             Rectangle { 
                 visible: model.hd
-                color: "#D47F31"
+                color: "#009fb8"
                 width: 25
                 height: 25
                 radius: (width * 0.5)
@@ -66,13 +66,13 @@ Rectangle {
                     anchors.centerIn: parent
                     text: "HD"
                     font.pixelSize: 10
-                    font.bold: true      
                 }
             }
-            
+
+                // Maphack circle.
             Rectangle {
                 visible: model.maphack
-                color: "#1A8EBF"
+                color: "#038a66"
                 width: 25
                 height: 25
                 radius: (width * 0.5)
@@ -81,7 +81,6 @@ Rectangle {
                     anchors.centerIn: parent
                     text: "MH"
                     font.pixelSize: 10
-                    font.bold: true      
                 }
             }
         }
@@ -107,7 +106,7 @@ Rectangle {
     }
 
     Separator{
-        color: "#630000"
+        color: "#21211f"
     }
 
     MouseArea {

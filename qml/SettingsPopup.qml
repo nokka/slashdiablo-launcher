@@ -18,7 +18,7 @@ Popup {
     modal: true
     focus: true
     width: 850
-    height: 510
+    height: 500
     margins: 0
     padding: 0
     
@@ -26,9 +26,9 @@ Popup {
     closePolicy: Popup.NoAutoClose
 
     Rectangle {
-        color: "#050000"
+        color: "#000003"
         border.color: "#785A29"
-        border.width: 2
+        border.width: 1
         anchors.fill: parent
 
         RowLayout {
@@ -44,19 +44,19 @@ Popup {
                 Layout.maximumWidth: 300
                 Layout.fillHeight: true
 
-                SText {
+                Title {
                     text: "MY GAMES"
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.topMargin: 20
                     font.pixelSize: 15
                     font.bold: true
-                    leftPadding: 15
+                    leftPadding: 30
                 }
 
                 ListView {
                     id: gamesList
-                    width: parent.width - 15;
+                    width: parent.width - 30;
                     height: gamesList.count * itemHeight
                     anchors.top: parent.top
                     anchors.right: parent.right
@@ -79,13 +79,13 @@ Popup {
                 }
 
                 // Add new game button.
-                SText {
+                Title {
                     text: "+ Add new game"
                     anchors.top: gamesList.bottom
                     anchors.left: parent.left
                     anchors.topMargin: 20
                     font.bold: true
-                    leftPadding: 25
+                    leftPadding: 30
 
                     MouseArea {
                         anchors.fill: parent
@@ -136,11 +136,8 @@ Popup {
                     }
                 }
                 
-                SButton {
+                XButton {
                     label: "DONE"
-                    borderRadius: 0
-                    backgroundColor: "#000000"
-                    borderColor: "#785A29"
                     width: 100
                     height: 50
                     cursorShape: Qt.PointingHandCursor
