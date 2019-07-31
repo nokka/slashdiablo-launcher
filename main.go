@@ -22,8 +22,8 @@ import (
 func main() {
 	// Environment variables set when building.
 	var (
-		githubOwner      = envString("GITHUB_OWNER", "")
-		githubRepository = envString("GITHUB_REPO", "")
+		githubOwner      = envString("GITHUB_OWNER", "nokka")
+		githubRepository = envString("GITHUB_REPO", "slashdiablo-patches")
 		githubToken      = envString("GITHUB_TOKEN", "")
 		debugMode        = envBool("DEBUG_MODE", false)
 	)

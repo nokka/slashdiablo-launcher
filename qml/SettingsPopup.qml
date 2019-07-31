@@ -1,5 +1,5 @@
 import QtQuick 2.4
-import QtQuick.Controls 2.1
+import QtQuick.Controls 2.5
 import QtQuick.Controls.Material 2.1
 import QtQuick.Layouts 1.3
 
@@ -25,9 +25,13 @@ Popup {
     anchors.centerIn: root
     closePolicy: Popup.NoAutoClose
 
-    /*Overlay.modal: Rectangle {
-        color: "#aacfdbe7"
-    }*/
+    Overlay.modal: Item {
+        Rectangle {
+            anchors.fill: parent
+            color: "#000000"
+            opacity: 0.8
+        }
+    }
 
     Rectangle {
         color: "#0f0f0f"
