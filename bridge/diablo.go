@@ -86,6 +86,7 @@ func (q *DiabloBridge) applyPatches() {
 }
 
 func (q *DiabloBridge) validateVersion() {
+	// TODO: Add state for checking for versions.
 	valid, err := q.d2service.ValidateGameVersions()
 	if err != nil {
 		q.logger.Error(err)

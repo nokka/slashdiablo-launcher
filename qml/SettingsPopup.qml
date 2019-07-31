@@ -25,19 +25,25 @@ Popup {
     anchors.centerIn: root
     closePolicy: Popup.NoAutoClose
 
+    /*Overlay.modal: Rectangle {
+        color: "#aacfdbe7"
+    }*/
+
     Rectangle {
-        color: "#0d0d0a"
+        color: "#0f0f0f"
         border.color: "#785A29"
         border.width: 1
         anchors.fill: parent
 
         // Bottom background.
-        Image { 
-            source: "assets/settings_bg.jpg";
-            fillMode: Image.PreserveAspectFit;
+        Image {
+            width: 848
+            source: "assets/content-bot-bg-new.png";
+            fillMode: Image.Stretch;
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottomMargin: 1
+            opacity: 0.8
         }
 
         RowLayout {
@@ -55,6 +61,7 @@ Popup {
 
                 Title {
                     text: "MY GAMES"
+                    color: "#c4b58b"
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.topMargin: 20
@@ -157,6 +164,9 @@ Popup {
                     onClicked: {
                         var success = settings.persistGameModel()
                         if(success) {
+                            // Validate the game versions after changes has been made to the settings.
+                            diablo.validateVersion()
+                            
                             settingsPopup.close()
                             return
                         }

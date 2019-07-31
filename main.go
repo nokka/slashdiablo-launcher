@@ -29,7 +29,7 @@ func main() {
 	)
 
 	// Set app context.
-	core.QCoreApplication_SetApplicationName("slashdiablo.launcher")
+	core.QCoreApplication_SetApplicationName("Slashdiablo launcher")
 	core.QCoreApplication_SetOrganizationName("slashdiablo.com")
 	core.QCoreApplication_SetOrganizationDomain("slashdiablo.com")
 

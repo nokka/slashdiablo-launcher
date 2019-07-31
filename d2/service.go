@@ -118,6 +118,15 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 					return
 				}
 			}
+
+			if game.HD {
+				state <- PatchState{Message: "Installing HD mod"}
+				err = s.applyHDMod(game.Location, progress)
+				if err != nil {
+					state <- PatchState{Error: err}
+					return
+				}
+			}
 		}
 
 		done <- true
@@ -188,6 +197,25 @@ func (s *Service) applyMaphack(path string, progress chan float32) error {
 	}
 
 	if err = s.doPatch(manifest.Files, "maphack", path, progress); err != nil {
+		// Make sure we clean up the failed patch.
+		if err := s.cleanUpFailedPatch(path); err != nil {
+			return err
+		}
+
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) applyHDMod(path string, progress chan float32) error {
+	// Download manifest from patch repository.
+	manifest, err := s.getManifest("hd/manifest.json")
+	if err != nil {
+		return err
+	}
+
+	if err = s.doPatch(manifest.Files, "hd", path, progress); err != nil {
 		// Make sure we clean up the failed patch.
 		if err := s.cleanUpFailedPatch(path); err != nil {
 			return err
