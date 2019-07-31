@@ -149,7 +149,6 @@ Popup {
                     label: "DONE"
                     width: 100
                     height: 50
-                    cursorShape: Qt.PointingHandCursor
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
                     anchors.bottomMargin: -25

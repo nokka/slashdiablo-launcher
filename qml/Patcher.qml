@@ -112,7 +112,6 @@ Item {
             fontSize: 10
             anchors.top: parent.top
             anchors.right: parent.right
-            cursorShape: Qt.PointingHandCursor
 
             onClicked: {
                 diablo.applyPatches()

@@ -23,7 +23,6 @@ Item {
                 enabled: diablo.playable
                 width: parent.width; height: 50
                 anchors.verticalCenter: parent.verticalCenter
-                cursorShape: Qt.PointingHandCursor
 
                 onClicked: diablo.launchGame()
             }

@@ -7,7 +7,6 @@ Button {
 
     property int fontSize: 15
     property string label: ""
-    property alias cursorShape: mouseArea.cursorShape
     
     Text {
         text: label
@@ -54,11 +53,14 @@ Button {
 
     MouseArea {
         id: mouseArea
+        hoverEnabled: true
         anchors.fill: parent
+
+        cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
 
         // Disable click on mouse area, making the event propagate
         // to the parent button. We need the mouse area to override
         // the button mouse cursor property.
-        onPressed:  mouse.accepted = false
+        onPressed: mouse.accepted = false
     }
 }
