@@ -153,7 +153,7 @@ Popup {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
                     anchors.bottomMargin: -25
-                    anchors.leftMargin: 50
+                    anchors.leftMargin: 65
 
                     onClicked: {
                         var success = settings.persistGameModel()
