@@ -35,6 +35,7 @@ Item {
 
         SText {
             anchors.bottom: parent.bottom;
+            anchors.bottomMargin: 10
             text: diablo.status
             font.pixelSize: 12
         }
@@ -101,7 +102,7 @@ Item {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             anchors.leftMargin: 30
-            text: "Game version isn't 1.13c"
+            text: "Games aren't up to date"
             font.pixelSize: 15
         }
 
