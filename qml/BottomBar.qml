@@ -17,7 +17,7 @@ Item {
             anchors.rightMargin: 20
 
              // Launch button.
-            SButton {
+            XButton {
                 label: "PLAY"
                 fontSize: 15
                 enabled: diablo.playable

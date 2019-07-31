@@ -26,10 +26,19 @@ Popup {
     closePolicy: Popup.NoAutoClose
 
     Rectangle {
-        color: "#000003"
+        color: "#0d0d0a"
         border.color: "#785A29"
         border.width: 1
         anchors.fill: parent
+
+        // Bottom background.
+        Image { 
+            source: "assets/settings_bg.jpg";
+            fillMode: Image.PreserveAspectFit;
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottomMargin: 1
+        }
 
         RowLayout {
             id: settingsLayout

@@ -6,7 +6,7 @@ SText {
     anchors.centerIn: parent
     font.family: beaufortbold.name
     font.bold: true
-    font.pixelSize: 15
+    font.pixelSize: 14
     color: "#c4b58b"
     
     MouseArea {

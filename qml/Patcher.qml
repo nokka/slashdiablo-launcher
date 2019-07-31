@@ -105,7 +105,7 @@ Item {
             font.pixelSize: 15
         }
 
-        SButton {
+        XButton {
             width: 100
             height: 40
             label: "UPDATE"

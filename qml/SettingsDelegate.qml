@@ -1,19 +1,16 @@
 import QtQuick 2.12				//Item
 
-Rectangle {
+Item {
     id: settingsDelegate
     width: parent.width
     height: 50
-    color: ListView.isCurrentItem ? "#121212" : "#00000000"
 
-    Image {
-        id: chevronRight
-        width: 13
-        height: 13
-        fillMode: Image.PreserveAspectFit
-        anchors.verticalCenter: parent.verticalCenter
+    // Left active indicator border.
+    Rectangle {
+        color: settingsDelegate.ListView.isCurrentItem ? "#d6651e" : "#21211f"
+        width: 3
+        height: parent.height
         anchors.left: parent.left
-        source: "assets/svg/chevron-right.svg"
     }
 
     // Name and location.
@@ -29,15 +26,8 @@ Rectangle {
         Title {
             anchors.top: parent.top
             text: getName()
-            font.pixelSize: 12
-        }
-
-        SText {
-            color: "#8d8d8d"
-            anchors.topMargin: 15
-            anchors.top: parent.top
-            text: (model.location != "" ? model.location : "No directory set")
-            font.pixelSize: 12
+            font.pixelSize: 14
+            anchors.topMargin: 5
         }
     }
 
