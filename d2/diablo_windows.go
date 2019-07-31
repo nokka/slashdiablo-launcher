@@ -37,10 +37,8 @@ func validate113cVersion(path string) (bool, error) {
 		return false, err
 	}
 
-	// Hash the current Game.exe.
-	currentGameHash = sha1.Sum(content)
-
-	version, ok := hashList[currentGameHash]
+	// Check the game version.
+	version, ok := hashList[sha1.Sum(content)]
 
 	// Unknown game version.
 	if !ok {

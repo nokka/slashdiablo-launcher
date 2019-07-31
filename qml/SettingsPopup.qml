@@ -47,7 +47,7 @@ Popup {
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottomMargin: 1
-            opacity: 0.8
+            opacity: 1.0
         }
 
         RowLayout {
