@@ -323,54 +323,6 @@ func (s *Service) doPatch(patchFiles []string, patchLength int64, remoteDir stri
 	return nil
 }
 
-/*func (s *Service) doPatch(files []PatchFile, remoteDir string, path string, progress chan float32) error {
-	// Figure out which files to patch.
-	patchFiles, patchLength, err := s.getFilesToPatch(files, path)
-	if err != nil {
-		return err
-	}
-
-	if len(patchFiles) > 0 {
-		// Reset progress.
-		progress <- 0.00
-
-		// Create a write counter that will get bytes written per cycle, pass the
-		// progress channel to report the number of bytes written.
-		counter := &WriteCounter{
-			Total:    float32(patchLength),
-			progress: progress,
-		}
-
-		// Store the downloaded .tmp suffixed files.
-		var tmpFiles []string
-
-		// Patch the files.
-		for _, fileName := range patchFiles {
-			// Create the file, but give it a tmp file extension, this means we won't overwrite a
-			// file until it's downloaded, but we'll remove the tmp extension once downloaded.
-			tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, fileName))
-
-			err := s.downloadFile(fileName, remoteDir, tmpPath, counter)
-			if err != nil {
-				return err
-			}
-
-			tmpFiles = append(tmpFiles, tmpPath)
-		}
-
-		// All the files were successfully downloaded, remove the .tmp suffix
-		// to complete the patch entirely.
-		for _, tmpFile := range tmpFiles {
-			err = os.Rename(tmpFile, tmpFile[:len(tmpFile)-4])
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}*/
-
 func (s *Service) downloadFile(fileName string, remoteDir string, path string, counter *WriteCounter) error {
 	out, err := os.Create(path)
 	if err != nil {
