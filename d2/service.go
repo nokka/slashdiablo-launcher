@@ -97,22 +97,19 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 		}
 
 		for _, game := range conf.Games {
-			state <- PatchState{Message: "Updating Diablo II to 1.13c"}
-			if err := s.apply113c(game.Location, progress); err != nil {
+			if err := s.apply113c(game.Location, state, progress); err != nil {
 				state <- PatchState{Error: err}
 				return
 			}
 
-			state <- PatchState{Message: "Updating Diablo II Slash patch"}
-			err = s.applySlashPatch(game.Location, progress)
+			err = s.applySlashPatch(game.Location, state, progress)
 			if err != nil {
 				state <- PatchState{Error: err}
 				return
 			}
 
 			if game.Maphack {
-				state <- PatchState{Message: "Installing maphack"}
-				err = s.applyMaphack(game.Location, progress)
+				err = s.applyMaphack(game.Location, state, progress)
 				if err != nil {
 					state <- PatchState{Error: err}
 					return
@@ -120,8 +117,7 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			}
 
 			if game.HD {
-				state <- PatchState{Message: "Installing HD mod"}
-				err = s.applyHDMod(game.Location, progress)
+				err = s.applyHDMod(game.Location, state, progress)
 				if err != nil {
 					state <- PatchState{Error: err}
 					return
@@ -151,83 +147,183 @@ func (s *Service) RunDEPFix() error {
 	return nil
 }
 
-func (s *Service) apply113c(path string, progress chan float32) error {
+func (s *Service) apply113c(path string, state chan PatchState, progress chan float32) error {
+	// Update UI.
+	state <- PatchState{Message: "Validating game version"}
+
 	// Download manifest from patch repository.
 	manifest, err := s.getManifest("1.13c/manifest.json")
 	if err != nil {
 		return err
 	}
 
-	if err := s.doPatch(manifest.Files, "1.13c", path, progress); err != nil {
-		// Make sure we clean up the failed patch.
-		if err := s.cleanUpFailedPatch(path); err != nil {
+	// Figure out which files to patch.
+	patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
+	if err != nil {
+		return err
+	}
+
+	if len(patchFiles) > 0 {
+		fmt.Println("------------------")
+		fmt.Println(path)
+		fmt.Println(patchFiles)
+		fmt.Println("------------------")
+		// Update UI.
+		state <- PatchState{Message: fmt.Sprintf("Updating %s to 1.13c", path)}
+
+		if err := s.doPatch(patchFiles, patchLength, "1.13c", path, progress); err != nil {
+			// Make sure we clean up the failed patch.
+			if err := s.cleanUpFailedPatch(path); err != nil {
+				return err
+			}
+
 			return err
 		}
-
-		return err
 	}
 
 	return nil
 }
 
-func (s *Service) applySlashPatch(path string, progress chan float32) error {
+func (s *Service) applySlashPatch(path string, state chan PatchState, progress chan float32) error {
+	// Update UI.
+	state <- PatchState{Message: "Validating Slashdiablo patch"}
+
 	// Download manifest from patch repository.
 	manifest, err := s.getManifest("current/manifest.json")
 	if err != nil {
 		return err
 	}
 
-	if err = s.doPatch(manifest.Files, "current", path, progress); err != nil {
-		// Make sure we clean up the failed patch.
-		if err := s.cleanUpFailedPatch(path); err != nil {
+	// Figure out which files to patch.
+	patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
+	if err != nil {
+		return err
+	}
+
+	if len(patchFiles) > 0 {
+		// Update UI.
+		state <- PatchState{Message: fmt.Sprintf("Updating %s to current Slashdiablo patch", path)}
+
+		if err = s.doPatch(patchFiles, patchLength, "current", path, progress); err != nil {
+			// Make sure we clean up the failed patch.
+			if err := s.cleanUpFailedPatch(path); err != nil {
+				return err
+			}
+
 			return err
 		}
-
-		return err
 	}
 
 	return nil
 }
 
-func (s *Service) applyMaphack(path string, progress chan float32) error {
+func (s *Service) applyMaphack(path string, state chan PatchState, progress chan float32) error {
+	// Update UI.
+	state <- PatchState{Message: "Validating maphack"}
+
 	// Download manifest from patch repository.
 	manifest, err := s.getManifest("maphack/manifest.json")
 	if err != nil {
 		return err
 	}
 
-	if err = s.doPatch(manifest.Files, "maphack", path, progress); err != nil {
-		// Make sure we clean up the failed patch.
-		if err := s.cleanUpFailedPatch(path); err != nil {
+	// Figure out which files to patch.
+	patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
+	if err != nil {
+		return err
+	}
+
+	if len(patchFiles) > 0 {
+		// Update UI.
+		state <- PatchState{Message: fmt.Sprintf("Updating %s to latest maphack version", path)}
+
+		if err = s.doPatch(patchFiles, patchLength, "maphack", path, progress); err != nil {
+			// Make sure we clean up the failed patch.
+			if err := s.cleanUpFailedPatch(path); err != nil {
+				return err
+			}
+
 			return err
 		}
-
-		return err
 	}
 
 	return nil
 }
 
-func (s *Service) applyHDMod(path string, progress chan float32) error {
+func (s *Service) applyHDMod(path string, state chan PatchState, progress chan float32) error {
+	// Update UI.
+	state <- PatchState{Message: "Validating HD mod"}
+
 	// Download manifest from patch repository.
 	manifest, err := s.getManifest("hd/manifest.json")
 	if err != nil {
 		return err
 	}
 
-	if err = s.doPatch(manifest.Files, "hd", path, progress); err != nil {
-		// Make sure we clean up the failed patch.
-		if err := s.cleanUpFailedPatch(path); err != nil {
+	// Figure out which files to patch.
+	patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
+	if err != nil {
+		return err
+	}
+
+	if len(patchFiles) > 0 {
+		// Update UI.
+		state <- PatchState{Message: fmt.Sprintf("Updating %s to latest HD mod version", path)}
+
+		if err = s.doPatch(patchFiles, patchLength, "hd", path, progress); err != nil {
+			// Make sure we clean up the failed patch.
+			if err := s.cleanUpFailedPatch(path); err != nil {
+				return err
+			}
+
 			return err
 		}
-
-		return err
 	}
 
 	return nil
 }
 
-func (s *Service) doPatch(files []PatchFile, remoteDir string, path string, progress chan float32) error {
+func (s *Service) doPatch(patchFiles []string, patchLength int64, remoteDir string, path string, progress chan float32) error {
+	// Reset progress.
+	progress <- 0.00
+
+	// Create a write counter that will get bytes written per cycle, pass the
+	// progress channel to report the number of bytes written.
+	counter := &WriteCounter{
+		Total:    float32(patchLength),
+		progress: progress,
+	}
+
+	// Store the downloaded .tmp suffixed files.
+	var tmpFiles []string
+
+	// Patch the files.
+	for _, fileName := range patchFiles {
+		// Create the file, but give it a tmp file extension, this means we won't overwrite a
+		// file until it's downloaded, but we'll remove the tmp extension once downloaded.
+		tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, fileName))
+
+		err := s.downloadFile(fileName, remoteDir, tmpPath, counter)
+		if err != nil {
+			return err
+		}
+
+		tmpFiles = append(tmpFiles, tmpPath)
+	}
+
+	// All the files were successfully downloaded, remove the .tmp suffix
+	// to complete the patch entirely.
+	for _, tmpFile := range tmpFiles {
+		err := os.Rename(tmpFile, tmpFile[:len(tmpFile)-4])
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+/*func (s *Service) doPatch(files []PatchFile, remoteDir string, path string, progress chan float32) error {
 	// Figure out which files to patch.
 	patchFiles, patchLength, err := s.getFilesToPatch(files, path)
 	if err != nil {
@@ -273,7 +369,7 @@ func (s *Service) doPatch(files []PatchFile, remoteDir string, path string, prog
 	}
 
 	return nil
-}
+}*/
 
 func (s *Service) downloadFile(fileName string, remoteDir string, path string, counter *WriteCounter) error {
 	out, err := os.Create(path)

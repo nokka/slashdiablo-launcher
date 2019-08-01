@@ -10,6 +10,9 @@ Item {
         // Set current game instance to the view.
         this.game = current
 
+        // Textfield needs to be set explicitly since it's read only.
+        d2pathInput.text = this.game.location
+
         // Update the switches initial state without triggering an animation.
         maphackSwitch.update()
         hdSwitch.update()
