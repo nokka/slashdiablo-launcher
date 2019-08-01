@@ -164,6 +164,7 @@ func (s *Service) apply113c(path string, state chan PatchState, progress chan fl
 	}
 
 	if len(patchFiles) > 0 {
+		fmt.Println("SHOULD PATCH")
 		fmt.Println("------------------")
 		fmt.Println(path)
 		fmt.Println(patchFiles)
@@ -386,6 +387,11 @@ func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, i
 
 			return nil, 0, err
 		}
+
+		fmt.Println("------------------")
+		fmt.Println("FILE", f.Name)
+		fmt.Println("LOCAL", hashed)
+		fmt.Println("REMOTE", f.CRC)
 
 		// File checksum differs from local copy, we need to get a new one.
 		if hashed != f.CRC {

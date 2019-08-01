@@ -4,10 +4,9 @@ package d2
 
 import (
 	"bufio"
-	"crypto/sha1"
+	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -23,13 +22,13 @@ var hashList = map[string]string{
 	"3e64f12c6ef72847f49d301c2472280d4460589d": "1.14a",
 	"11e940266c6838414c2114c2172227f982d4054e": "1.14b",
 	"255691dd53e3bcd646e5c6e1e2e7b16da745b706": "1.14c",
-	"af0ea93d2a652ceb11ac01ee2e4ae1ef613444c2": "1.14d"
+	"af0ea93d2a652ceb11ac01ee2e4ae1ef613444c2": "1.14d",
 }
 
 // validate113cVersion will check the given installations Diablo II version.
 func validate113cVersion(path string) (bool, error) {
 	// Open local Game.exe.
-	content, err := ioutil.ReadFile(localizePath(path) + "\\Game.exe")
+	/*content, err := ioutil.ReadFile(localizePath(path) + "\\Game.exe")
 	if err != nil {
 		if os.IsNotExist(err) {
 			return false, nil
@@ -37,20 +36,61 @@ func validate113cVersion(path string) (bool, error) {
 		return false, err
 	}
 
+	// Hash the content of the Game.exe.
+	hashed := fmt.Sprintf("%x", sha1.Sum(content))
+
 	// Check the game version.
-	version, ok := hashList[sha1.Sum(content)]
+	version, ok := hashList[hashed]
 
 	// Unknown game version.
 	if !ok {
 		return false, nil
 	}
 
-
 	return version == "1.13c", nil
+	*/
+	return false, nil
 }
 
 // launch will execute the Diablo II.exe in the given directory.
 func launch(path string) error {
+	fmt.Println("LAUNCHING")
+
+	// Localize the path.
+	localized := localizePath(path)
+
+	// Exec the Diablo II.exe.
+	cmd := exec.Command(localized+"\\Diablo II.exe", "-w")
+	cmd.Dir = localized
+
+	// Collect the output from the command.
+	var output bytes.Buffer
+	var stderr bytes.Buffer
+
+	cmd.Stdout = &output
+	cmd.Stderr = &stderr
+
+	if err := cmd.Start(); err != nil {
+		fmt.Println(output.Bytes())
+		fmt.Println(stderr.Bytes())
+		fmt.Println("Start err:", err)
+		return err
+	}
+
+	if err := cmd.Wait(); err != nil {
+		fmt.Println(output.Bytes())
+		fmt.Println(stderr.Bytes())
+		fmt.Println("Wait err:", err)
+		return err
+	}
+
+	fmt.Println(output.Bytes())
+	fmt.Println(stderr.Bytes())
+
+	return nil
+}
+
+/*func launch(path string) error {
 	// Localize the path.
 	localized := localizePath(path)
 
@@ -63,7 +103,7 @@ func launch(path string) error {
 	}
 
 	return nil
-}
+}*/
 
 // localizePath will localize the path for the OS.
 func localizePath(path string) string {
