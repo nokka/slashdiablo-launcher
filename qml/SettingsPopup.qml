@@ -64,7 +64,7 @@ Popup {
                 Layout.fillHeight: true
 
                 Title {
-                    text: "MY GAMES"
+                    text: "GAME SETTINGS"
                     color: "#c4b58b"
                     anchors.top: parent.top
                     anchors.left: parent.left

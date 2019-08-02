@@ -31,7 +31,7 @@ Button {
         id: animateIn
         target: sbutton
         properties: "background.border.color";
-        to: "#ba4141";
+        to: "#665a46";
         duration: 100
     }
 

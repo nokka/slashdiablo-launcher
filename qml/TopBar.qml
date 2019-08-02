@@ -90,7 +90,7 @@ Item {
     // Status panel.
     Item {
         height: parent.height
-        width: parent.width * 0.30
+        width: parent.width * 0.34
         anchors.right: parent.right
 
         RowLayout {
@@ -111,9 +111,8 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
 
-                    SText {
-                        text: "SERVER STATUS"
-                        font.bold: true      
+                    Title {
+                        text: "SERVER STATUS"    
                         anchors.verticalCenter: parent.verticalCenter                  
                     }
 
@@ -121,8 +120,10 @@ Item {
                     Rectangle {
                         width: 12
                         height: 12
-                        color: "#0B8A0F"
+                        color: "#0aa646"
                         radius: (width * 0.5)
+                        border.color: "#61e897"
+                        border.width: 1
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right 
                     }
@@ -130,7 +131,7 @@ Item {
             }
 
             // Users online.
-            Item {
+            /*Item {
                 width: 80
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 height: parent.height
@@ -157,16 +158,16 @@ Item {
                         source: "assets/svg/users.svg"
                     }
                 }
-            }
+            }*/
 
              // Options.
             Item {
-                width: 90
+                width: 120
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 height: parent.height
 
                 Item {
-                    width: 90
+                    width: 120
                     height: 20
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -181,12 +182,12 @@ Item {
                         source: "assets/svg/options.svg"
                     }
 
-                    SText {
-                        text: "OPTIONS"
+                    Title {
+                        text: "GAME SETTINGS"
                         font.bold: true
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
-                        anchors.rightMargin: 20
+                        anchors.rightMargin: 5
 
                         MouseArea {
                             anchors.fill: parent
@@ -199,5 +200,7 @@ Item {
         }
     }
 
-    Separator{}
+    Separator{
+        color: "#3d3b36"
+    }
 }

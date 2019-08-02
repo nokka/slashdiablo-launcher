@@ -8,12 +8,11 @@ Rectangle {
     radius: 5
     color: "#00000000"
 
-    Text {
+    Title {
         id: rankItem
         width: 15
-        font.family: roboto.name
         font.pixelSize: fontSize
-        color: "#ffffff"
+        color: "#9e998b"
         text: model.rank
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
@@ -25,17 +24,16 @@ Rectangle {
         width: 30
         font.family: roboto.name
         font.pixelSize: fontSize
-        color: "#f3e6d0"
+        color: "#3d3b36"
         text: model.class
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: rankItem.width + 20
     }
 
-    Text {
-        color: "#f3e6d0"
-        font.family: roboto.name
-        font.pixelSize: fontSize
+    Title {
+        color: "#ccb789"
+        font.pixelSize: 13
         text: model.name
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
@@ -44,12 +42,14 @@ Rectangle {
     }
 
     Text {
-        color: "#ffe6a1"
+        color: "#069499"
         font.family: roboto.name
         font.pixelSize: fontSize
-        text: "lvl " + model.level
+        text: model.level
         anchors.verticalCenter: parent.verticalCenter
         anchors.rightMargin: 20
         anchors.right: parent.right
     }
+
+    Separator{}
 }

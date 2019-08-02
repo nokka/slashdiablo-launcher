@@ -15,7 +15,7 @@ Item {
         visible: (diablo.patching && !diablo.errored)
 
         ProgressBar {
-            height: 2
+            height: 4
             value: diablo.patchProgress
             width: parent.width
             anchors.verticalCenter: parent.verticalCenter
@@ -23,12 +23,12 @@ Item {
             style: ProgressBarStyle {
                 background: Rectangle {
                     radius: 3
-                    color: "#0d0d0d"
+                    color: "#00686b"
                 }
                 
                 progress: Rectangle {
                     radius: 3
-                    color: "#600303"
+                    color: "#069499"
                 }
             }
         }
@@ -71,7 +71,7 @@ Item {
         anchors.fill:parent 
         visible: (!diablo.patching && !diablo.errored && diablo.playable)
 
-        SText {
+        Title {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             anchors.leftMargin: 30
@@ -84,7 +84,7 @@ Item {
     Item {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        width: 320
+        width: 350
         height: 40
         visible: (!diablo.validVersion && !diablo.patching && !diablo.errored)
 
@@ -98,18 +98,18 @@ Item {
             source: "assets/svg/error.svg"
         }
 
-        SText {
+        Title {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             anchors.leftMargin: 30
-            text: "Games aren't up to date"
+            text: "Games need to be updated"
             font.pixelSize: 15
         }
 
         XButton {
-            width: 100
+            width: 120
             height: 40
-            label: "UPDATE"
+            label: "UPDATE NOW"
             fontSize: 10
             anchors.top: parent.top
             anchors.right: parent.right

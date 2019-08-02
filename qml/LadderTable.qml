@@ -29,7 +29,7 @@ Item {
 			height: 50
 			width: 285
 			
-			SText {
+			Title {
 				text: "LADDER TOP 10"
 				font.pixelSize: 13
 				font.bold: true

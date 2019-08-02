@@ -14,11 +14,11 @@ Rectangle {
     FontLoader { id: beaufortbold; source: "assets/fonts/Beaufort-Bold.ttf" }
     
     // Background image.
-    Item {
+    /*Item {
         id: background
         anchors.fill: parent;
         Image { source: "assets/bg_red.png"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
-    }
+    }*/
 
     // Top bar for the entire app.
     TopBar {
