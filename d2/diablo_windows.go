@@ -54,43 +54,6 @@ func validate113cVersion(path string) (bool, error) {
 }
 
 // launch will execute the Diablo II.exe in the given directory.
-/*func launch(path string) error {
-	fmt.Println("LAUNCHING")
-
-	// Localize the path.
-	localized := localizePath(path)
-
-	// Exec the Diablo II.exe.
-	cmd := exec.Command(localized+"\\Diablo II.exe", "-w")
-	cmd.Dir = localized
-
-	// Collect the output from the command.
-	var output bytes.Buffer
-	var stderr bytes.Buffer
-
-	cmd.Stdout = &output
-	cmd.Stderr = &stderr
-
-	if err := cmd.Start(); err != nil {
-		fmt.Println(output.Bytes())
-		fmt.Println(stderr.Bytes())
-		fmt.Println("Start err:", err)
-		return err
-	}
-
-	if err := cmd.Wait(); err != nil {
-		fmt.Println(output.Bytes())
-		fmt.Println(stderr.Bytes())
-		fmt.Println("Wait err:", err)
-		return err
-	}
-
-	fmt.Println(output.Bytes())
-	fmt.Println(stderr.Bytes())
-
-	return nil
-}*/
-
 func launch(path string, done chan execState) (*int, error) {
 	// Localize the path.
 	localized := localizePath(path)
