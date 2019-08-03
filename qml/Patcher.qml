@@ -75,7 +75,7 @@ Item {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             anchors.leftMargin: 30
-            text: "Game is up to date"
+            text: "Games are up to date"
             font.pixelSize: 15
         }
     }

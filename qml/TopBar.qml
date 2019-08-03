@@ -2,6 +2,9 @@ import QtQuick 2.12                 // Item
 import QtQuick.Layouts 1.3          // RowLayout
 
 Item {
+    property string activeMenuItem: "launch"
+    property string menuGradientStart: "#000000"
+    property string menuGradientStop: "#0d0d0d"
     property var menuSources: { 
         "launch": "LauncherView.qml",
         "rules": "RulesView.qml",
@@ -33,11 +36,21 @@ Item {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 height: parent.height
                 width: 100
+
+                Rectangle {
+                    visible: activeMenuItem == "launch"
+                    anchors.fill: parent
+                    gradient: Gradient {
+                           GradientStop { position: 0.2; color: menuGradientStart }
+                            GradientStop { position: 1.0; color: menuGradientStop }
+                    }
+                }
                 
                 MenuItem {
                     text: "LAUNCH"
 
                     onClicked: function() {
+                        activeMenuItem = "launch"
                         contentLoader.source = menuSources.launch
                     }
                 }
@@ -47,11 +60,21 @@ Item {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 height: parent.height
                 width: 100
+
+                Rectangle {
+                    visible: activeMenuItem == "community"
+                    anchors.fill: parent
+                    gradient: Gradient {
+                           GradientStop { position: 0.2; color: menuGradientStart }
+                            GradientStop { position: 1.0; color: menuGradientStop }
+                    }
+                }
                 
                 MenuItem {
                     text: "COMMUNITY"
 
                     onClicked: function() {
+                        activeMenuItem = "community"
                         contentLoader.source = menuSources.community
                     }
                 }
@@ -61,11 +84,21 @@ Item {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 height: parent.height
                 width: 100
+
+                Rectangle {
+                    visible: activeMenuItem == "rules"
+                    anchors.fill: parent
+                    gradient: Gradient {
+                           GradientStop { position: 0.2; color: menuGradientStart }
+                            GradientStop { position: 1.0; color: menuGradientStop }
+                    }
+                }
                 
                 MenuItem {
                     text: "RULES"
 
                     onClicked: function() {
+                        activeMenuItem = "rules"
                         contentLoader.source = menuSources.rules
                     }
                 }
@@ -75,11 +108,20 @@ Item {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 height: parent.height
                 width: 100
+
+                Rectangle {
+                    visible: activeMenuItem == "armory"
+                    anchors.fill: parent
+                    gradient: Gradient {
+                           GradientStop { position: 0.2; color: menuGradientStart }
+                            GradientStop { position: 1.0; color: menuGradientStop }
+                    }
+                }
             
                 MenuItem {
                     text: "ARMORY"
-
                     onClicked: function() {
+                        activeMenuItem = "armory"
                         contentLoader.source = menuSources.armory
                     }
                 }

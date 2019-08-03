@@ -7,11 +7,13 @@ SText {
     font.family: beaufortbold.name
     font.bold: true
     font.pixelSize: 14
-    color: "#c4b58b"
+    color: mousearea.containsMouse ? "#ffffe6" : "#c4b58b"
     
     MouseArea {
+        id: mousearea
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: parent.onClicked()
+        hoverEnabled: true
     }
 } 

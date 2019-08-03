@@ -7,10 +7,12 @@ Button {
 
     property int fontSize: 15
     property string label: ""
+    property bool clickable: true
+    property bool enabled: clickable
     
     Text {
         text: label
-        color: "#f3e6d0"
+        color: clickable ? "#f3e6d0" : "#737373"
         font.family: beaufortbold.name
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
@@ -56,11 +58,16 @@ Button {
         hoverEnabled: true
         anchors.fill: parent
 
-        cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+        cursorShape: containsMouse ? ((clickable) ? Qt.PointingHandCursor : Qt.ForbiddenCursor) : Qt.ArrowCursor
 
         // Disable click on mouse area, making the event propagate
         // to the parent button. We need the mouse area to override
         // the button mouse cursor property.
-        onPressed: mouse.accepted = false
+        onPressed: {
+            if(!clickable) {
+                return false
+            }
+            mouse.accepted = false
+        }
     }
 }

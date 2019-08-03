@@ -32,7 +32,7 @@ Rectangle {
     }
 
     Title {
-        color: "#ccb789"
+        color: mousearea.containsMouse ? "#ffffe6" : "#c4b58b"
         font.pixelSize: 13
         text: model.name
         anchors.verticalCenter: parent.verticalCenter
@@ -49,6 +49,17 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         anchors.rightMargin: 20
         anchors.right: parent.right
+    }
+
+    MouseArea {
+        id: mousearea
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onClicked: {
+            console.log("clicked ladder item")
+            Qt.openUrlExternally("https://armory.slashdiablo.net/character/"+model.name.toLowerCase())
+        }
+        hoverEnabled: true
     }
 
     Separator{}
