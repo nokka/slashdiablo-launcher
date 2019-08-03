@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/nokka/slashdiablo-launcher/config"
@@ -17,6 +18,49 @@ import (
 type Service struct {
 	githubClient  github.Client
 	configService config.Service
+	gameStates    chan execState
+	runningGames  []game
+	mux           sync.Mutex
+}
+
+type game struct {
+	PID    int
+	GameID int
+}
+
+type execState struct {
+	pid *int
+	err error
+}
+
+func (s *Service) listenForGameStates() {
+	fmt.Println("Listening for game states")
+	for {
+		select {
+		case state := <-s.gameStates:
+			fmt.Println("GOT STATE-------------------------")
+			// Something went wrong while execing, log error.
+			if state.err != nil {
+				fmt.Println("Got error", state.err)
+			}
+
+			s.mux.Lock()
+
+			// Game exited, remove it from the slice based on pid.
+			for index, g := range s.runningGames {
+				if state.pid != nil && g.PID == *state.pid {
+					fmt.Println("Delete index", index)
+					s.runningGames = append(s.runningGames[:index], s.runningGames[index+1:]...)
+
+					fmt.Println("Running games after the delete")
+					fmt.Println(s.runningGames)
+				}
+			}
+
+			s.mux.Unlock()
+			fmt.Println("------------------------------")
+		}
+	}
 }
 
 // Exec will exec the Diablo 2.
@@ -26,17 +70,22 @@ func (s *Service) Exec() error {
 		return err
 	}
 
-	for _, game := range conf.Games {
-		for i := 0; i < game.Instances; i++ {
+	for _, g := range conf.Games {
+		for i := 0; i < g.Instances; i++ {
 			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
-			time.Sleep(500 * time.Millisecond)
-			go func() {
-				if err := launch(game.Location); err != nil {
-					return
-				}
-			}()
+			time.Sleep(200 * time.Millisecond)
+			pid, err := launch(g.Location, s.gameStates)
+			if err != nil {
+				return err
+			}
+
+			// Add the started game to our slice of games.
+			s.runningGames = append(s.runningGames, game{PID: *pid, GameID: g.ID})
 		}
 	}
+
+	fmt.Println("RUNNING GAMES")
+	fmt.Println(s.runningGames)
 
 	return nil
 }
@@ -446,8 +495,15 @@ func NewService(
 	githubClient github.Client,
 	configuration config.Service,
 ) *Service {
-	return &Service{
+	s := &Service{
 		githubClient:  githubClient,
 		configService: configuration,
+		gameStates:    make(chan execState, 4),
 	}
+
+	// Setup game listener once, will stay alive for the duration
+	// of the service's life cycle.
+	go s.listenForGameStates()
+
+	return s
 }

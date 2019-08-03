@@ -5,12 +5,15 @@ package d2
 import (
 	"bufio"
 	"bytes"
+	"crypto/sha1"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 	"unicode/utf8"
 )
 
@@ -28,7 +31,7 @@ var hashList = map[string]string{
 // validate113cVersion will check the given installations Diablo II version.
 func validate113cVersion(path string) (bool, error) {
 	// Open local Game.exe.
-	/*content, err := ioutil.ReadFile(localizePath(path) + "\\Game.exe")
+	content, err := ioutil.ReadFile(localizePath(path) + "\\Game.exe")
 	if err != nil {
 		if os.IsNotExist(err) {
 			return false, nil
@@ -48,12 +51,10 @@ func validate113cVersion(path string) (bool, error) {
 	}
 
 	return version == "1.13c", nil
-	*/
-	return false, nil
 }
 
 // launch will execute the Diablo II.exe in the given directory.
-func launch(path string) error {
+/*func launch(path string) error {
 	fmt.Println("LAUNCHING")
 
 	// Localize the path.
@@ -88,6 +89,50 @@ func launch(path string) error {
 	fmt.Println(stderr.Bytes())
 
 	return nil
+}*/
+
+func launch(path string, done chan execState) (*int, error) {
+	// Localize the path.
+	localized := localizePath(path)
+
+	// Exec the Diablo II.exe.
+	cmd := exec.Command(localized+"\\Diablo II.exe", "-w")
+	cmd.Dir = localized
+
+	// Collect the output from the command.
+	var stderr bytes.Buffer
+
+	// Pipe errors to our buffer.
+	cmd.Stderr = &stderr
+
+	fmt.Println("Starting...")
+	if err := cmd.Start(); err != nil {
+		return nil, err
+	}
+
+	fmt.Println("Started with pid:", cmd.Process.Pid)
+
+	// Wait on separate thread.
+	go func() {
+		fmt.Println("Waiting...")
+
+		if err := cmd.Wait(); err != nil {
+			if exiterr, ok := err.(*exec.ExitError); ok {
+				// The program has exited with an exit code != 0
+				if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+					done <- execState{pid: &cmd.Process.Pid, err: fmt.Errorf("Exit status: %d : %s", status.ExitStatus(), stderr.String())}
+				}
+			} else {
+				// Was some other wait error such as permissions, return the err.
+				done <- execState{pid: &cmd.Process.Pid, err: fmt.Errorf("cmd.Wait: %d : %s", err, stderr.String())}
+			}
+		}
+
+		fmt.Println("Waiting done...")
+		done <- execState{pid: &cmd.Process.Pid, err: nil}
+	}()
+
+	return &cmd.Process.Pid, nil
 }
 
 /*func launch(path string) error {
