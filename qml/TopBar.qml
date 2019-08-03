@@ -3,8 +3,8 @@ import QtQuick.Layouts 1.3          // RowLayout
 
 Item {
     property string activeMenuItem: "launch"
-    property string menuGradientStart: "#000000"
-    property string menuGradientStop: "#0d0d0d"
+    property string menuGradientStart: "#00000000"
+    property string menuGradientStop: "#b3a792"
     property var menuSources: { 
         "launch": "LauncherView.qml",
         "rules": "RulesView.qml",
@@ -39,6 +39,7 @@ Item {
 
                 Rectangle {
                     visible: activeMenuItem == "launch"
+                    opacity: 0.1
                     anchors.fill: parent
                     gradient: Gradient {
                            GradientStop { position: 0.2; color: menuGradientStart }
@@ -48,7 +49,6 @@ Item {
                 
                 MenuItem {
                     text: "LAUNCH"
-
                     onClicked: function() {
                         activeMenuItem = "launch"
                         contentLoader.source = menuSources.launch
@@ -63,6 +63,7 @@ Item {
 
                 Rectangle {
                     visible: activeMenuItem == "community"
+                    opacity: 0.1
                     anchors.fill: parent
                     gradient: Gradient {
                            GradientStop { position: 0.2; color: menuGradientStart }
@@ -87,6 +88,7 @@ Item {
 
                 Rectangle {
                     visible: activeMenuItem == "rules"
+                    opacity: 0.1
                     anchors.fill: parent
                     gradient: Gradient {
                            GradientStop { position: 0.2; color: menuGradientStart }
@@ -111,6 +113,7 @@ Item {
 
                 Rectangle {
                     visible: activeMenuItem == "armory"
+                    opacity: 0.1
                     anchors.fill: parent
                     gradient: Gradient {
                            GradientStop { position: 0.2; color: menuGradientStart }
