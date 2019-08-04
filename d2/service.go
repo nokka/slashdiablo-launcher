@@ -63,6 +63,11 @@ func (s *Service) listenForGameStates() {
 	}
 }
 
+// SetGateway will set the given gateway for the user.
+func (s *Service) SetGateway(gateway string) error {
+	return nil
+}
+
 // Exec will exec the Diablo 2.
 func (s *Service) Exec() error {
 	conf, err := s.configService.Read()
@@ -73,7 +78,7 @@ func (s *Service) Exec() error {
 	for _, g := range conf.Games {
 		for i := 0; i < g.Instances; i++ {
 			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
-			time.Sleep(200 * time.Millisecond)
+			time.Sleep(500 * time.Millisecond)
 			pid, err := launch(g.Location, s.gameStates)
 			if err != nil {
 				return err

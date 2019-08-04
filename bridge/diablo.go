@@ -1,6 +1,8 @@
 package bridge
 
 import (
+	"fmt"
+
 	"github.com/nokka/slashdiablo-launcher/d2"
 	"github.com/nokka/slashdiablo-launcher/log"
 	"github.com/therecipe/qt/core"
@@ -24,10 +26,11 @@ type DiabloBridge struct {
 	_ string  `property:"status"`
 
 	// Slots.
-	_ func() `slot:"launchGame"`
-	_ func() `slot:"validateVersion"`
-	_ func() `slot:"applyPatches"`
-	_ func() `slot:"runDEPFix"`
+	_ func()               `slot:"launchGame"`
+	_ func()               `slot:"validateVersion"`
+	_ func()               `slot:"applyPatches"`
+	_ func()               `slot:"runDEPFix"`
+	_ func(gateway string) `slot:"setGateway"`
 }
 
 // Connect will connect the QML signals to functions in Go.
@@ -36,6 +39,7 @@ func (q *DiabloBridge) Connect() {
 	q.ConnectApplyPatches(q.applyPatches)
 	q.ConnectValidateVersion(q.validateVersion)
 	q.ConnectRunDEPFix(q.runDEPFix)
+	q.ConnectSetGateway(q.setGateway)
 }
 
 func (q *DiabloBridge) launchGame() {
@@ -107,6 +111,10 @@ func (q *DiabloBridge) runDEPFix() {
 		q.logger.Error(err)
 		// @TODO: Add QML signal.
 	}
+}
+
+func (q *DiabloBridge) setGateway(gateway string) {
+	fmt.Println(gateway)
 }
 
 // NewDiablo ...

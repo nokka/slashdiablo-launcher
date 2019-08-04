@@ -78,6 +78,22 @@ Item {
             text: "Games are up to date"
             font.pixelSize: 15
         }
+
+
+        Dropdown{
+            id: gameInstances
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.rightMargin: 30
+            currentIndex: 0
+            model: [ "Slashdiablo", "Battle.net"]
+            height: 30
+            width: 120
+
+            onActivated: {
+                diablo.setGateway(this.currentText)
+            }
+        }
     }
 
     // Show when the Diablo version is invalid, we're not patching and there's no error.
