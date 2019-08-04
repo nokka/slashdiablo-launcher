@@ -34,7 +34,6 @@ type execState struct {
 }
 
 func (s *Service) listenForGameStates() {
-	fmt.Println("Listening for game states")
 	for {
 		select {
 		case state := <-s.gameStates:
@@ -79,6 +78,7 @@ func (s *Service) Exec() error {
 		for i := 0; i < g.Instances; i++ {
 			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
 			time.Sleep(500 * time.Millisecond)
+
 			pid, err := launch(g.Location, s.gameStates)
 			if err != nil {
 				return err
@@ -88,9 +88,6 @@ func (s *Service) Exec() error {
 			s.runningGames = append(s.runningGames, game{PID: *pid, GameID: g.ID})
 		}
 	}
-
-	fmt.Println("RUNNING GAMES")
-	fmt.Println(s.runningGames)
 
 	return nil
 }
@@ -108,15 +105,17 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 		return false, err
 	}
 
+	upToDate := true
+
 	if len(conf.Games) > 0 {
 		for _, game := range conf.Games {
-			ok, err := validate113cVersion(game.Location)
+			valid, err := validate113cVersion(game.Location)
 			if err != nil {
 				return false, err
 			}
 
 			// Game wasn't 1.13c, needs to be updated.
-			if !ok {
+			if !valid {
 				return false, nil
 			}
 
@@ -126,16 +125,15 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 				return false, err
 			}
 
+			// Files aren't up to date.
 			if len(patchFiles) > 0 {
 				return false, nil
 			}
-
-			// Game is both 1.13c and up to date with Slash patches.
-			return true, nil
 		}
 	}
 
-	return false, nil
+	// Games are both 1.13c and up to date with Slash patches.
+	return upToDate, nil
 }
 
 // Patch will check for updates and if found, patch the game, both D2 and HD version.
@@ -218,11 +216,6 @@ func (s *Service) apply113c(path string, state chan PatchState, progress chan fl
 	}
 
 	if len(patchFiles) > 0 {
-		fmt.Println("SHOULD PATCH")
-		fmt.Println("------------------")
-		fmt.Println(path)
-		fmt.Println(patchFiles)
-		fmt.Println("------------------")
 		// Update UI.
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to 1.13c", path)}
 
@@ -441,11 +434,6 @@ func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, i
 
 			return nil, 0, err
 		}
-
-		fmt.Println("------------------")
-		fmt.Println("FILE", f.Name)
-		fmt.Println("LOCAL", hashed)
-		fmt.Println("REMOTE", f.CRC)
 
 		// File checksum differs from local copy, we need to get a new one.
 		if hashed != f.CRC {

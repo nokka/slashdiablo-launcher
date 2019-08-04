@@ -25,7 +25,7 @@ func main() {
 		githubOwner      = envString("GITHUB_OWNER", "nokka")
 		githubRepository = envString("GITHUB_REPO", "slashdiablo-patches")
 		githubToken      = envString("GITHUB_TOKEN", "")
-		debugMode        = envBool("DEBUG_MODE", true)
+		debugMode        = envBool("DEBUG_MODE", false)
 	)
 
 	// Set app context.
