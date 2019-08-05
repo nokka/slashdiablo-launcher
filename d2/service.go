@@ -100,13 +100,26 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 	}
 
 	// Get current slash patch and compare.
-	manifest, err := s.getManifest("current/manifest.json")
+	slashManifest, err := s.getManifest("current/manifest.json")
+	if err != nil {
+		return false, err
+	}
+
+	// Get current maphack patch and compare.
+	maphackManifest, err := s.getManifest("maphack/manifest.json")
+	if err != nil {
+		return false, err
+	}
+
+	// Get current HD patch and compare.
+	HDManifest, err := s.getManifest("hd/manifest.json")
 	if err != nil {
 		return false, err
 	}
 
 	upToDate := true
 
+	fmt.Println("DOING VALIDATION LOOP")
 	if len(conf.Games) > 0 {
 		for _, game := range conf.Games {
 			valid, err := validate113cVersion(game.Location)
@@ -119,20 +132,73 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 				return false, nil
 			}
 
+			fmt.Println("1.13c was valid")
+
 			// Check if the current game install is up to date with the slash patch.
-			patchFiles, _, err := s.getFilesToPatch(manifest.Files, game.Location)
+			slashFiles, _, err := s.getFilesToPatch(slashManifest.Files, game.Location)
 			if err != nil {
 				return false, err
 			}
 
-			// Files aren't up to date.
-			if len(patchFiles) > 0 {
+			// Slash patch isn't up to date.
+			if len(slashFiles) > 0 {
+				fmt.Println(slashFiles)
+				fmt.Println("SLASH FILES WEREN'T UP TO DATE")
 				return false, nil
+			}
+
+			// MAPHACK -------------------------------------------
+			// Check how many files aren't up to date with maphack.
+			maphackFiles, _, err := s.getFilesToPatch(maphackManifest.Files, game.Location)
+			if err != nil {
+				return false, err
+			}
+
+			// Maphack is enabled, make sure there's no missing files.
+			if game.Maphack {
+				fmt.Println("MAPHACK WAS ENABLED")
+
+				// Maphack patch isn't up to date.
+				if len(maphackFiles) > 0 {
+					return false, nil
+				}
+
+				fmt.Println("MAPHACK FILES ARE UP TO DATE")
+			} else {
+				fmt.Println("MAPHACK WAS NOT ENABLED")
+
+				fmt.Println("MAPHACK PATCH FILES:", len(maphackFiles))
+				fmt.Println("MAPHACK FILES IN TOTAL:", len(maphackManifest.Files))
+
+				// Maphack wasn't enabled, make sure we don't have any of the files.
+				if len(maphackFiles) != len(maphackManifest.Files) {
+					fmt.Println("MAPHACK VALIDATION FAILED")
+					return false, nil
+				}
+			}
+
+			// HD ------------------------------------------------
+			if game.HD {
+				fmt.Println("HD WAS ENABLED, CHECKING VERSION")
+				// Check if the current game install is up to date with the HD patch.
+				HDFiles, _, err := s.getFilesToPatch(HDManifest.Files, game.Location)
+				if err != nil {
+					return false, err
+				}
+
+				// Maphack patch isn't up to date.
+				if len(HDFiles) > 0 {
+					return false, nil
+				}
+
+				fmt.Println("HD FILES ARE UP TO DATE")
+			} else {
+				// hd wasn't enabled, make sure we remove the files.
 			}
 		}
 	}
 
-	// Games are both 1.13c and up to date with Slash patches.
+	// Games are both 1.13c and up to date with Slash patch, maphack and HD.
 	return upToDate, nil
 }
 
