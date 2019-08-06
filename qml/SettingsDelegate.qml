@@ -24,6 +24,7 @@ Item {
         anchors.topMargin: 10
 
         Title {
+            color: mousearea.containsMouse ? "#ffffe6" : "#f3e6d0"
             anchors.top: parent.top
             text: getName()
             font.pixelSize: 14
@@ -100,10 +101,12 @@ Item {
     }
 
     MouseArea {
+        id: mousearea
         anchors.top: parent.top
         anchors.left: parent.left
         width: (parent.width * 0.90)
         height: parent.height
+        hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onClicked: {
             settingsDelegate.ListView.view.currentIndex = index;
