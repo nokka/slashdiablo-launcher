@@ -3,12 +3,12 @@ import QtQuick.Controls 2.5 // ItemDelegate
 
 ItemDelegate {
     width: parent.width
+    height: 30
 
-    contentItem: Text {
+    contentItem: Title {
         id:textItem
         text: modelData
-        color: hovered ? "#ffffff" : "#898989"
-        elide: Text.ElideRight
+        color: hovered ? "#ffffff" : "#f3e6d0"
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignLeft
     }

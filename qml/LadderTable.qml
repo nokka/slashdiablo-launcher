@@ -16,17 +16,17 @@ Item {
 
     anchors.top: parent.top
     anchors.right: parent.right
-	anchors.topMargin: 5
-	anchors.rightMargin: 20
 
 	ColumnLayout {
 		anchors.fill: parent
+		anchors.leftMargin: 10
+		anchors.rightMargin: 10
 
 		// Shown when there's characters to show.
 		Item {
 			visible: (!ladder.loading && !ladder.error)
 			Layout.alignment: Qt.AlignHCenter
-			height: 50
+			height: 40
 			width: 285
 			
 			Title {

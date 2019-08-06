@@ -4,7 +4,7 @@ Rectangle {
     property int fontSize: 12
 
     width: parent.width
-    height: 32
+    height: 33
     radius: 5
     color: "#00000000"
 
@@ -62,5 +62,7 @@ Rectangle {
         hoverEnabled: true
     }
 
-    Separator{}
+    Separator{
+        color: "#3d3b36"
+    }
 }

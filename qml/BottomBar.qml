@@ -5,6 +5,19 @@ Item {
         anchors.bottom: parent.bottom;
         width: parent.width; height: 80
 
+        // Background.
+        Rectangle {
+            anchors.fill: parent
+            color: "#000000"
+            opacity: 0.6
+        }
+
+        Separator {
+            color: "#3d3b36"
+            anchors.top: parent.top
+            anchors.bottom: undefined
+        }
+
         // Patcher including progress bar.
         Patcher{
             width: parent.width * 0.65

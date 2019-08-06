@@ -4,10 +4,9 @@ import QtQuick.Controls 2.2
 ComboBox {
     id: dropdown
 
-    contentItem: Text {
+    contentItem: Title {
         text: dropdown.displayText
-        font: dropdown.font
-        color: dropdown.pressed ? "#969696" : "#ffffff"
+        color: dropdown.pressed ? "#969696" : "#f3e6d0"
         topPadding: 7
         leftPadding: 12
     }

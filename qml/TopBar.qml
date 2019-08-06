@@ -135,7 +135,7 @@ Item {
     // Status panel.
     Item {
         height: parent.height
-        width: parent.width * 0.34
+        width: parent.width * 0.3215
         anchors.right: parent.right
 
         RowLayout {
@@ -146,7 +146,7 @@ Item {
 
             // Server status.
             Item {
-                width: 120
+                width: 110
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 height: parent.height
                 
@@ -205,7 +205,7 @@ Item {
                 }
             }*/
 
-             // Options.
+             // Settings.
             Item {
                 width: 120
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
