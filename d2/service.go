@@ -119,7 +119,6 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 
 	upToDate := true
 
-	fmt.Println("DOING VALIDATION LOOP")
 	if len(conf.Games) > 0 {
 		for _, game := range conf.Games {
 			valid, err := validate113cVersion(game.Location)
@@ -129,10 +128,11 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 
 			// Game wasn't 1.13c, needs to be updated.
 			if !valid {
+				fmt.Println("1.13c WAS NOT UP TO DATE, RETURNING FALSE")
 				return false, nil
 			}
 
-			fmt.Println("1.13c was valid")
+			fmt.Println("1.13c WAS UP TO DATE")
 
 			// Check if the current game install is up to date with the slash patch.
 			slashFiles, _, err := s.getFilesToPatch(slashManifest.Files, game.Location)
@@ -142,64 +142,114 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 
 			// Slash patch isn't up to date.
 			if len(slashFiles) > 0 {
-				fmt.Println(slashFiles)
-				fmt.Println("SLASH FILES WEREN'T UP TO DATE")
+				fmt.Println("SLASH PATCH IS NOT UP TO DATE")
 				return false, nil
 			}
 
-			// MAPHACK -------------------------------------------
+			fmt.Println("SLASH PATCH WAS UP TO DATE")
+
 			// Check how many files aren't up to date with maphack.
-			maphackFiles, _, err := s.getFilesToPatch(maphackManifest.Files, game.Location)
+			missingMaphackFiles, _, err := s.getFilesToPatch(maphackManifest.Files, game.Location)
 			if err != nil {
 				return false, err
 			}
 
 			// Maphack is enabled, make sure there's no missing files.
 			if game.Maphack {
-				fmt.Println("MAPHACK WAS ENABLED")
-
 				// Maphack patch isn't up to date.
-				if len(maphackFiles) > 0 {
+				if len(missingMaphackFiles) > 0 {
+					fmt.Println("MAPHACK WAS EANBLED, BUT MISSING FILES")
 					return false, nil
 				}
-
-				fmt.Println("MAPHACK FILES ARE UP TO DATE")
+				fmt.Println("MAPHACK WAS ENABLED, EVERYTHING WAS OK")
 			} else {
-				fmt.Println("MAPHACK WAS NOT ENABLED")
-
-				fmt.Println("MAPHACK PATCH FILES:", len(maphackFiles))
-				fmt.Println("MAPHACK FILES IN TOTAL:", len(maphackManifest.Files))
-
-				// Maphack wasn't enabled, make sure we don't have any of the files.
-				if len(maphackFiles) != len(maphackManifest.Files) {
-					fmt.Println("MAPHACK VALIDATION FAILED")
-					return false, nil
-				}
-			}
-
-			// HD ------------------------------------------------
-			if game.HD {
-				fmt.Println("HD WAS ENABLED, CHECKING VERSION")
-				// Check if the current game install is up to date with the HD patch.
-				HDFiles, _, err := s.getFilesToPatch(HDManifest.Files, game.Location)
+				installed, err := isMaphackInstalled(game.Location)
 				if err != nil {
 					return false, err
 				}
 
-				// Maphack patch isn't up to date.
-				if len(HDFiles) > 0 {
+				// Maphack wasn't supposed to be installed, but it is, we need to update.
+				if installed {
+					fmt.Println("MAPHACK WAS INSTALLED WHEN IT WASN'T SUPPOSED TO, NEED TO UPDATE")
 					return false, nil
 				}
 
-				fmt.Println("HD FILES ARE UP TO DATE")
+				fmt.Println("MAPHACK WAS NOT ENABLED, EVERYTHING WAS OK")
+			}
+
+			// Check if the current game install is up to date with the HD patch.
+			missingHDFiles, _, err := s.getFilesToPatch(HDManifest.Files, game.Location)
+			if err != nil {
+				return false, err
+			}
+
+			if game.HD {
+				// HD patch isn't up to date.
+				if len(missingHDFiles) > 0 {
+					fmt.Println("HD WAS ENABLED, BUT MISSING FILES")
+					return false, nil
+				}
+				fmt.Println("HD WAS ENABLED, EVERYTHING WAS OK")
 			} else {
-				// hd wasn't enabled, make sure we remove the files.
+				installed, err := isHDInstalled(game.Location)
+				if err != nil {
+					return false, err
+				}
+
+				// HD wasn't supposed to be installed, but it is, we need to update.
+				if installed {
+					fmt.Println("HD WAS INSTALLED WHEN IT WASN'T SUPPOSED TO, NEED TO UPDATE")
+					return false, nil
+				}
+
+				fmt.Println("HD WAS NOT ENABLED, EVERYTHING WAS OK")
 			}
 		}
 	}
 
 	// Games are both 1.13c and up to date with Slash patch, maphack and HD.
 	return upToDate, nil
+}
+
+func (s *Service) resetPatch(path string, files []PatchFile) error {
+	// Check how many files aren't up to date.
+	missmatchedFiles, _, err := s.getFilesToPatch(files, path)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("RESETING PATCH")
+	fmt.Println("MISSMATCHED LENGTH", len(missmatchedFiles))
+	fmt.Println("MISSMATCHED FILES", missmatchedFiles)
+	fmt.Println("TOTAL FILES", len(files))
+
+	// If the number of missmatched files to patch aren't all of them, then we have
+	// some of them left that needs to be removed.
+	if len(missmatchedFiles) != len(files) {
+		for _, file := range files {
+			filePath := localizePath(fmt.Sprintf("%s/%s", path, file.Name))
+
+			// Check if the file exists, on disk, if it does, remove it.
+			_, err := os.Stat(filePath)
+			if err != nil {
+				// File didn't exist on disk, continue to next.
+				if os.IsNotExist(err) {
+					continue
+				}
+				// Unknown error.
+				return err
+
+			}
+
+			// File that shouldn't be on disk exists, remove it.
+			err = os.Remove(filePath)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 // Patch will check for updates and if found, patch the game, both D2 and HD version.
@@ -214,7 +264,59 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			return
 		}
 
+		// Download maphack manifest from patch repository, , we'll use it multiple times.
+		maphackManifest, err := s.getManifest("maphack/manifest.json")
+		if err != nil {
+			state <- PatchState{Error: err}
+			return
+		}
+		// Download HD manifest from patch repository, we'll use it multiple times.
+		hdManifest, err := s.getManifest("hd/manifest.json")
+		if err != nil {
+			state <- PatchState{Error: err}
+			return
+		}
+
 		for _, game := range conf.Games {
+			// If maphack is disabled, make sure no rogue files have managed to stay in the directory.
+			if !game.Maphack {
+				installed, err := isMaphackInstalled(game.Location)
+				if err != nil {
+					state <- PatchState{Error: err}
+					return
+				}
+
+				// If maphack is installed, but was supposed to be disabled, reset the patch.
+				if installed {
+					fmt.Println("RESETTING PATCH FOR MAPHACK")
+					err := s.resetPatch(game.Location, maphackManifest.Files)
+					if err != nil {
+						state <- PatchState{Error: err}
+						return
+					}
+				}
+			}
+
+			// If HD is disabled, make sure no rogue files have managed to stay in the directory.
+			if !game.HD {
+				installed, err := isHDInstalled(game.Location)
+				if err != nil {
+					state <- PatchState{Error: err}
+					return
+				}
+
+				// If HD is installed, but was supposed to be disabled, reset the patch.
+				if installed {
+					fmt.Println("RESETTING PATCH FOR HD")
+					err := s.resetPatch(game.Location, hdManifest.Files)
+					if err != nil {
+						state <- PatchState{Error: err}
+						return
+					}
+				}
+			}
+
+			// The install has been reset, let's validate the 1.13c version and apply missing files.
 			if err := s.apply113c(game.Location, state, progress); err != nil {
 				state <- PatchState{Error: err}
 				return
@@ -227,7 +329,7 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			}
 
 			if game.Maphack {
-				err = s.applyMaphack(game.Location, state, progress)
+				err = s.applyMaphack(game.Location, state, progress, maphackManifest.Files)
 				if err != nil {
 					state <- PatchState{Error: err}
 					return
@@ -235,7 +337,7 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			}
 
 			if game.HD {
-				err = s.applyHDMod(game.Location, state, progress)
+				err = s.applyHDMod(game.Location, state, progress, hdManifest.Files)
 				if err != nil {
 					state <- PatchState{Error: err}
 					return
@@ -266,8 +368,7 @@ func (s *Service) RunDEPFix() error {
 }
 
 func (s *Service) apply113c(path string, state chan PatchState, progress chan float32) error {
-	// Update UI.
-	state <- PatchState{Message: "Validating game version"}
+	state <- PatchState{Message: "Checking game version"}
 
 	// Download manifest from patch repository.
 	manifest, err := s.getManifest("1.13c/manifest.json")
@@ -282,7 +383,6 @@ func (s *Service) apply113c(path string, state chan PatchState, progress chan fl
 	}
 
 	if len(patchFiles) > 0 {
-		// Update UI.
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to 1.13c", path)}
 
 		if err := s.doPatch(patchFiles, patchLength, "1.13c", path, progress); err != nil {
@@ -299,8 +399,7 @@ func (s *Service) apply113c(path string, state chan PatchState, progress chan fl
 }
 
 func (s *Service) applySlashPatch(path string, state chan PatchState, progress chan float32) error {
-	// Update UI.
-	state <- PatchState{Message: "Validating Slashdiablo patch"}
+	state <- PatchState{Message: "Checking Slashdiablo patch"}
 
 	// Download manifest from patch repository.
 	manifest, err := s.getManifest("current/manifest.json")
@@ -315,7 +414,6 @@ func (s *Service) applySlashPatch(path string, state chan PatchState, progress c
 	}
 
 	if len(patchFiles) > 0 {
-		// Update UI.
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to current Slashdiablo patch", path)}
 
 		if err = s.doPatch(patchFiles, patchLength, "current", path, progress); err != nil {
@@ -331,24 +429,16 @@ func (s *Service) applySlashPatch(path string, state chan PatchState, progress c
 	return nil
 }
 
-func (s *Service) applyMaphack(path string, state chan PatchState, progress chan float32) error {
-	// Update UI.
-	state <- PatchState{Message: "Validating maphack"}
-
-	// Download manifest from patch repository.
-	manifest, err := s.getManifest("maphack/manifest.json")
-	if err != nil {
-		return err
-	}
+func (s *Service) applyMaphack(path string, state chan PatchState, progress chan float32, manifestFiles []PatchFile) error {
+	state <- PatchState{Message: "Checking maphack..."}
 
 	// Figure out which files to patch.
-	patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
+	patchFiles, patchLength, err := s.getFilesToPatch(manifestFiles, path)
 	if err != nil {
 		return err
 	}
 
 	if len(patchFiles) > 0 {
-		// Update UI.
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to latest maphack version", path)}
 
 		if err = s.doPatch(patchFiles, patchLength, "maphack", path, progress); err != nil {
@@ -364,18 +454,12 @@ func (s *Service) applyMaphack(path string, state chan PatchState, progress chan
 	return nil
 }
 
-func (s *Service) applyHDMod(path string, state chan PatchState, progress chan float32) error {
+func (s *Service) applyHDMod(path string, state chan PatchState, progress chan float32, manifestFiles []PatchFile) error {
 	// Update UI.
-	state <- PatchState{Message: "Validating HD mod"}
-
-	// Download manifest from patch repository.
-	manifest, err := s.getManifest("hd/manifest.json")
-	if err != nil {
-		return err
-	}
+	state <- PatchState{Message: "Checking HD mod"}
 
 	// Figure out which files to patch.
-	patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
+	patchFiles, patchLength, err := s.getFilesToPatch(manifestFiles, path)
 	if err != nil {
 		return err
 	}
