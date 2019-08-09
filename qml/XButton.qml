@@ -24,8 +24,16 @@ Button {
 
         // Outer border.
         gradient: Gradient {
-            GradientStop { position: 0.0; color: "#362d14" }
-            GradientStop { position: 1.0; color: "#a17b2f" }
+            GradientStop { 
+                id: gradientStart
+                position: 0.0;
+                color: (hovered ? "#615840" : "#362d14")
+            }
+            GradientStop {
+                id: gradientStop
+                position: 1.0;
+                color: (hovered ? "#d9b16c" : "#a17b2f")
+            }
         }
 
         // Inner fill.
@@ -46,12 +54,63 @@ Button {
 
         // Most inner fill.
         Rectangle {
+            id: fill
             width: (parent.width-15)
             height: (parent.height-15)
             anchors.centerIn: parent
-            color: "#040405"
+            color: (hovered ? "#000c14" : "#040405")
         }
     }
+    
+    PropertyAnimation {
+        id: animateIn
+        target: fill
+        properties: "color";
+        to: "#000c14";
+        duration: 200
+    }
+
+    PropertyAnimation {
+        id: animateOut
+        target: fill
+        properties: "color";
+        to: "#040405";
+        duration: 100
+    }
+
+    // Gradient animations in.
+    /*PropertyAnimation {
+        id: animateGradientTopIn
+        target: gradientStart
+        properties: "color"
+        to: "#b5ac98"
+        duration: 100
+    }
+
+    PropertyAnimation {
+        id: animateGradientBottomIn
+        target: gradientStop
+        properties: "color"
+        to: "#d9b16c"
+        duration: 100
+    }
+
+    // Gradient animations out.
+    PropertyAnimation {
+        id: animateGradientTopOut
+        target: gradientStart
+        properties: "color"
+        to: "#362d14"
+        duration: 0
+    }
+
+    PropertyAnimation {
+        id: animateGradientBottomOut
+        target: gradientStop
+        properties: "color"
+        to: "#a17b2f"
+        duration: 0
+    }*/
 
     MouseArea {
         id: mouseArea
@@ -70,4 +129,17 @@ Button {
             mouse.accepted = false
         }
     }
+
+    /*onHoveredChanged: {
+        if (hovered) {
+            animateIn.start();
+            animateGradientTopIn.start();
+            animateGradientBottomIn.start();
+            
+        } else {
+            animateOut.start();
+            animateGradientTopOut.start();
+            animateGradientBottomOut.start();
+        }
+    }*/
 }
