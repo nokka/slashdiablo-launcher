@@ -58,7 +58,7 @@ Button {
             width: (parent.width-15)
             height: (parent.height-15)
             anchors.centerIn: parent
-            color: (hovered ? "#000c14" : "#040405")
+            color: "#040405"
         }
     }
     
@@ -78,40 +78,6 @@ Button {
         duration: 100
     }
 
-    // Gradient animations in.
-    /*PropertyAnimation {
-        id: animateGradientTopIn
-        target: gradientStart
-        properties: "color"
-        to: "#b5ac98"
-        duration: 100
-    }
-
-    PropertyAnimation {
-        id: animateGradientBottomIn
-        target: gradientStop
-        properties: "color"
-        to: "#d9b16c"
-        duration: 100
-    }
-
-    // Gradient animations out.
-    PropertyAnimation {
-        id: animateGradientTopOut
-        target: gradientStart
-        properties: "color"
-        to: "#362d14"
-        duration: 0
-    }
-
-    PropertyAnimation {
-        id: animateGradientBottomOut
-        target: gradientStop
-        properties: "color"
-        to: "#a17b2f"
-        duration: 0
-    }*/
-
     MouseArea {
         id: mouseArea
         hoverEnabled: true
@@ -129,17 +95,4 @@ Button {
             mouse.accepted = false
         }
     }
-
-    /*onHoveredChanged: {
-        if (hovered) {
-            animateIn.start();
-            animateGradientTopIn.start();
-            animateGradientBottomIn.start();
-            
-        } else {
-            animateOut.start();
-            animateGradientTopOut.start();
-            animateGradientBottomOut.start();
-        }
-    }*/
 }
