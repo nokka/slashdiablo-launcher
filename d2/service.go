@@ -111,6 +111,9 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 		return false, err
 	}
 
+	fmt.Println("MAPHACK MANIFEST ---")
+	fmt.Println(maphackManifest)
+
 	// Get current HD patch and compare.
 	HDManifest, err := s.getManifest("hd/manifest.json")
 	if err != nil {
@@ -159,6 +162,7 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 				// Maphack patch isn't up to date.
 				if len(missingMaphackFiles) > 0 {
 					fmt.Println("MAPHACK WAS EANBLED, BUT MISSING FILES")
+					fmt.Println(missingMaphackFiles)
 					return false, nil
 				}
 				fmt.Println("MAPHACK WAS ENABLED, EVERYTHING WAS OK")
@@ -577,12 +581,20 @@ func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, i
 		if err != nil {
 			// If the file doesn't exist on disk, we need to patch it.
 			if err == ErrCRCFileNotFound {
+				if f.Name == "BH.cfg" {
+					fmt.Println("FILE DIDNT EXIST LOCALLY", file)
+				}
 				shouldPatch = append(shouldPatch, f.Name)
 				totalContentLength += f.ContentLength
 				continue
 			}
 
 			return nil, 0, err
+		}
+
+		if f.Name == "BH.cfg" {
+			fmt.Println("LOCAL HASH", hashed)
+			fmt.Println("SERVER HASH", f.CRC)
 		}
 
 		// File checksum differs from local copy, we need to get a new one.
