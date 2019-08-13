@@ -22,6 +22,7 @@ type DiabloBridge struct {
 	_ bool    `property:"errored"`
 	_ bool    `property:"playable"`
 	_ bool    `property:"validVersion"`
+	_ bool    `property:"validatingVersion"`
 	_ float32 `property:"patchProgress"`
 	_ string  `property:"status"`
 
@@ -34,26 +35,30 @@ type DiabloBridge struct {
 }
 
 // Connect will connect the QML signals to functions in Go.
-func (q *DiabloBridge) Connect() {
-	q.ConnectLaunchGame(q.launchGame)
-	q.ConnectApplyPatches(q.applyPatches)
-	q.ConnectValidateVersion(q.validateVersion)
-	q.ConnectRunDEPFix(q.runDEPFix)
-	q.ConnectSetGateway(q.setGateway)
+func (b *DiabloBridge) Connect() {
+	b.ConnectLaunchGame(b.launchGame)
+	b.ConnectApplyPatches(b.applyPatches)
+	b.ConnectValidateVersion(b.validateVersion)
+	b.ConnectRunDEPFix(b.runDEPFix)
+	b.ConnectSetGateway(b.setGateway)
 }
 
-func (q *DiabloBridge) launchGame() {
-	err := q.d2service.Exec()
-	if err != nil {
-		q.logger.Error(err)
-		// @TODO: Add QML signal.
-	}
+func (b *DiabloBridge) launchGame() {
+	// Do the work on another thread not to lock the GUI.
+	go func() {
+		err := b.d2service.Exec()
+		if err != nil {
+			b.logger.Error(err)
+			// @TODO: Add QML signal.
+		}
+	}()
+
 }
 
-func (q *DiabloBridge) applyPatches() {
+func (b *DiabloBridge) applyPatches() {
 	// Tell the GUI we've started patching.
-	q.SetPatching(true)
-	q.SetPlayable(false)
+	b.SetPatching(true)
+	b.SetPlayable(false)
 
 	// Run this on a seperate thread so we don't block the UI.
 	go func() {
@@ -61,59 +66,65 @@ func (q *DiabloBridge) applyPatches() {
 
 		// Let the patcher run, it returns a channel
 		// where we get the progress from, and another channel with errors.
-		progress, state := q.d2service.Patch(done)
+		progress, state := b.d2service.Patch(done)
 
 		for {
 			select {
 			case percentage := <-progress:
-				q.SetPatchProgress(percentage)
+				b.SetPatchProgress(percentage)
 			case current := <-state:
 				if current.Error != nil {
 					// Log the error to persistant logging store.
-					q.logger.Error(current.Error)
+					b.logger.Error(current.Error)
 
 					// Update bridge state.
-					q.SetErrored(true)
-					q.SetPatching(false)
+					b.SetErrored(true)
+					b.SetPatching(false)
 				}
 
 				if current.Message != "" {
-					q.SetStatus(current.Message)
+					b.SetStatus(current.Message)
 				}
 			case <-done:
-				q.SetPatching(false)
-				q.validateVersion()
+				b.SetPatching(false)
+				b.validateVersion()
 				return
 			}
 		}
 	}()
 }
 
-func (q *DiabloBridge) validateVersion() {
-	// TODO: Add state for checking for versions.
-	valid, err := q.d2service.ValidateGameVersions()
-	if err != nil {
-		q.logger.Error(err)
-		q.SetErrored(true)
-		return
-	}
+func (b *DiabloBridge) validateVersion() {
+	// Update GUI that we're updating.
+	b.SetValidatingVersion(true)
 
-	if valid {
-		q.SetPlayable(true)
-	}
+	// Do the work on another thread not to lock the GUI.
+	go func() {
+		// TODO: Add state for checking for versions.
+		valid, err := b.d2service.ValidateGameVersions()
+		if err != nil {
+			b.logger.Error(err)
+			b.SetErrored(true)
+		}
 
-	q.SetValidVersion(valid)
+		if valid {
+			b.SetPlayable(true)
+		}
+
+		b.SetValidVersion(valid)
+		b.SetValidatingVersion(false)
+	}()
 }
 
-func (q *DiabloBridge) runDEPFix() {
-	err := q.d2service.RunDEPFix()
+func (b *DiabloBridge) runDEPFix() {
+	err := b.d2service.RunDEPFix()
 	if err != nil {
-		q.logger.Error(err)
+		b.logger.Error(err)
 		// @TODO: Add QML signal.
 	}
 }
 
-func (q *DiabloBridge) setGateway(gateway string) {
+func (b *DiabloBridge) setGateway(gateway string) {
 	fmt.Println(gateway)
 }
 
@@ -129,6 +140,7 @@ func NewDiablo(d2s *d2.Service, logger log.Logger) *DiabloBridge {
 	b.SetPatching(false)
 	b.SetErrored(false)
 	b.SetPlayable(false)
+	b.SetValidatingVersion(false)
 
 	return b
 }

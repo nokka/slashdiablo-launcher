@@ -9,10 +9,31 @@ Item {
     anchors.leftMargin: 20
     anchors.verticalCenter: parent.verticalCenter
 
+    Item {
+        anchors.fill: parent
+        visible: diablo.validatingVersion
+
+        // Loading circle.			
+        CircularProgress {
+            size: 25
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            visible: true
+        }
+
+        Title {
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: 35
+            text: "Checking game versions..."
+            font.pixelSize: 15
+        }
+    }
+
     // Show when we're patching and no error has occurred.
     Item {
-        anchors.fill:parent 
-        visible: (diablo.patching && !diablo.errored)
+        anchors.fill: parent 
+        visible: (diablo.patching && !diablo.errored && !diablo.validatingVersion)
 
         ProgressBar {
             height: 4
@@ -44,7 +65,7 @@ Item {
     // Show when patcher errors.
     Item {
         anchors.fill:parent 
-        visible: diablo.errored
+        visible: diablo.errored && !diablo.validatingVersion
         
         Image {
             id: patcherError
@@ -69,7 +90,7 @@ Item {
     // Show when patching is done, no error occurred and the game is playable.
     Item {
         anchors.fill:parent 
-        visible: (!diablo.patching && !diablo.errored && diablo.playable)
+        visible: (!diablo.patching && !diablo.errored && !diablo.validatingVersion && diablo.playable)
 
         Title {
             anchors.left: parent.left
@@ -102,7 +123,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         width: 350
         height: 40
-        visible: (!diablo.validVersion && !diablo.patching && !diablo.errored)
+        visible: (!diablo.validVersion && !diablo.patching && !diablo.errored && !diablo.validatingVersion)
 
         Image {
             id: versionError

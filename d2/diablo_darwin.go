@@ -7,6 +7,28 @@ import (
 	"os"
 )
 
+// validate113cVersion will check the given installations Diablo II version.
+func validate113cVersion(dir string) (bool, error) {
+	return true, nil
+}
+
+// launch will execute the Diablo II.exe in the given directory.
+func launch(path string, done chan execState) (*int, error) {
+	fmt.Println(path)
+	id := 1
+	return &id, nil
+}
+
+// localizePath will localize the path for the OS.
+func localizePath(path string) string {
+	return path
+}
+
+// runDEPFix will run a fix to disable DEP.
+func runDEPFix(path string) error {
+	return nil
+}
+
 func isHDInstalled(path string) (bool, error) {
 	filePath := localizePath(fmt.Sprintf("%s/%s", path, "D2HD.dll"))
 
@@ -45,24 +67,7 @@ func isMaphackInstalled(path string) (bool, error) {
 	return true, nil
 }
 
-// validate113cVersion will check the given installations Diablo II version.
-func validate113cVersion(dir string) (bool, error) {
-	return true, nil
-}
-
-// launch will execute the Diablo II.exe in the given directory.
-func launch(path string, done chan execState) (*int, error) {
-	fmt.Println(path)
-	id := 1
-	return &id, nil
-}
-
-// localizePath will localize the path for the OS.
-func localizePath(path string) string {
-	return path
-}
-
-// runDEPFix will run a fix to disable DEP.
-func runDEPFix(path string) error {
+// setGateway will set the gateway for Diablo II.
+func setGateway(gateway string) error {
 	return nil
 }

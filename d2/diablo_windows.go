@@ -15,6 +15,8 @@ import (
 	"strings"
 	"syscall"
 	"unicode/utf8"
+
+	"golang.org/x/sys/windows/registry"
 )
 
 // SHA1 of the different versions of Diablo Game.exe.
@@ -26,44 +28,6 @@ var hashList = map[string]string{
 	"11e940266c6838414c2114c2172227f982d4054e": "1.14b",
 	"255691dd53e3bcd646e5c6e1e2e7b16da745b706": "1.14c",
 	"af0ea93d2a652ceb11ac01ee2e4ae1ef613444c2": "1.14d",
-}
-
-func isHDInstalled(path string) (bool, error) {
-	filePath := localizePath(fmt.Sprintf("%s/%s", path, "D2HD.dll"))
-
-	fmt.Println("HD FILE PATH", filePath)
-
-	// Check if the file exists on disk.
-	_, err := os.Stat(filePath)
-	if err != nil {
-		// File didn't exist on disk, return false.
-		if os.IsNotExist(err) {
-			return false, nil
-		}
-		// Unknown error.
-		return false, err
-	}
-
-	return true, nil
-}
-
-func isMaphackInstalled(path string) (bool, error) {
-	filePath := localizePath(fmt.Sprintf("%s/%s", path, "BH.dll"))
-
-	fmt.Println("MAPHACK FILE PATH", filePath)
-
-	// Check if the file exists on disk.
-	_, err := os.Stat(filePath)
-	if err != nil {
-		// File didn't exist on disk, return false.
-		if os.IsNotExist(err) {
-			return false, nil
-		}
-		// Unknown error.
-		return false, err
-	}
-
-	return true, nil
 }
 
 // validate113cVersion will check the given installations Diablo II version.
@@ -136,96 +100,6 @@ func launch(path string, done chan execState) (*int, error) {
 	return &cmd.Process.Pid, nil
 }
 
-/*func launch(path string) error {
-	// Localize the path.
-	localized := localizePath(path)
-
-	// Exec the Diablo II.exe.
-	cmd := exec.Command(localized+"\\Diablo II.exe", "-w")
-
-	err := cmd.Run()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}*/
-
-// localizePath will localize the path for the OS.
-func localizePath(path string) string {
-	// Windows uses backslashes for paths, so we'll reverse them.
-	reversed := strings.Replace(path, "/", "\\", -1)
-
-	// Remove the heading backslash.
-	_, i := utf8.DecodeRuneInString(reversed)
-
-	return reversed[i:]
-}
-
-// runDEPFix will run a fix to disable DEP.
-/*func runDEPFix(path string) error {
-	// Localize the path.
-	//localized := localizePath(path)
-	go func() {
-		cmd := exec.Command("cmd.exe", "/C", "call", `DEP_fix.bat`)
-		cmd.Dir = `D:\Testing\Diablo II`
-
-		var out bytes.Buffer
-		var stderr bytes.Buffer
-		var stdin io.Reader
-		cmd.Stdout = &out
-		cmd.Stderr = &stderr
-		cmd.Stdin = stdin
-
-		err := cmd.Run()
-		if err != nil {
-			fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
-		}
-
-		buf, err := ioutil.ReadAll(stdin)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(buf)
-	}()
-
-	return nil
-}*/
-
-/*func runDEPFix(path string) error {
-	// Localize the path.
-	//localized := localizePath(path)
-	go func() {
-		cmd := exec.Command("cmd.exe", "/C", "call", `DEP_fix.bat`)
-		cmd.Dir = `D:\Testing\Diablo II`
-
-		r, w, err := os.Pipe()
-		if err != nil {
-			return
-		}
-
-		cmd.Stdout = w
-		cmd.Stderr = w
-
-		go func() {
-			scanner := bufio.NewScanner(r)
-			for scanner.Scan() {
-				line := scanner.Text()
-				fmt.Println("READING LINE")
-				fmt.Println(line)
-			}
-		}()
-
-		err = cmd.Run()
-		if err != nil {
-			fmt.Println("ERROR", err)
-			return
-		}
-	}()
-
-	return nil
-}*/
-
 func runDEPFix(path string) error {
 	go func() {
 		cmd := exec.Command("cmd.exe", "/C", "call", `DEP_fix.bat`)
@@ -272,4 +146,72 @@ func runDEPFix(path string) error {
 	}()
 
 	return nil
+}
+
+// setGateway will set the gateway for Diablo II.
+func setGateway(gateway string) error {
+	// Open the Battle.net configuration registry key.
+	key, err := registry.OpenKey(registry.CURRENT_USER, `Software\Battle.net\Configuration`, registry.QUERY_VALUE|registry.SET_VALUE)
+	if err != nil {
+		return err
+	}
+
+	// Set the new value.
+	if err := key.SetStringValue("key", "value"); err != nil {
+		return err
+	}
+
+	// Close the registry when we're done.
+	if err := key.Close(); err != nil {
+		return err
+	}
+}
+
+func isHDInstalled(path string) (bool, error) {
+	filePath := localizePath(fmt.Sprintf("%s/%s", path, "D2HD.dll"))
+
+	fmt.Println("HD FILE PATH", filePath)
+
+	// Check if the file exists on disk.
+	_, err := os.Stat(filePath)
+	if err != nil {
+		// File didn't exist on disk, return false.
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		// Unknown error.
+		return false, err
+	}
+
+	return true, nil
+}
+
+func isMaphackInstalled(path string) (bool, error) {
+	filePath := localizePath(fmt.Sprintf("%s/%s", path, "BH.dll"))
+
+	fmt.Println("MAPHACK FILE PATH", filePath)
+
+	// Check if the file exists on disk.
+	_, err := os.Stat(filePath)
+	if err != nil {
+		// File didn't exist on disk, return false.
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		// Unknown error.
+		return false, err
+	}
+
+	return true, nil
+}
+
+// localizePath will localize the path for the OS.
+func localizePath(path string) string {
+	// Windows uses backslashes for paths, so we'll reverse them.
+	reversed := strings.Replace(path, "/", "\\", -1)
+
+	// Remove the heading backslash.
+	_, i := utf8.DecodeRuneInString(reversed)
+
+	return reversed[i:]
 }

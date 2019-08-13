@@ -2,16 +2,6 @@
 
 package d2
 
-import "fmt"
-
-func isHDInstalled(path string) (bool, error) {
-	return false, nil
-}
-
-func isMaphackInstalled(path string) (bool, error) {
-	return false, nil
-}
-
 // validate113cVersion will check the given installations Diablo II version.
 func validate113cVersion(dir string) (bool, error) {
 	return false, nil
@@ -19,7 +9,6 @@ func validate113cVersion(dir string) (bool, error) {
 
 // launch will execute the Diablo II.exe in the given directory.
 func launch(path string, done chan execState) (*int, error) {
-	fmt.Println(path)
 	id := 1
 	return &id, nil
 }
@@ -31,5 +20,18 @@ func localizePath(path string) string {
 
 // runDEPFix will run a fix to disable DEP.
 func runDEPFix(path string) error {
+	return nil
+}
+
+func isHDInstalled(path string) (bool, error) {
+	return false, nil
+}
+
+func isMaphackInstalled(path string) (bool, error) {
+	return false, nil
+}
+
+// setGateway will set the gateway for Diablo II.
+func setGateway(gateway string) error {
 	return nil
 }
