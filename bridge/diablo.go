@@ -1,8 +1,6 @@
 package bridge
 
 import (
-	"fmt"
-
 	"github.com/nokka/slashdiablo-launcher/d2"
 	"github.com/nokka/slashdiablo-launcher/log"
 	"github.com/therecipe/qt/core"
@@ -125,7 +123,11 @@ func (b *DiabloBridge) runDEPFix() {
 }
 
 func (b *DiabloBridge) setGateway(gateway string) {
-	fmt.Println(gateway)
+	err := b.d2service.SetGateway(gateway)
+	if err != nil {
+		b.logger.Error(err)
+		// @TODO: Add QML signal.
+	}
 }
 
 // NewDiablo ...
