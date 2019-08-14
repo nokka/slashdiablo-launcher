@@ -15,10 +15,10 @@ Item {
 
         // Loading circle.			
         CircularProgress {
-            size: 25
+            size: 20
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            visible: true
+            visible: diablo.validatingVersion
         }
 
         Title {

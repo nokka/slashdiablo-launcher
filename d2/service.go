@@ -64,6 +64,7 @@ func (s *Service) listenForGameStates() {
 
 // SetGateway will set the given gateway for the user.
 func (s *Service) SetGateway(gateway string) error {
+	// Call the set gateway func.
 	return nil
 }
 
