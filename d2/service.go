@@ -578,25 +578,16 @@ func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, i
 
 		// Get the checksum from the patch file on disk.
 		hashed, err := hashCRC32(path, polynomial)
+
 		if err != nil {
 			// If the file doesn't exist on disk, we need to patch it.
 			if err == ErrCRCFileNotFound {
-				if f.Name == "BH.cfg" {
-					fmt.Println("LOCAL HASH", hashed)
-					fmt.Println("SERVER HASH", f.CRC)
-					fmt.Println("FILE DIDNT EXIST LOCALLY", file)
-				}
 				shouldPatch = append(shouldPatch, f.Name)
 				totalContentLength += f.ContentLength
 				continue
 			}
 
 			return nil, 0, err
-		}
-
-		if f.Name == "BH.cfg" {
-			fmt.Println("LOCAL HASH", hashed)
-			fmt.Println("SERVER HASH", f.CRC)
 		}
 
 		// File checksum differs from local copy, we need to get a new one.
