@@ -154,11 +154,11 @@ func setGateway(gateway string) error {
 	var bnetIP string
 
 	switch gateway {
-	case "Slashdiablo":
-		bnetIP = "play.slashdiablo.net"
+	case GatewaySlashdiablo:
+		bnetIP = SlashDiabloIP
 		gatewayHex = getSlashGateway()
-	case "Battle.net":
-		bnetIP = "uswest.battle.net"
+	case GatewayBattleNet:
+		bnetIP = BattleNetIP
 		gatewayHex = getBattleNetGateway()
 	}
 

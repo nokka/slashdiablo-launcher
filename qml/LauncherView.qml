@@ -11,7 +11,21 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: 20
 
-        Item {
+        // News list.
+        ListView {
+			id: newsList
+			spacing: 4
+			height: 300
+
+			anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.topMargin: 20
+
+			model: NewsModel{}
+			delegate: NewsItemDelegate{}
+		}
+
+        /*Item {
             id: logobg
             width: 234
             height: 267
@@ -29,7 +43,7 @@ Item {
             anchors.top: parent.top
             anchors.topMargin: 117
             Image { source: "assets/logo-text.png"; anchors.fill: parent; opacity: 1.0 }
-        }
+        }*/
     }
 
     // Top ladder table.
