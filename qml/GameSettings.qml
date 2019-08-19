@@ -15,6 +15,7 @@ Item {
 
         // Update the switches initial state without triggering an animation.
         maphackSwitch.update()
+        overrideMaphackCfgSwitch.update()
         hdSwitch.update()
     }
 
@@ -25,6 +26,7 @@ Item {
                 location: d2pathInput.text,
                 instances: (gameInstances.currentIndex+1),
                 maphack: maphackSwitch.checked,
+                override_bh_cfg: overrideMaphackCfgSwitch.checked,
                 hd: hdSwitch.checked
             }
 
@@ -196,6 +198,42 @@ Item {
                 Separator{}
             }
 
+            // Use default maphack config.
+            Item {
+                Layout.preferredWidth: settingsLayout.width
+                Layout.preferredHeight: 60
+
+                Row {
+                    topPadding: 10
+
+                    Column {
+                        width: (settingsLayout.width - overrideMaphackCfg.width)
+                        Title {
+                            text: "OVERRIDE MAPHACK CONFIG"
+                            font.pixelSize: 13
+                        }
+
+                        SText {
+                            text: "Check if you want to provide your own custom BH.cfg."
+                            font.pixelSize: 11
+                            topPadding: 5
+                            color: "#454545"
+                        }
+                    }
+                    Column {
+                        id: overrideMaphackCfg
+                        width: 60
+                        SSwitch{
+                            id: overrideMaphackCfgSwitch
+                            checked: (game != undefined ? game.override_bh_cfg : false)
+                            onToggled: updateGameModel()
+                        }
+                    } 
+                }
+                
+                Separator{}
+            }
+
             // Include HD box.
             Item {
                 Layout.preferredWidth: settingsLayout.width
@@ -230,6 +268,40 @@ Item {
                 }
                 
                 Separator{}
+            }
+
+             // Dep fix.
+            Item {
+                Layout.preferredWidth: settingsLayout.width
+                Layout.preferredHeight: 60
+
+                Row {
+                    topPadding: 10
+
+                    Column {
+                        width: (settingsLayout.width - depFixButton.width)
+                        Title {
+                            text: "DATA EXECUTION PREVENTION (DEP)"
+                            font.pixelSize: 13
+                        }
+
+                        SText {
+                            text: "Run if this install has troubles with crashing - requires reboot."
+                            font.pixelSize: 11
+                            topPadding: 5
+                            color: "#454545"
+                        }
+                    }
+                    Column {
+                        id: depFixButton
+                        width: 100
+                        XButton {
+                            width: 100
+                            height: 40
+                            label: "Run"
+                        }
+                    } 
+                }
             }
         }
     }

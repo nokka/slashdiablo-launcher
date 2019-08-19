@@ -10,6 +10,7 @@ const (
 	Location
 	Instances
 	Maphack
+	OverrideBHCfg
 	HD
 )
 
@@ -27,11 +28,12 @@ type GameModel struct {
 
 func (m *GameModel) init() {
 	m.SetRoles(map[int]*core.QByteArray{
-		ID:        core.NewQByteArray2("id", -1),
-		Location:  core.NewQByteArray2("location", -1),
-		Instances: core.NewQByteArray2("instances", -1),
-		Maphack:   core.NewQByteArray2("maphack", -1),
-		HD:        core.NewQByteArray2("hd", -1),
+		ID:            core.NewQByteArray2("id", -1),
+		Location:      core.NewQByteArray2("location", -1),
+		Instances:     core.NewQByteArray2("instances", -1),
+		Maphack:       core.NewQByteArray2("maphack", -1),
+		OverrideBHCfg: core.NewQByteArray2("override_bh_config", -1),
+		HD:            core.NewQByteArray2("hd", -1),
 	})
 
 	m.ConnectData(m.data)
@@ -73,6 +75,8 @@ func (m *GameModel) data(index *core.QModelIndex, role int) *core.QVariant {
 		return core.NewQVariant1(item.Instances)
 	case Maphack:
 		return core.NewQVariant1(item.Maphack)
+	case OverrideBHCfg:
+		return core.NewQVariant1(item.OverrideBHCfg)
 	case HD:
 		return core.NewQVariant1(item.HD)
 	default:
@@ -80,7 +84,7 @@ func (m *GameModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	}
 }
 
-// addGame adds a character to the model.
+// addGame adds a game to the model.
 func (m *GameModel) addGame(g *Game) {
 	m.BeginInsertRows(core.NewQModelIndex(), len(m.Games()), len(m.Games()))
 	m.SetGames(append(m.Games(), g))
@@ -91,7 +95,7 @@ func (m *GameModel) addGame(g *Game) {
 func (m *GameModel) updateGame(index int) {
 	var fIndex = m.Index(0, 0, core.NewQModelIndex())
 	var lIndex = m.Index(index, 0, core.NewQModelIndex())
-	m.DataChanged(fIndex, lIndex, []int{Location, Instances, Maphack, HD})
+	m.DataChanged(fIndex, lIndex, []int{Location, Instances, Maphack, OverrideBHCfg, HD})
 }
 
 func (m *GameModel) removeGame(index int) {

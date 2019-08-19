@@ -25,7 +25,7 @@ func main() {
 		githubOwner      = envString("GITHUB_OWNER", "nokka")
 		githubRepository = envString("GITHUB_REPO", "slashdiablo-patches")
 		githubToken      = envString("GITHUB_TOKEN", "")
-		debugMode        = envBool("DEBUG_MODE", true)
+		debugMode        = envBool("DEBUG_MODE", false)
 	)
 
 	// Set app context.
@@ -148,6 +148,7 @@ func populateGameModel(conf *storage.Config, gm *config.GameModel) {
 		g.Location = game.Location
 		g.Instances = game.Instances
 		g.Maphack = game.Maphack
+		g.OverrideBHCfg = game.OverrideBHCfg
 		g.HD = game.HD
 
 		gm.AddGame(g)

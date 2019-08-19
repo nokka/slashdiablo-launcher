@@ -98,7 +98,6 @@ func (b *DiabloBridge) validateVersion() {
 
 	// Do the work on another thread not to lock the GUI.
 	go func() {
-		// TODO: Add state for checking for versions.
 		valid, err := b.d2service.ValidateGameVersions()
 		if err != nil {
 			b.logger.Error(err)

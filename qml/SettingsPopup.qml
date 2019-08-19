@@ -12,7 +12,8 @@ Popup {
         "location": 258,
         "instances": 260,
         "maphack": 264,
-        "hd": 272
+        "override_bh_cfg": 272,
+        "hd": 288
     }
 
     modal: true
@@ -92,6 +93,7 @@ Popup {
                                 "location": model.data(model.index(this.currentIndex, 0), gameRoles.location),
                                 "instances": model.data(model.index(this.currentIndex, 0), gameRoles.instances),
                                 "maphack": model.data(model.index(this.currentIndex, 0), gameRoles.maphack),
+                                "override_bh_cfg": model.data(model.index(this.currentIndex, 0), gameRoles.override_bh_cfg),
                                 "hd": model.data(model.index(this.currentIndex, 0), gameRoles.hd)
                             })
                         }
@@ -151,7 +153,7 @@ Popup {
                         id: gameSettings
                         anchors.left: parent.left
                         anchors.top: parent.top
-                        anchors.topMargin: 49
+                        anchors.topMargin: 45
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                 }

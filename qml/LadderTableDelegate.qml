@@ -56,7 +56,6 @@ Rectangle {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: {
-            console.log("clicked ladder item")
             Qt.openUrlExternally("https://armory.slashdiablo.net/character/"+model.name.toLowerCase())
         }
         hoverEnabled: true
