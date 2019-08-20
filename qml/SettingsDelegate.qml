@@ -60,7 +60,7 @@ Item {
                 }
             }
 
-                // Maphack circle.
+            // Maphack circle.
             Rectangle {
                 visible: model.maphack
                 color: "#038a66"

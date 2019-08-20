@@ -10,7 +10,7 @@ Item {
 	Rectangle {
 		anchors.fill: parent
 		color: "#000000"
-		opacity: 0.5
+		opacity: 0.8
 	}
 
     anchors.top: parent.top

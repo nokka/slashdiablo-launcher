@@ -102,6 +102,7 @@ Popup {
 
                 // Add new game button.
                 Title {
+                    visible: (gamesList.count <= 3)
                     text: "+ Add new game"
                     anchors.top: gamesList.bottom
                     anchors.left: parent.left

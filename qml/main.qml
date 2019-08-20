@@ -4,7 +4,7 @@ import QtQuick.Controls 2.5
 Rectangle {
     id: root
     width: 1024; height: 600
-    color: "#12110f"
+    color: "#000000"
 
     // Load fonts.
     FontLoader { id: roboto; source: "assets/fonts/Roboto-Regular.ttf" }
@@ -14,11 +14,11 @@ Rectangle {
     FontLoader { id: beaufortbold; source: "assets/fonts/Beaufort-Bold.ttf" }
     
     // Background image.
-    /*Item {
+    Item {
         id: background
         anchors.fill: parent;
-        Image { source: "assets/test.png"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 1.0 }
-    }*/
+        Image { source: "assets/test.png"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 0.5 }
+    }
 
     // Top bar for the entire app.
     TopBar {

@@ -11,7 +11,9 @@ Item {
         this.game = current
 
         // Textfield needs to be set explicitly since it's read only.
-        d2pathInput.text = this.game.location
+        if(this.game.location != undefined) {
+            d2pathInput.text = this.game.location
+        }
 
         // Update the switches initial state without triggering an animation.
         maphackSwitch.update()
@@ -189,7 +191,7 @@ Item {
                         width: 60
                         SSwitch{
                             id: maphackSwitch
-                            checked: (game != undefined ? game.maphack : false)
+                            checked: ((game != undefined && game.maphack != undefined) ? game.maphack : false)
                             onToggled: updateGameModel()
                         }
                     } 
@@ -214,7 +216,7 @@ Item {
                         }
 
                         SText {
-                            text: "Check if you want to provide your own custom BH.cfg."
+                            text: "If you want to provide your own custom BH.cfg."
                             font.pixelSize: 11
                             topPadding: 5
                             color: "#454545"
@@ -225,7 +227,7 @@ Item {
                         width: 60
                         SSwitch{
                             id: overrideMaphackCfgSwitch
-                            checked: (game != undefined ? game.override_bh_cfg : false)
+                            checked: ((game != undefined && game.override_bh_cfg != undefined) ? game.override_bh_cfg : false)
                             onToggled: updateGameModel()
                         }
                     } 
@@ -261,7 +263,7 @@ Item {
                         width: 60
                         SSwitch{
                             id: hdSwitch
-                            checked: (game != undefined ? game.hd : false)
+                            checked: ((game != undefined && game.hd != undefined) ? game.hd : false)
                             onToggled: updateGameModel()
                         }
                     }
@@ -286,7 +288,7 @@ Item {
                         }
 
                         SText {
-                            text: "Run if this install has troubles with crashing - requires reboot."
+                            text: "Run if this install has troubles with crashing - requires reboot after."
                             font.pixelSize: 11
                             topPadding: 5
                             color: "#454545"

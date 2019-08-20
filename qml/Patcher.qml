@@ -100,16 +100,15 @@ Item {
             font.pixelSize: 15
         }
 
-
         Dropdown{
             id: gameInstances
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            anchors.rightMargin: 30
+            anchors.rightMargin: 10
             currentIndex: 0
             model: [ "Slashdiablo", "Battle.net"]
             height: 30
-            width: 120
+            width: 140
 
             onActivated: {
                 diablo.setGateway(this.currentText)
