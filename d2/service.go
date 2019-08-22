@@ -67,7 +67,7 @@ func (s *Service) SetGateway(gateway string) error {
 	return setGateway(gateway)
 }
 
-// Exec will exec the Diablo 2.
+// Exec will exec Diablo 2 installs.
 func (s *Service) Exec() error {
 	conf, err := s.configService.Read()
 	if err != nil {
@@ -138,7 +138,7 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 			fmt.Println("1.13c WAS UP TO DATE")
 
 			// Check if the current game install is up to date with the slash patch.
-			slashFiles, _, err := s.getFilesToPatch(slashManifest.Files, game.Location)
+			slashFiles, _, err := s.getFilesToPatch(slashManifest.Files, game.Location, nil)
 			if err != nil {
 				return false, err
 			}
@@ -151,17 +151,27 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 
 			fmt.Println("SLASH PATCH WAS UP TO DATE")
 
+			// If the user has chosen to override the maphack config with their own,
+			// we need to make sure the config is being ignored from the patch.
+			var ignoredMaphackFiles []string
+
+			if game.OverrideBHCfg {
+				ignoredMaphackFiles = append(ignoredMaphackFiles, "BH.cfg")
+			}
+
 			// Check how many files aren't up to date with maphack.
-			missingMaphackFiles, _, err := s.getFilesToPatch(maphackManifest.Files, game.Location)
+			missingMaphackFiles, _, err := s.getFilesToPatch(maphackManifest.Files, game.Location, ignoredMaphackFiles)
 			if err != nil {
 				return false, err
 			}
+
+			fmt.Println("MISSING MAPHACK FILES", missingMaphackFiles)
 
 			// Maphack is enabled, make sure there's no missing files.
 			if game.Maphack {
 				// Maphack patch isn't up to date.
 				if len(missingMaphackFiles) > 0 {
-					fmt.Println("MAPHACK WAS EANBLED, BUT MISSING FILES")
+					fmt.Println("MAPHACK WAS ENABLED, BUT OUT OF DATE / MISSING FILES")
 					fmt.Println(missingMaphackFiles)
 					return false, nil
 				}
@@ -182,7 +192,7 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 			}
 
 			// Check if the current game install is up to date with the HD patch.
-			missingHDFiles, _, err := s.getFilesToPatch(HDManifest.Files, game.Location)
+			missingHDFiles, _, err := s.getFilesToPatch(HDManifest.Files, game.Location, nil)
 			if err != nil {
 				return false, err
 			}
@@ -217,7 +227,7 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 
 func (s *Service) resetPatch(path string, files []PatchFile) error {
 	// Check how many files aren't up to date.
-	missmatchedFiles, _, err := s.getFilesToPatch(files, path)
+	missmatchedFiles, _, err := s.getFilesToPatch(files, path, nil)
 	if err != nil {
 		return err
 	}
@@ -333,7 +343,15 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			}
 
 			if game.Maphack {
-				err = s.applyMaphack(game.Location, state, progress, maphackManifest.Files)
+				// If the user has chosen to override the maphack config with their own,
+				// we need to make sure the config is being ignored from the patch.
+				var ignoredMaphackFiles []string
+
+				if game.OverrideBHCfg {
+					ignoredMaphackFiles = append(ignoredMaphackFiles, "BH.cfg")
+				}
+
+				err = s.applyMaphack(game.Location, state, progress, maphackManifest.Files, ignoredMaphackFiles)
 				if err != nil {
 					state <- PatchState{Error: err}
 					return
@@ -381,7 +399,7 @@ func (s *Service) apply113c(path string, state chan PatchState, progress chan fl
 	}
 
 	// Figure out which files to patch.
-	patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
+	patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path, nil)
 	if err != nil {
 		return err
 	}
@@ -412,7 +430,7 @@ func (s *Service) applySlashPatch(path string, state chan PatchState, progress c
 	}
 
 	// Figure out which files to patch.
-	patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path)
+	patchFiles, patchLength, err := s.getFilesToPatch(manifest.Files, path, nil)
 	if err != nil {
 		return err
 	}
@@ -433,11 +451,11 @@ func (s *Service) applySlashPatch(path string, state chan PatchState, progress c
 	return nil
 }
 
-func (s *Service) applyMaphack(path string, state chan PatchState, progress chan float32, manifestFiles []PatchFile) error {
+func (s *Service) applyMaphack(path string, state chan PatchState, progress chan float32, manifestFiles []PatchFile, ignoredFiles []string) error {
 	state <- PatchState{Message: "Checking maphack..."}
 
 	// Figure out which files to patch.
-	patchFiles, patchLength, err := s.getFilesToPatch(manifestFiles, path)
+	patchFiles, patchLength, err := s.getFilesToPatch(manifestFiles, path, ignoredFiles)
 	if err != nil {
 		return err
 	}
@@ -463,7 +481,7 @@ func (s *Service) applyHDMod(path string, state chan PatchState, progress chan f
 	state <- PatchState{Message: "Checking HD mod"}
 
 	// Figure out which files to patch.
-	patchFiles, patchLength, err := s.getFilesToPatch(manifestFiles, path)
+	patchFiles, patchLength, err := s.getFilesToPatch(manifestFiles, path, nil)
 	if err != nil {
 		return err
 	}
@@ -566,12 +584,30 @@ func (s *Service) cleanUpFailedPatch(dir string) error {
 	return nil
 }
 
-func (s *Service) getFilesToPatch(files []PatchFile, d2path string) ([]string, int64, error) {
+func (s *Service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnore []string) ([]string, int64, error) {
 	shouldPatch := make([]string, 0)
 	var totalContentLength int64
 
 	for _, file := range files {
 		f := file
+
+		// Check if the file should be ignored or not.
+		if filesToIgnore != nil && len(filesToIgnore) > 0 {
+			fmt.Println("FILES TO IGNORE WAS INVOKED")
+			var ignore bool
+			for _, ignored := range filesToIgnore {
+				// If the current file should be ignored, just skip it.
+				if f.Name == ignored {
+					ignore = true
+					break
+				}
+			}
+
+			// File should be ignored, continue with the next.
+			if ignore {
+				continue
+			}
+		}
 
 		// Full path on disk to the patch file.
 		path := localizePath(fmt.Sprintf("%s/%s", d2path, f.Name))
