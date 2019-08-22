@@ -232,11 +232,6 @@ func (s *Service) resetPatch(path string, files []PatchFile) error {
 		return err
 	}
 
-	fmt.Println("RESETING PATCH")
-	fmt.Println("MISSMATCHED LENGTH", len(missmatchedFiles))
-	fmt.Println("MISSMATCHED FILES", missmatchedFiles)
-	fmt.Println("TOTAL FILES", len(files))
-
 	// If the number of missmatched files to patch aren't all of them, then we have
 	// some of them left that needs to be removed.
 	if len(missmatchedFiles) != len(files) {
@@ -302,7 +297,6 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 
 				// If maphack is installed, but was supposed to be disabled, reset the patch.
 				if installed {
-					fmt.Println("RESETTING PATCH FOR MAPHACK")
 					err := s.resetPatch(game.Location, maphackManifest.Files)
 					if err != nil {
 						state <- PatchState{Error: err}
@@ -321,7 +315,6 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 
 				// If HD is installed, but was supposed to be disabled, reset the patch.
 				if installed {
-					fmt.Println("RESETTING PATCH FOR HD")
 					err := s.resetPatch(game.Location, hdManifest.Files)
 					if err != nil {
 						state <- PatchState{Error: err}
@@ -390,7 +383,7 @@ func (s *Service) RunDEPFix() error {
 }
 
 func (s *Service) apply113c(path string, state chan PatchState, progress chan float32) error {
-	state <- PatchState{Message: "Checking game version"}
+	state <- PatchState{Message: "Checking game version..."}
 
 	// Download manifest from patch repository.
 	manifest, err := s.getManifest("1.13c/manifest.json")
@@ -421,7 +414,7 @@ func (s *Service) apply113c(path string, state chan PatchState, progress chan fl
 }
 
 func (s *Service) applySlashPatch(path string, state chan PatchState, progress chan float32) error {
-	state <- PatchState{Message: "Checking Slashdiablo patch"}
+	state <- PatchState{Message: "Checking Slashdiablo patch..."}
 
 	// Download manifest from patch repository.
 	manifest, err := s.getManifest("current/manifest.json")
@@ -593,7 +586,6 @@ func (s *Service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnor
 
 		// Check if the file should be ignored or not.
 		if filesToIgnore != nil && len(filesToIgnore) > 0 {
-			fmt.Println("FILES TO IGNORE WAS INVOKED")
 			var ignore bool
 			for _, ignored := range filesToIgnore {
 				// If the current file should be ignored, just skip it.
