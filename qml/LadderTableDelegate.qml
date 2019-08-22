@@ -2,10 +2,8 @@ import QtQuick 2.12
 
 Rectangle {
     property int fontSize: 12
-
     width: parent.width
-    height: 33
-    radius: 5
+    height: 36
     color: "#00000000"
 
     Title {
@@ -62,7 +60,15 @@ Rectangle {
         hoverEnabled: true
     }
 
-    Separator{
-        color: "#3d3b36"
+    // Border bottom.
+    Image {
+        width: parent.width; height: 9
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: -7
+        fillMode: Image.Stretch
+        source: "assets/item_bg.png"
+        opacity: 0.7
     }
 }

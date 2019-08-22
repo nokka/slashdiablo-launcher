@@ -25,20 +25,20 @@ Item {
 		Item {
 			visible: (!ladder.loading && !ladder.error)
 			Layout.alignment: Qt.AlignHCenter
-			height: 40
+			height: 35
 			width: 285
 			
 			Title {
 				text: "LADDER TOP 10"
 				font.pixelSize: 13
 				font.bold: true
-				topPadding: 20
+				topPadding: 17
 			}
 		}
 		
 		ListView {
 			id: ladderList
-			spacing: 2
+			spacing: 0
 			visible: (!ladder.loading && !ladder.error)
 			height: 320
 
