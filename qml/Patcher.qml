@@ -87,10 +87,10 @@ Item {
         }
     }
 
-    // Show when patching is done, no error occurred and the game is playable.
+    // Show when patching is done, no error occurred and the game version is valid.
     Item {
         anchors.fill:parent 
-        visible: (!diablo.patching && !diablo.errored && !diablo.validatingVersion && diablo.playable)
+        visible: (!diablo.patching && !diablo.errored && !diablo.validatingVersion && diablo.validVersion)
 
         Title {
             anchors.left: parent.left

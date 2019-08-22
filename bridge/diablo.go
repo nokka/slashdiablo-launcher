@@ -18,7 +18,6 @@ type DiabloBridge struct {
 	// Properties.
 	_ bool    `property:"patching"`
 	_ bool    `property:"errored"`
-	_ bool    `property:"playable"`
 	_ bool    `property:"validVersion"`
 	_ bool    `property:"validatingVersion"`
 	_ float32 `property:"patchProgress"`
@@ -56,7 +55,7 @@ func (b *DiabloBridge) launchGame() {
 func (b *DiabloBridge) applyPatches() {
 	// Tell the GUI we've started patching.
 	b.SetPatching(true)
-	b.SetPlayable(false)
+	b.SetValidVersion(false)
 
 	// Run this on a seperate thread so we don't block the UI.
 	go func() {
@@ -93,8 +92,9 @@ func (b *DiabloBridge) applyPatches() {
 }
 
 func (b *DiabloBridge) validateVersion() {
-	// Update GUI that we're updating.
+	// Update GUI and reset errors.
 	b.SetValidatingVersion(true)
+	b.SetErrored(false)
 
 	// Do the work on another thread not to lock the GUI.
 	go func() {
@@ -102,10 +102,6 @@ func (b *DiabloBridge) validateVersion() {
 		if err != nil {
 			b.logger.Error(err)
 			b.SetErrored(true)
-		}
-
-		if valid {
-			b.SetPlayable(true)
 		}
 
 		b.SetValidVersion(valid)
@@ -140,7 +136,7 @@ func NewDiablo(d2s *d2.Service, logger log.Logger) *DiabloBridge {
 	// Set initial state.
 	b.SetPatching(false)
 	b.SetErrored(false)
-	b.SetPlayable(false)
+	b.SetValidVersion(false)
 	b.SetValidatingVersion(false)
 
 	return b

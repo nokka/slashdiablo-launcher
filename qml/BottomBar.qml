@@ -33,7 +33,7 @@ Item {
             XButton {
                 label: "PLAY"
                 fontSize: 15
-                clickable: diablo.playable
+                clickable: diablo.validVersion
                 width: parent.width; height: 50
                 anchors.verticalCenter: parent.verticalCenter
 
