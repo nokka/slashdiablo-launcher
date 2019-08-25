@@ -2,18 +2,16 @@ import QtQuick 2.12
 
 Item {
         id: bottombar
-        anchors.bottom: parent.bottom;
-        width: parent.width; height: 80
 
-        // Background.
-        Rectangle {
-            anchors.fill: parent
-            color: "#000000"
-            opacity: 0.6
+        // Background image.
+        Item {
+            id: background
+            anchors.fill: parent;
+            Image { source: "assets/bottom_bg.jpg"; fillMode: Image.Stretch; anchors.fill: parent;  opacity: 0.4 }
         }
 
         Separator {
-            color: "#3d3b36"
+            color: "#030202"
             anchors.top: parent.top
             anchors.bottom: undefined
         }

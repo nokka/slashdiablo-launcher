@@ -4,12 +4,19 @@ import QtQuick.Layouts 1.3          // RowLayout
 Item {
     property string activeMenuItem: "launch"
     property string menuGradientStart: "#00000000"
-    property string menuGradientStop: "#b3a792"
+    property string menuGradientStop: "#363636"
     property var menuSources: { 
         "launch": "LauncherView.qml",
         "rules": "RulesView.qml",
         "community": "CommunityView.qml",
         "armory": "ArmoryView.qml"
+    }
+
+    // Background image.
+    Item {
+        id: background
+        anchors.fill: parent;
+        Image { source: "assets/top_border.jpg"; fillMode: Image.Stretch; anchors.fill: parent;  opacity: 1.0 }
     }
 
     // Background.
@@ -246,6 +253,6 @@ Item {
     }
 
     Separator{
-        color: "#3d3b36"
+        color: "#030202"
     }
 }

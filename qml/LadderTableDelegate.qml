@@ -31,7 +31,7 @@ Rectangle {
 
     Title {
         color: mousearea.containsMouse ? "#ffffe6" : "#c4b58b"
-        font.pixelSize: 13
+        font.pixelSize: 11
         text: model.name
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left

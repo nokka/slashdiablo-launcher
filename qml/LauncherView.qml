@@ -4,12 +4,19 @@ import QtQuick.Controls 2.5
 Item {
     id: launchView
     width: parent.width; height: parent.height
-    
+    anchors.leftMargin: 20
+
     Item {
-        width: parent.width * 0.65
-        height: parent.height - 80
+        // Background image.
+        Item {
+            id: background
+            anchors.fill: parent;
+            Image { source: "assets/diablo.png"; fillMode: Image.Tile; anchors.fill: parent;  opacity: 0.2 }
+        }
+        
+        width: parent.width * 0.68
+        height: parent.height
         anchors.left: parent.left
-        anchors.leftMargin: 20
 
         // News list.
         ListView {
@@ -48,8 +55,5 @@ Item {
 
     // Top ladder table.
     LadderTable{}
-
-    // Bottom bar.
-    BottomBar{}
     
 }

@@ -41,7 +41,7 @@ Button {
             width: (parent.width-2)
             height: (parent.height-2)
             anchors.centerIn: parent
-            color: "#010912"
+            color: "#0d0d0d"
         }
 
         // Inner border.
@@ -49,7 +49,7 @@ Button {
             width: (parent.width-12)
             height: (parent.height-12)
             anchors.centerIn: parent
-            color: "#042029"
+            color: "#802a03"
         }
 
         // Most inner fill.

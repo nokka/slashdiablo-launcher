@@ -12,8 +12,9 @@ ComboBox {
     }
 
     background: Rectangle {
-        color: "#0d0d0d"
-        border.color: "#373737"
+        color: "#080808"
+        border.color: "#171717"
+        radius: 5
     }
 
     popup: Popup {

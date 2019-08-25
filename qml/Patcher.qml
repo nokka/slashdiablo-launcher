@@ -36,7 +36,7 @@ Item {
         visible: (diablo.patching && !diablo.errored && !diablo.validatingVersion)
 
         ProgressBar {
-            height: 4
+            height: 8
             value: diablo.patchProgress
             width: parent.width
             anchors.verticalCenter: parent.verticalCenter
@@ -44,12 +44,16 @@ Item {
             style: ProgressBarStyle {
                 background: Rectangle {
                     radius: 3
-                    color: "#00686b"
+                    color: "#080805"
+                    border.width: 1
+                    border.color: "#171714"
                 }
                 
                 progress: Rectangle {
                     radius: 3
-                    color: "#069499"
+                    color: "#e3530b"
+                    border.width: 1
+                    border.color: "#171714"
                 }
             }
         }

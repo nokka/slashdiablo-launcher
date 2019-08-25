@@ -5,12 +5,11 @@ import QtQuick.Layouts 1.3		//ColumnLayout
 Item {
     id: ladderTableBox
 	width: parent.width * 0.32
-    height: parent.height - 80
+    height: parent.height
 
 	Rectangle {
 		anchors.fill: parent
-		color: "#000000"
-		opacity: 0.8
+		color: "#030202"
 	}
 
     anchors.top: parent.top
