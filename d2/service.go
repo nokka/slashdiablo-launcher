@@ -39,7 +39,6 @@ func (s *Service) listenForGameStates() {
 	for {
 		select {
 		case state := <-s.gameStates:
-			fmt.Println("GOT STATE-------------------------")
 			// Something went wrong while execing, log error.
 			if state.err != nil {
 				s.logger.Error(state.err)
@@ -59,7 +58,6 @@ func (s *Service) listenForGameStates() {
 			}
 
 			s.mux.Unlock()
-			fmt.Println("------------------------------")
 		}
 	}
 }
@@ -162,6 +160,8 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 				ignoredMaphackFiles = append(ignoredMaphackFiles, "BH.cfg")
 			}
 
+			fmt.Println("IGNORED FILES WHILE VALIDATING VERSION", ignoredMaphackFiles)
+
 			// Check how many files aren't up to date with maphack.
 			missingMaphackFiles, _, err := s.getFilesToPatch(maphackManifest.Files, game.Location, ignoredMaphackFiles)
 			if err != nil {
@@ -228,9 +228,9 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 	return upToDate, nil
 }
 
-func (s *Service) resetPatch(path string, files []PatchFile) error {
+func (s *Service) resetPatch(path string, files []PatchFile, filesToIgnore []string) error {
 	// Check how many files aren't up to date.
-	missmatchedFiles, _, err := s.getFilesToPatch(files, path, nil)
+	missmatchedFiles, _, err := s.getFilesToPatch(files, path, filesToIgnore)
 	if err != nil {
 		return err
 	}
@@ -253,10 +253,22 @@ func (s *Service) resetPatch(path string, files []PatchFile) error {
 
 			}
 
-			// File that shouldn't be on disk exists, remove it.
-			err = os.Remove(filePath)
-			if err != nil {
-				return err
+			// Make sure we don't remove the ignored files.
+			var ignore bool
+
+			for _, ignored := range filesToIgnore {
+				if file.Name == ignored {
+					ignore = true
+					break
+				}
+			}
+
+			if !ignore {
+				// File that shouldn't be on disk exists, remove it.
+				err = os.Remove(filePath)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -290,6 +302,15 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 		}
 
 		for _, game := range conf.Games {
+			// If the user has chosen to override the maphack config with their own,
+			// we need to make sure the config is being ignored from the patch, and also
+			// when reseting the maphack patch.
+			var ignoredMaphackFiles []string
+
+			if game.OverrideBHCfg {
+				ignoredMaphackFiles = append(ignoredMaphackFiles, "BH.cfg")
+			}
+
 			// If maphack is disabled, make sure no rogue files have managed to stay in the directory.
 			if !game.Maphack {
 				installed, err := isMaphackInstalled(game.Location)
@@ -300,7 +321,7 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 
 				// If maphack is installed, but was supposed to be disabled, reset the patch.
 				if installed {
-					err := s.resetPatch(game.Location, maphackManifest.Files)
+					err := s.resetPatch(game.Location, maphackManifest.Files, ignoredMaphackFiles)
 					if err != nil {
 						state <- PatchState{Error: err}
 						return
@@ -318,7 +339,7 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 
 				// If HD is installed, but was supposed to be disabled, reset the patch.
 				if installed {
-					err := s.resetPatch(game.Location, hdManifest.Files)
+					err := s.resetPatch(game.Location, hdManifest.Files, nil)
 					if err != nil {
 						state <- PatchState{Error: err}
 						return
@@ -339,14 +360,6 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			}
 
 			if game.Maphack {
-				// If the user has chosen to override the maphack config with their own,
-				// we need to make sure the config is being ignored from the patch.
-				var ignoredMaphackFiles []string
-
-				if game.OverrideBHCfg {
-					ignoredMaphackFiles = append(ignoredMaphackFiles, "BH.cfg")
-				}
-
 				err = s.applyMaphack(game.Location, state, progress, maphackManifest.Files, ignoredMaphackFiles)
 				if err != nil {
 					state <- PatchState{Error: err}
