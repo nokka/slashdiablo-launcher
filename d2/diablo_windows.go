@@ -94,6 +94,33 @@ func launch(path string, done chan execState) (*int, error) {
 	return &cmd.Process.Pid, nil
 }
 
+// configureForOS will set specific configurations, such as compatibility mode.
+func configureForOS(path string) error {
+	// The key name is the localized path for the Diablo II directory.
+	keyName := fmt.Sprintf("%s\\%s", localizePath(path), "Game.exe")
+
+	// Open the compatibility key directory.
+	compatibilityKey, err := registry.OpenKey(registry.CURRENT_USER,
+		`Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers`,
+		registry.QUERY_VALUE|registry.SET_VALUE,
+	)
+	if err != nil {
+		return err
+	}
+
+	// Set Windows XP Service Pack 2 compatibility mode.
+	if err := compatibilityKey.SetStringValue(keyName, "~ RUNASADMIN WINXPSP2"); err != nil {
+		return err
+	}
+
+	// Close the registry when we're done.
+	if err := compatibilityKey.Close(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // applyDEP will run a fix to disable DEP.
 func applyDEP(path string) error {
 	// Localize the path.
@@ -195,19 +222,16 @@ func setGateway(gateway string) error {
 	// Open the Battle net configuration directory.
 	confKey, err := registry.OpenKey(registry.CURRENT_USER, `Software\Blizzard Entertainment\Diablo II`, registry.QUERY_VALUE|registry.SET_VALUE)
 	if err != nil {
-		fmt.Println("OPEN KEY ERROR", err)
 		return err
 	}
 
 	// Set Battle.net IP.
 	if err := confKey.SetStringValue("BNETIP", bnetIP); err != nil {
-		fmt.Println("SETTING ERROR", err)
 		return err
 	}
 
 	// Set the Command line args when starting.
 	if err := confKey.SetStringValue("CmdLine", "-skiptobnet"); err != nil {
-		fmt.Println("SETTING ERROR", err)
 		return err
 	}
 
@@ -221,8 +245,6 @@ func setGateway(gateway string) error {
 
 func isHDInstalled(path string) (bool, error) {
 	filePath := localizePath(fmt.Sprintf("%s/%s", path, "D2HD.dll"))
-
-	fmt.Println("HD FILE PATH", filePath)
 
 	// Check if the file exists on disk.
 	_, err := os.Stat(filePath)
@@ -240,8 +262,6 @@ func isHDInstalled(path string) (bool, error) {
 
 func isMaphackInstalled(path string) (bool, error) {
 	filePath := localizePath(fmt.Sprintf("%s/%s", path, "BH.dll"))
-
-	fmt.Println("MAPHACK FILE PATH", filePath)
 
 	// Check if the file exists on disk.
 	_, err := os.Stat(filePath)

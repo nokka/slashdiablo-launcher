@@ -18,6 +18,11 @@ func localizePath(path string) string {
 	return path
 }
 
+// configureForOS will set specific configurations, such as compatibility mode.
+func configureForOS(path string) error {
+	return nil
+}
+
 // applyDEP will run a fix to disable DEP.
 func applyDEP(path string) error {
 	return nil

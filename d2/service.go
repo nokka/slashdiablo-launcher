@@ -402,6 +402,13 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 					return
 				}
 			}
+
+			// Finally set os specific configurations, such as compatibility mode.
+			err := configureForOS(game.Location)
+			if err != nil {
+				state <- PatchState{Error: err}
+				return
+			}
 		}
 
 		done <- true
