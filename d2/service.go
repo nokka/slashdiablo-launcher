@@ -41,7 +41,7 @@ func (s *Service) listenForGameStates() {
 		case state := <-s.gameStates:
 			// Something went wrong while execing, log error.
 			if state.err != nil {
-				s.logger.Error(state.err)
+				s.logger.Error(fmt.Errorf("Diablo II exec with code: %s", state.err))
 			}
 
 			s.mux.Lock()
@@ -67,12 +67,28 @@ func (s *Service) SetGateway(gateway string) error {
 	return setGateway(gateway)
 }
 
+/*func mutateInstancesToLaunch([]storage.Game) {
+	// Loop over config games
+
+	// Loop over running instances
+
+	// Count how many instances are running of the specific id
+
+	// Subtract the running games from game.Instances
+
+	// Add the new instances to launch int to the config game.
+}*/
+
 // Exec will exec Diablo 2 installs.
 func (s *Service) Exec() error {
 	conf, err := s.configService.Read()
 	if err != nil {
 		return err
 	}
+
+	// Mutate the number of instances to launch to take into
+	// account the number of games already running.
+	//mutateInstancesToLaunch(conf.Games)
 
 	for _, g := range conf.Games {
 		for i := 0; i < g.Instances; i++ {

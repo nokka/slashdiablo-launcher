@@ -70,17 +70,12 @@ func launch(path string, done chan execState) (*int, error) {
 	// Pipe errors to our buffer.
 	cmd.Stderr = &stderr
 
-	fmt.Println("Starting...")
 	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
 
-	fmt.Println("Started with pid:", cmd.Process.Pid)
-
 	// Wait on separate thread.
 	go func() {
-		fmt.Println("Waiting...")
-
 		if err := cmd.Wait(); err != nil {
 			if exiterr, ok := err.(*exec.ExitError); ok {
 				// The program has exited with an exit code != 0
@@ -93,7 +88,6 @@ func launch(path string, done chan execState) (*int, error) {
 			}
 		}
 
-		fmt.Println("Waiting done...")
 		done <- execState{pid: &cmd.Process.Pid, err: nil}
 	}()
 
