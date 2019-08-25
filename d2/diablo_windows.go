@@ -9,11 +9,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
 	"syscall"
+	"time"
 	"unicode/utf8"
 
 	"golang.org/x/sys/windows/registry"
@@ -100,50 +100,68 @@ func launch(path string, done chan execState) (*int, error) {
 	return &cmd.Process.Pid, nil
 }
 
-func runDEPFix(path string) error {
+// applyDEP will run a fix to disable DEP.
+func applyDEP(path string) error {
+	// Localize the path.
+	localized := localizePath(path)
+
+	// Use cmd.exe to call the bat file.
+	cmd := exec.Command("cmd.exe", "/C", "call", "DEP_fix.bat")
+	cmd.Dir = localized
+
+	// Capture stdin for the command, so we can send data on it.
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+
+	r, w, err := os.Pipe()
+	if err != nil {
+		return err
+	}
+
+	cmd.Stdout = w
+	cmd.Stderr = w
+
+	// Log output of the bat file.
 	go func() {
-		cmd := exec.Command("cmd.exe", "/C", "call", `DEP_fix.bat`)
-		cmd.Dir = localizePath(path)
+		scanner := bufio.NewScanner(r)
+		var linesWritten int
 
-		// Capture stdin for the command, so we can send data on it.
-		stdin, err := cmd.StdinPipe()
-		if err != nil {
-			log.Fatal(err)
-		}
+		for scanner.Scan() {
+			line := scanner.Text()
+			linesWritten++
+			fmt.Println(line)
 
-		r, w, err := os.Pipe()
-		if err != nil {
-			return
-		}
-
-		cmd.Stdout = w
-		cmd.Stderr = w
-
-		err = cmd.Start()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		go func() {
-			scanner := bufio.NewScanner(r)
-			for scanner.Scan() {
-				line := scanner.Text()
-				fmt.Println(line)
+			// Kill the go routine when all the ouput has been captured.
+			if linesWritten == 6 {
+				return
 			}
-		}()
-
-		fmt.Println("DONE READING")
-		_, err = io.WriteString(stdin, "Yes")
-		if err != nil {
-			log.Fatal(err)
 		}
-
-		_, err = io.WriteString(stdin, "")
-		if err != nil {
-			log.Fatal(err)
-		}
-
 	}()
+
+	// Start won't wait for the program to finish,
+	// this is because we need to send input to the program.
+	err = cmd.Start()
+	if err != nil {
+		return err
+	}
+
+	// Write 'Yes' to the cmd to allow overwriting the Diablo.II.exe.
+	_, err = io.WriteString(stdin, "Yes")
+	if err != nil {
+		return err
+	}
+
+	// Wait to make sure the bat file has time to finish the previous action
+	// before sending the next input.
+	time.Sleep(1 * time.Second)
+
+	// Write any key to the cmd to exit.
+	_, err = io.WriteString(stdin, "a")
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -12,12 +12,14 @@ import (
 
 	"github.com/nokka/slashdiablo-launcher/config"
 	"github.com/nokka/slashdiablo-launcher/github"
+	"github.com/nokka/slashdiablo-launcher/log"
 )
 
 // Service is responsible for all things related to Diablo II.
 type Service struct {
 	githubClient  github.Client
 	configService config.Service
+	logger        log.Logger
 	gameStates    chan execState
 	runningGames  []game
 	mux           sync.Mutex
@@ -40,7 +42,7 @@ func (s *Service) listenForGameStates() {
 			fmt.Println("GOT STATE-------------------------")
 			// Something went wrong while execing, log error.
 			if state.err != nil {
-				fmt.Println("Got error", state.err)
+				s.logger.Error(state.err)
 			}
 
 			s.mux.Lock()
@@ -79,6 +81,7 @@ func (s *Service) Exec() error {
 			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
 			time.Sleep(1 * time.Second)
 
+			// The second argument is a channel, listened on by listenForGameStates().
 			pid, err := launch(g.Location, s.gameStates)
 			if err != nil {
 				return err
@@ -366,20 +369,10 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 	return progress, state
 }
 
-// RunDEPFix will run a specific fix to disable DEP.
-func (s *Service) RunDEPFix() error {
-	/*conf, err := s.configService.Read()
-	if err != nil {
-		return err
-	}
-
+// ApplyDEP will run  data execution prevention (DEP) on the Game.exe in the path.
+func (s *Service) ApplyDEP(path string) error {
 	// Run OS specific fix.
-	err = runDEPFix("")
-	if err != nil {
-		return err
-	}*/
-
-	return nil
+	return applyDEP(path)
 }
 
 func (s *Service) apply113c(path string, state chan PatchState, progress chan float32) error {
@@ -670,10 +663,12 @@ type PatchFile struct {
 func NewService(
 	githubClient github.Client,
 	configuration config.Service,
+	logger log.Logger,
 ) *Service {
 	s := &Service{
 		githubClient:  githubClient,
 		configService: configuration,
+		logger:        logger,
 		gameStates:    make(chan execState, 4),
 	}
 

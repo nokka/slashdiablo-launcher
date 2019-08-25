@@ -24,8 +24,8 @@ func localizePath(path string) string {
 	return path
 }
 
-// runDEPFix will run a fix to disable DEP.
-func runDEPFix(path string) error {
+// applyDEP will run a fix to disable DEP.
+func applyDEP(path string) error {
 	return nil
 }
 

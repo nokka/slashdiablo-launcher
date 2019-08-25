@@ -283,7 +283,7 @@ Item {
                     Column {
                         width: (settingsLayout.width - depFixButton.width)
                         Title {
-                            text: "DATA EXECUTION PREVENTION (DEP)"
+                            text: "DISABLE DEP (REQUIRES ADMIN)"
                             font.pixelSize: 13
                         }
 
@@ -301,6 +301,10 @@ Item {
                             width: 100
                             height: 40
                             label: "Run"
+
+                           onClicked: {
+                               diablo.applyDEP(d2pathInput.text)
+                            }
                         }
                     } 
                 }

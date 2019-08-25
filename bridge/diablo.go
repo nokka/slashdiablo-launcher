@@ -27,7 +27,7 @@ type DiabloBridge struct {
 	_ func()               `slot:"launchGame"`
 	_ func()               `slot:"validateVersion"`
 	_ func()               `slot:"applyPatches"`
-	_ func()               `slot:"runDEPFix"`
+	_ func(path string)    `slot:"applyDEP"`
 	_ func(gateway string) `slot:"setGateway"`
 }
 
@@ -36,7 +36,7 @@ func (b *DiabloBridge) Connect() {
 	b.ConnectLaunchGame(b.launchGame)
 	b.ConnectApplyPatches(b.applyPatches)
 	b.ConnectValidateVersion(b.validateVersion)
-	b.ConnectRunDEPFix(b.runDEPFix)
+	b.ConnectApplyDEP(b.applyDEP)
 	b.ConnectSetGateway(b.setGateway)
 }
 
@@ -109,12 +109,15 @@ func (b *DiabloBridge) validateVersion() {
 	}()
 }
 
-func (b *DiabloBridge) runDEPFix() {
-	err := b.d2service.RunDEPFix()
-	if err != nil {
-		b.logger.Error(err)
-		// @TODO: Add QML signal.
-	}
+func (b *DiabloBridge) applyDEP(path string) {
+	// Do the work on another thread not to lock the GUI.
+	go func() {
+		err := b.d2service.ApplyDEP(path)
+		if err != nil {
+			b.logger.Error(err)
+			// @TODO: Add QML signal.
+		}
+	}()
 }
 
 func (b *DiabloBridge) setGateway(gateway string) {

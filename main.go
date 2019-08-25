@@ -25,7 +25,7 @@ func main() {
 		githubOwner      = envString("GITHUB_OWNER", "nokka")
 		githubRepository = envString("GITHUB_REPO", "slashdiablo-patches")
 		githubToken      = envString("GITHUB_TOKEN", "")
-		debugMode        = envBool("DEBUG_MODE", false)
+		debugMode        = envBool("DEBUG_MODE", true)
 	)
 
 	// Set app context.
@@ -95,7 +95,7 @@ func main() {
 
 	// Setup services.
 	cs := config.NewService(store, gm)
-	d2s := d2.NewService(gc, cs)
+	d2s := d2.NewService(gc, cs, logger)
 	ls := ladder.NewService(lc, lm)
 
 	// Populate the game model with the game config
