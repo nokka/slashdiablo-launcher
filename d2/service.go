@@ -13,6 +13,7 @@ import (
 	"github.com/nokka/slashdiablo-launcher/config"
 	"github.com/nokka/slashdiablo-launcher/github"
 	"github.com/nokka/slashdiablo-launcher/log"
+	"github.com/nokka/slashdiablo-launcher/storage"
 )
 
 // Service is responsible for all things related to Diablo II.
@@ -67,17 +68,27 @@ func (s *Service) SetGateway(gateway string) error {
 	return setGateway(gateway)
 }
 
-/*func mutateInstancesToLaunch([]storage.Game) {
-	// Loop over config games
+func (s *Service) mutateInstancesToLaunch(games []storage.Game) {
+	for i := 0; i < len(games); i++ {
+		var runningCount int
+		fmt.Println("-----------------------------------")
+		fmt.Println("CHECKING GAME WITH ID", games[i].ID)
+		for _, running := range s.runningGames {
+			if games[i].ID == running.GameID {
+				fmt.Println("FOUND MATCH", games[i].ID, running.GameID)
+				runningCount++
+			}
+		}
 
-	// Loop over running instances
+		fmt.Println("RUNNING COUNT ", runningCount)
 
-	// Count how many instances are running of the specific id
+		// If any games of this id is running already, subtract the number
+		// and mutate the game so the next time we launch, we launch the correct number.
+		games[i].Instances = games[i].Instances - runningCount
 
-	// Subtract the running games from game.Instances
-
-	// Add the new instances to launch int to the config game.
-}*/
+		fmt.Println("INSTANCES TO LAUNCH IN MUTATE FUNC", games[i].Instances)
+	}
+}
 
 // Exec will exec Diablo 2 installs.
 func (s *Service) Exec() error {
@@ -88,9 +99,10 @@ func (s *Service) Exec() error {
 
 	// Mutate the number of instances to launch to take into
 	// account the number of games already running.
-	//mutateInstancesToLaunch(conf.Games)
+	s.mutateInstancesToLaunch(conf.Games)
 
 	for _, g := range conf.Games {
+		fmt.Println("INSTANCES TO LAUNCH", g.Instances)
 		for i := 0; i < g.Instances; i++ {
 			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
 			time.Sleep(1 * time.Second)
