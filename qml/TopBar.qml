@@ -12,13 +12,6 @@ Item {
         "armory": "ArmoryView.qml"
     }
 
-    // Background image.
-    Item {
-        id: background
-        anchors.fill: parent;
-        Image { source: "assets/top_border.jpg"; fillMode: Image.Stretch; anchors.fill: parent;  opacity: 1.0 }
-    }
-
     // Background.
     Rectangle {
         anchors.fill: parent

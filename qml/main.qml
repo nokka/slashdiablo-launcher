@@ -13,6 +13,13 @@ Rectangle {
     FontLoader { id: beaufort; source: "assets/fonts/Beaufort-Regular.ttf" }
     FontLoader { id: beaufortbold; source: "assets/fonts/Beaufort-Bold.ttf" }
 
+    // Background image.
+    Item {
+        id: background
+        anchors.fill: parent;
+        Image { source: "assets/skull_bg3.png"; fillMode: Image.Tile; anchors.fill: parent;}
+    }
+
     // Top bar for the entire app.
     TopBar {
         id: topbar

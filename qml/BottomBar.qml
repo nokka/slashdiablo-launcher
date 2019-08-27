@@ -7,7 +7,7 @@ Item {
         Item {
             id: background
             anchors.fill: parent;
-            Image { source: "assets/bottom_bg.jpg"; fillMode: Image.Stretch; anchors.fill: parent;  opacity: 0.4 }
+            Image { source: "assets/bottom_bar_bg.png"; fillMode: Image.Pad; anchors.fill: parent;  opacity: 0.8 }
         }
 
         Separator {

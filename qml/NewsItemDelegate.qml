@@ -2,16 +2,17 @@ import QtQuick 2.12
 
 Item {
     id: newsItem
-    width: 650
-    height: 100
+    width: 405
+    height: 120
 
     Row {
         width: parent.width
-        height: 100
+        height: 120
         spacing: 10
+        anchors.topMargin: 20
 
         // Timestamp.
-        Item {
+        /*Item {
             width: 80
             height: 80
             anchors.verticalCenter: parent.verticalCenter
@@ -31,10 +32,10 @@ Item {
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
             }
-        }
+        }*/
 
         Item {
-            width: newsItem.width * 0.70; height: 80
+            width: newsItem.width * 0.70; height: 90
             anchors.verticalCenter: parent.verticalCenter
 
             Title {
