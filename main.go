@@ -8,6 +8,7 @@ import (
 
 	"github.com/nokka/goqmlframeless"
 	"github.com/nokka/slashdiablo-launcher/bridge"
+	ladderClient "github.com/nokka/slashdiablo-launcher/clients/ladder"
 	"github.com/nokka/slashdiablo-launcher/clients/slashdiablo"
 	"github.com/nokka/slashdiablo-launcher/config"
 	"github.com/nokka/slashdiablo-launcher/d2"
@@ -22,8 +23,7 @@ import (
 func main() {
 	// Environment variables set when building.
 	var (
-		slashdiabloAddress = envString("SLASHDIABLO_ADDRESS", "http://slashdiablo.net/files/slashdiablo-patches")
-		debugMode          = envBool("DEBUG_MODE", false)
+		debugMode = envBool("DEBUG_MODE", false)
 	)
 
 	// Set app context.
@@ -88,8 +88,8 @@ func main() {
 	gm := config.NewGameModel(nil)
 
 	// Setup clients.
-	sc := slashdiablo.NewClient(slashdiabloAddress)
-	lc := ladder.NewClient()
+	sc := slashdiablo.NewClient()
+	lc := ladderClient.NewClient()
 
 	// Setup services.
 	cs := config.NewService(store, gm)

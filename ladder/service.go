@@ -2,6 +2,8 @@ package ladder
 
 import (
 	"errors"
+
+	ladderClient "github.com/nokka/slashdiablo-launcher/clients/ladder"
 )
 
 // Service is responsible for all things related to the Slashdiablo ladder.
@@ -10,13 +12,13 @@ type Service interface {
 }
 
 type service struct {
-	sdClient    Client
+	client      ladderClient.Client
 	ladderModel *TopLadderModel
 }
 
 // GetLadder will fetch the ladder from the Slashdiablo API.
 func (s *service) SetLadderCharacters(mode string) error {
-	characters, err := s.sdClient.GetLadder(mode)
+	characters, err := s.client.GetLadder(mode)
 	if err != nil {
 		return err
 	}
@@ -36,7 +38,7 @@ func (s *service) SetLadderCharacters(mode string) error {
 }
 
 // newCharacter will create a new QObject character that we can pass to the model.
-func newCharacter(char ladderCharacter) *Character {
+func newCharacter(char ladderClient.Character) *Character {
 	c := NewCharacter(nil)
 	c.Rank = char.Rank
 	c.Name = char.Name
@@ -47,11 +49,11 @@ func newCharacter(char ladderCharacter) *Character {
 
 // NewService returns a service with all the dependencies.
 func NewService(
-	sdClient Client,
+	client ladderClient.Client,
 	ladderModel *TopLadderModel,
 ) Service {
 	return &service{
-		sdClient:    sdClient,
+		client:      client,
 		ladderModel: ladderModel,
 	}
 }

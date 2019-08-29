@@ -6,17 +6,14 @@ import (
 	"net/http"
 )
 
-// Client ...
+// Client encapsulates the details of the Slashdiablo API.
 type Client struct {
 	address string
 }
 
 // GetFile will the file by the given path in the repository set on the service.
 func (c *Client) GetFile(filePath string) (io.ReadCloser, error) {
-	addr := fmt.Sprintf("%s/%s", c.address, filePath)
-	fmt.Println("CLIENT ADDRESS")
-	fmt.Println(addr)
-	resp, err := http.Get(addr)
+	resp, err := http.Get(fmt.Sprintf("%s/%s", c.address, filePath))
 	if err != nil {
 		return nil, err
 	}
@@ -25,8 +22,8 @@ func (c *Client) GetFile(filePath string) (io.ReadCloser, error) {
 }
 
 // NewClient returns a new client with all dependencies setup.
-func NewClient(address string) Client {
+func NewClient() Client {
 	return Client{
-		address: address,
+		address: "http://slashdiablo.net/files/slashdiablo-patches",
 	}
 }
