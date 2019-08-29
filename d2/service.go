@@ -10,20 +10,20 @@ import (
 	"sync"
 	"time"
 
+	"github.com/nokka/slashdiablo-launcher/clients/slashdiablo"
 	"github.com/nokka/slashdiablo-launcher/config"
-	"github.com/nokka/slashdiablo-launcher/github"
 	"github.com/nokka/slashdiablo-launcher/log"
 	"github.com/nokka/slashdiablo-launcher/storage"
 )
 
 // Service is responsible for all things related to Diablo II.
 type Service struct {
-	githubClient  github.Client
-	configService config.Service
-	logger        log.Logger
-	gameStates    chan execState
-	runningGames  []game
-	mux           sync.Mutex
+	slashdiabloClient slashdiablo.Client
+	configService     config.Service
+	logger            log.Logger
+	gameStates        chan execState
+	runningGames      []game
+	mux               sync.Mutex
 }
 
 type game struct {
@@ -586,7 +586,7 @@ func (s *Service) downloadFile(fileName string, remoteDir string, path string, c
 	defer out.Close()
 
 	f := fmt.Sprintf("%s/%s", remoteDir, fileName)
-	contents, err := s.githubClient.GetFile(f)
+	contents, err := s.slashdiabloClient.GetFile(f)
 	if err != nil {
 		return err
 	}
@@ -670,7 +670,7 @@ func (s *Service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnor
 }
 
 func (s *Service) getManifest(path string) (*Manifest, error) {
-	contents, err := s.githubClient.GetFile(path)
+	contents, err := s.slashdiabloClient.GetFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -709,15 +709,15 @@ type PatchFile struct {
 
 // NewService returns a service with all the dependencies.
 func NewService(
-	githubClient github.Client,
+	slashdiabloClient slashdiablo.Client,
 	configuration config.Service,
 	logger log.Logger,
 ) *Service {
 	s := &Service{
-		githubClient:  githubClient,
-		configService: configuration,
-		logger:        logger,
-		gameStates:    make(chan execState, 4),
+		slashdiabloClient: slashdiabloClient,
+		configService:     configuration,
+		logger:            logger,
+		gameStates:        make(chan execState, 4),
 	}
 
 	// Setup game listener once, will stay alive for the duration

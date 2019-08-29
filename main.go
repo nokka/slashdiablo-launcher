@@ -8,9 +8,9 @@ import (
 
 	"github.com/nokka/goqmlframeless"
 	"github.com/nokka/slashdiablo-launcher/bridge"
+	"github.com/nokka/slashdiablo-launcher/clients/slashdiablo"
 	"github.com/nokka/slashdiablo-launcher/config"
 	"github.com/nokka/slashdiablo-launcher/d2"
-	"github.com/nokka/slashdiablo-launcher/github"
 	"github.com/nokka/slashdiablo-launcher/ladder"
 	"github.com/nokka/slashdiablo-launcher/log"
 	"github.com/nokka/slashdiablo-launcher/storage"
@@ -22,10 +22,8 @@ import (
 func main() {
 	// Environment variables set when building.
 	var (
-		githubOwner      = envString("GITHUB_OWNER", "nokka")
-		githubRepository = envString("GITHUB_REPO", "slashdiablo-patches")
-		githubToken      = envString("GITHUB_TOKEN", "")
-		debugMode        = envBool("DEBUG_MODE", true)
+		slashdiabloAddress = envString("SLASHDIABLO_ADDRESS", "http://slashdiablo.net/files/slashdiablo-patches")
+		debugMode          = envBool("DEBUG_MODE", false)
 	)
 
 	// Set app context.
@@ -90,12 +88,12 @@ func main() {
 	gm := config.NewGameModel(nil)
 
 	// Setup clients.
-	gc := github.NewClient(githubOwner, githubRepository, githubToken)
+	sc := slashdiablo.NewClient(slashdiabloAddress)
 	lc := ladder.NewClient()
 
 	// Setup services.
 	cs := config.NewService(store, gm)
-	d2s := d2.NewService(gc, cs, logger)
+	d2s := d2.NewService(sc, cs, logger)
 	ls := ladder.NewService(lc, lm)
 
 	// Populate the game model with the game config
