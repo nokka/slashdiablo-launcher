@@ -4,14 +4,21 @@ Item {
         id: bottombar
 
         // Background image.
-        Item {
+        /*Item {
             id: background
             anchors.fill: parent;
             Image { source: "assets/bottom_bar_bg.png"; fillMode: Image.Pad; anchors.fill: parent;  opacity: 0.8 }
+        }*/
+
+        // Background.
+        Rectangle {
+            anchors.fill: parent
+            color: "#000000"
+            opacity: 0.5
         }
 
         Separator {
-            color: "#030202"
+            color: "#141414"
             anchors.top: parent.top
             anchors.bottom: undefined
         }
