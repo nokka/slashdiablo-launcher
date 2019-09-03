@@ -31,7 +31,7 @@ Rectangle {
     // Content area.
     Item {
         width: parent.width
-        height: (parent.height - (topbar.height + bottombar.height))
+        height: (parent.height - topbar.height)
         anchors.top: topbar.bottom
        
         // Loads pages dynamically, launcher view is default.
@@ -40,14 +40,6 @@ Rectangle {
             anchors.fill: parent
             source: "LauncherView.qml"
         }
-    }
-
-    
-    // Bottom bar.
-    BottomBar{
-        id: bottombar
-        width: parent.width; height: 80
-        anchors.bottom: parent.bottom;
     }
 
     // Settings popup.

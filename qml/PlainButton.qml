@@ -21,63 +21,16 @@ Button {
 
     background: Rectangle {
         anchors.fill: parent
-        radius: 3
-        
-        // Outer border.
-        gradient: Gradient {
-            GradientStop { 
-                id: gradientStart
-                position: 0.0;
-                color: (hovered ? "#615840" : "#362d14")
-            }
-            GradientStop {
-                id: gradientStop
-                position: 1.0;
-                color: (hovered ? "#d9b16c" : "#a17b2f")
-            }
-        }
+        color: "#21060D"
+        radius: 5
 
         // Inner fill.
         Rectangle {
             width: (parent.width-2)
             height: (parent.height-2)
             anchors.centerIn: parent
-            color: "#0d0d0d"
-            radius: 3
+            color: (hovered ? "#0391C4" : "#027EB4")
         }
-
-        // Inner border.
-        Rectangle {
-            width: (parent.width-12)
-            height: (parent.height-12)
-            anchors.centerIn: parent
-            color: "#5E1617"
-        }
-
-        // Most inner fill.
-        Rectangle {
-            id: fill
-            width: (parent.width-15)
-            height: (parent.height-15)
-            anchors.centerIn: parent
-            color: "#040405"
-        }
-    }
-    
-    PropertyAnimation {
-        id: animateIn
-        target: fill
-        properties: "color";
-        to: "#000c14";
-        duration: 200
-    }
-
-    PropertyAnimation {
-        id: animateOut
-        target: fill
-        properties: "color";
-        to: "#040405";
-        duration: 100
     }
 
     MouseArea {
