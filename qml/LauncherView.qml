@@ -7,9 +7,17 @@ Item {
     anchors.leftMargin: 20
 
     Item {
-        width: 405
+        id: sidebar
+        width: 350
         height: parent.height
         anchors.right: parent.right
+        
+        Separator{
+            width: 1
+            color: "#3F2A2A"
+            anchors.right: undefined
+            anchors.top: parent.top
+        }
 
         // News list.
         ListView {
@@ -19,31 +27,56 @@ Item {
 
 			anchors.top: parent.top
             anchors.left: parent.left
-            anchors.topMargin: 20
+            anchors.topMargin: 10
+            anchors.leftMargin: 20
 
 			model: NewsModel{}
 			delegate: NewsItemDelegate{}
 		}
 
-        /*Item {
-            id: logobg
-            width: 234
-            height: 267
-            anchors.top: parent.top
-            anchors.topMargin: 20
-            anchors.horizontalCenter: parent.horizontalCenter
-            Image { source: "assets/logo-bg.png"; anchors.fill: parent; opacity: 1.0 }
-        }
-
         Item {
-            id: logotext
-            width: 240
-            height: 71
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 117
-            Image { source: "assets/logo-text.png"; anchors.fill: parent; opacity: 1.0 }
-        }*/
+            anchors.bottom: parent.bottom
+            width: parent.width; height: 70
+            anchors.left: parent.left
+            anchors.bottomMargin: 15
+
+            Separator{
+                color: "#3F2A2A"
+                anchors.top: parent.top
+                anchors.bottom: undefined
+            }
+    
+            Title {
+                text: "DIABLO GATEWAY"
+                anchors.bottom: gameInstances.top
+                anchors.left: parent.left
+                anchors.leftMargin: 20
+                anchors.bottomMargin: 5
+            }
+
+            Dropdown{
+                id: gameInstances
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                anchors.leftMargin: 20
+                currentIndex: 0
+                model: ["Slashdiablo", "Battle.net"]
+                height: 30
+                width: 300
+
+                onActivated: {
+                    diablo.setGateway(this.currentText)
+                }
+            }
+        }        
+    }
+
+        
+    // Bottom bar.
+    BottomBar{
+        id: bottombar
+        width: (parent.width-sidebar.width); height: 80
+        anchors.bottom: parent.bottom;
     }
 
     // Top ladder table.

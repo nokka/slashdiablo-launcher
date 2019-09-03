@@ -6,7 +6,7 @@ Item {
     id: ladderTableBox
 	width: parent.width * 0.32
     height: parent.height
-
+	
 	Rectangle {
 		anchors.fill: parent
 		color: "#030202"

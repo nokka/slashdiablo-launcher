@@ -82,12 +82,27 @@ Item {
         }
 
         SText {
+            id: patchError
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             text: "Couldn't patch game files"
             font.pixelSize: 15
             anchors.leftMargin: 30
             topPadding: 5
+        }
+
+        XButton {
+            width: 120
+            height: 40
+            label: "TRY AGAIN"
+            fontSize: 10
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: patchError.right
+            anchors.leftMargin: 20
+
+            onClicked: {
+                diablo.applyPatches()
+            }
         }
     }
 
@@ -104,18 +119,21 @@ Item {
             font.pixelSize: 15
         }
 
-        Dropdown{
-            id: gameInstances
-            anchors.right: parent.right
+        Item {
+            width: 350; height: parent.height
             anchors.verticalCenter: parent.verticalCenter
-            anchors.rightMargin: 10
-            currentIndex: 0
-            model: [ "Slashdiablo", "Battle.net"]
-            height: 30
-            width: 140
+            anchors.right: parent.right;
 
-            onActivated: {
-                diablo.setGateway(this.currentText)
+            // Launch button.
+            XButton {
+                label: "PLAY"
+                fontSize: 15
+                clickable: diablo.validVersion
+                width: 325; height: 50
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                onClicked: diablo.launchGame()
             }
         }
     }

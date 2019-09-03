@@ -2,6 +2,7 @@ import QtQuick 2.12                 // Item
 import QtQuick.Layouts 1.3          // RowLayout
 
 Item {
+    id: derp
     property string activeMenuItem: "launch"
     property string menuGradientStart: "#00000000"
     property string menuGradientStop: "#363636"
@@ -16,7 +17,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         color: "#000000"
-        opacity: 0.6
+        opacity: 0.0
     }
 
     // Main menu.
@@ -246,6 +247,6 @@ Item {
     }
 
     Separator{
-        color: "#030202"
+        color: "#3F2A2A"
     }
 }
