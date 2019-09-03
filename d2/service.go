@@ -440,11 +440,11 @@ func (s *Service) apply113c(path string, state chan PatchState, progress chan fl
 
 	if len(patchFiles) > 0 {
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to 1.13c", path)}
-
 		if err := s.doPatch(patchFiles, patchLength, "1.13c", path, progress); err != nil {
+			patchErr := err
 			// Make sure we clean up the failed patch.
 			if err := s.cleanUpFailedPatch(path); err != nil {
-				return err
+				return fmt.Errorf("Clean up error: %s : %s", patchErr, err)
 			}
 
 			return err
@@ -473,9 +473,10 @@ func (s *Service) applySlashPatch(path string, state chan PatchState, progress c
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to current Slashdiablo patch", path)}
 
 		if err = s.doPatch(patchFiles, patchLength, "current", path, progress); err != nil {
+			patchErr := err
 			// Make sure we clean up the failed patch.
 			if err := s.cleanUpFailedPatch(path); err != nil {
-				return err
+				return fmt.Errorf("Clean up error: %s : %s", patchErr, err)
 			}
 
 			return err
@@ -496,11 +497,11 @@ func (s *Service) applyMaphack(path string, state chan PatchState, progress chan
 
 	if len(patchFiles) > 0 {
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to latest maphack version", path)}
-
 		if err = s.doPatch(patchFiles, patchLength, "maphack", path, progress); err != nil {
+			patchErr := err
 			// Make sure we clean up the failed patch.
 			if err := s.cleanUpFailedPatch(path); err != nil {
-				return err
+				return fmt.Errorf("Clean up error: %s : %s", patchErr, err)
 			}
 
 			return err
@@ -523,11 +524,11 @@ func (s *Service) applyHDMod(path string, state chan PatchState, progress chan f
 	if len(patchFiles) > 0 {
 		// Update UI.
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to latest HD mod version", path)}
-
 		if err = s.doPatch(patchFiles, patchLength, "hd", path, progress); err != nil {
+			patchErr := err
 			// Make sure we clean up the failed patch.
 			if err := s.cleanUpFailedPatch(path); err != nil {
-				return err
+				return fmt.Errorf("Clean up error: %s : %s", patchErr, err)
 			}
 
 			return err
