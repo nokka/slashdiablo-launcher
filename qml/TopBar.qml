@@ -247,6 +247,6 @@ Item {
     }
 
     Separator{
-        color: "#3F2A2A"
+        color: "#4a402c"
     }
 }

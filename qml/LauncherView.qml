@@ -14,7 +14,7 @@ Item {
         
         Separator{
             width: 1
-            color: "#3F2A2A"
+            color: "#4a402c"
             anchors.right: undefined
             anchors.top: parent.top
         }
@@ -41,7 +41,7 @@ Item {
             anchors.bottomMargin: 15
 
             Separator{
-                color: "#3F2A2A"
+                color: "#4a402c"
                 anchors.top: parent.top
                 anchors.bottom: undefined
             }

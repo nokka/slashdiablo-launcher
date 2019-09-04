@@ -16,5 +16,6 @@ ItemDelegate {
         color: hovered ? "#111111" : "#050505"
         width: parent.width
         border.width: 0
+        opacity: 0.2
     }
 }

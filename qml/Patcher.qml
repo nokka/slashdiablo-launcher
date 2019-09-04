@@ -125,7 +125,7 @@ Item {
             anchors.right: parent.right;
 
             // Launch button.
-            XButton {
+            PlainButton {
                 label: "PLAY"
                 fontSize: 15
                 clickable: diablo.validVersion

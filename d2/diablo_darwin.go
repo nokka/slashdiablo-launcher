@@ -37,8 +37,6 @@ func applyDEP(path string) error {
 func isHDInstalled(path string) (bool, error) {
 	filePath := localizePath(fmt.Sprintf("%s/%s", path, "D2HD.dll"))
 
-	fmt.Println("HD FILE PATH", filePath)
-
 	// Check if the file exists on disk.
 	_, err := os.Stat(filePath)
 	if err != nil {
@@ -55,8 +53,6 @@ func isHDInstalled(path string) (bool, error) {
 
 func isMaphackInstalled(path string) (bool, error) {
 	filePath := localizePath(fmt.Sprintf("%s/%s", path, "BH.dll"))
-
-	fmt.Println("MAPHACK FILE PATH", filePath)
 
 	// Check if the file exists on disk.
 	_, err := os.Stat(filePath)

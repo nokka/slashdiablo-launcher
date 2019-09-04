@@ -65,7 +65,14 @@ func (s *Service) listenForGameStates() {
 
 // SetGateway will set the given gateway for the user.
 func (s *Service) SetGateway(gateway string) error {
-	return setGateway(gateway)
+	err := setGateway(gateway)
+	if err != nil {
+		return err
+	}
+
+	// Set gateway in the config.
+
+	return nil
 }
 
 func (s *Service) mutateInstancesToLaunch(games []storage.Game) {
@@ -128,6 +135,10 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 		return false, err
 	}
 
+	if conf.Gateway == "" {
+		s.SetGateway(GatewaySlashdiablo)
+	}
+
 	// Get current slash patch and compare.
 	slashManifest, err := s.getManifest("current/manifest.json")
 	if err != nil {
@@ -139,9 +150,6 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-
-	fmt.Println("MAPHACK MANIFEST ---")
-	fmt.Println(maphackManifest)
 
 	// Get current HD patch and compare.
 	HDManifest, err := s.getManifest("hd/manifest.json")
@@ -160,11 +168,8 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 
 			// Game wasn't 1.13c, needs to be updated.
 			if !valid {
-				fmt.Println("1.13c WAS NOT UP TO DATE, RETURNING FALSE")
 				return false, nil
 			}
-
-			fmt.Println("1.13c WAS UP TO DATE")
 
 			// Check if the current game install is up to date with the slash patch.
 			slashFiles, _, err := s.getFilesToPatch(slashManifest.Files, game.Location, nil)
@@ -174,11 +179,8 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 
 			// Slash patch isn't up to date.
 			if len(slashFiles) > 0 {
-				fmt.Println("SLASH PATCH IS NOT UP TO DATE")
 				return false, nil
 			}
-
-			fmt.Println("SLASH PATCH WAS UP TO DATE")
 
 			// If the user has chosen to override the maphack config with their own,
 			// we need to make sure the config is being ignored from the patch.
@@ -188,25 +190,18 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 				ignoredMaphackFiles = append(ignoredMaphackFiles, "BH.cfg")
 			}
 
-			fmt.Println("IGNORED FILES WHILE VALIDATING VERSION", ignoredMaphackFiles)
-
 			// Check how many files aren't up to date with maphack.
 			missingMaphackFiles, _, err := s.getFilesToPatch(maphackManifest.Files, game.Location, ignoredMaphackFiles)
 			if err != nil {
 				return false, err
 			}
 
-			fmt.Println("MISSING MAPHACK FILES", missingMaphackFiles)
-
 			// Maphack is enabled, make sure there's no missing files.
 			if game.Maphack {
 				// Maphack patch isn't up to date.
 				if len(missingMaphackFiles) > 0 {
-					fmt.Println("MAPHACK WAS ENABLED, BUT OUT OF DATE / MISSING FILES")
-					fmt.Println(missingMaphackFiles)
 					return false, nil
 				}
-				fmt.Println("MAPHACK WAS ENABLED, EVERYTHING WAS OK")
 			} else {
 				installed, err := isMaphackInstalled(game.Location)
 				if err != nil {
@@ -215,11 +210,8 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 
 				// Maphack wasn't supposed to be installed, but it is, we need to update.
 				if installed {
-					fmt.Println("MAPHACK WAS INSTALLED WHEN IT WASN'T SUPPOSED TO, NEED TO UPDATE")
 					return false, nil
 				}
-
-				fmt.Println("MAPHACK WAS NOT ENABLED, EVERYTHING WAS OK")
 			}
 
 			// Check if the current game install is up to date with the HD patch.
@@ -231,10 +223,8 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 			if game.HD {
 				// HD patch isn't up to date.
 				if len(missingHDFiles) > 0 {
-					fmt.Println("HD WAS ENABLED, BUT MISSING FILES")
 					return false, nil
 				}
-				fmt.Println("HD WAS ENABLED, EVERYTHING WAS OK")
 			} else {
 				installed, err := isHDInstalled(game.Location)
 				if err != nil {
@@ -243,11 +233,8 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 
 				// HD wasn't supposed to be installed, but it is, we need to update.
 				if installed {
-					fmt.Println("HD WAS INSTALLED WHEN IT WASN'T SUPPOSED TO, NEED TO UPDATE")
 					return false, nil
 				}
-
-				fmt.Println("HD WAS NOT ENABLED, EVERYTHING WAS OK")
 			}
 		}
 	}

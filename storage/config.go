@@ -2,7 +2,8 @@ package storage
 
 // Config is the configuration required to run the app.
 type Config struct {
-	Games []Game `json:"games"`
+	Games   []Game `json:"games"`
+	Gateway string `json:"gateway"`
 }
 
 // Game represents a game setup by the user.
