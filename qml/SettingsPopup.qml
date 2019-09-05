@@ -7,6 +7,8 @@ Popup {
     id: settingsPopup
 
     property int itemHeight: 50
+    property bool errored: false
+
     property var gameRoles: { 
         "id": 257,
         "location": 258,
@@ -158,8 +160,36 @@ Popup {
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                 }
+
+                // Error popup.
+                Item {
+                    id: errorPopup
+                    visible: errored
+                    width: 300
+                    height: 50
+                    anchors.horizontalCenter: doneButton.horizontalCenter
+                    anchors.bottom: doneButton.top
+                    anchors.bottomMargin: 15
+
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "#8f3131"
+                        border.width: 1
+                        border.color: "#000000"
+                    }
+
+
+                    SText {
+                        text: "New Game doesn't have Diablo II directory set."
+                        font.pixelSize: 11
+                        anchors.centerIn: parent
+                        color: "#ffffff"
+                    }
+                }
                 
                 XButton {
+                    id: doneButton
+                    visible: (gamesList.count > 0)
                     label: "DONE"
                     width: 100
                     height: 50
@@ -169,19 +199,44 @@ Popup {
                     anchors.leftMargin: 65
 
                     onClicked: {
-                        var success = settings.persistGameModel()
-                        if(success) {
-                            // Validate the game versions after changes has been made to the settings.
-                            diablo.validateVersion()
-                            
-                            settingsPopup.close()
-                            return
-                        }
+                        // Reset error.
+                        errored = false
+                        
+                        if(validateGames()) {
+                            var success = settings.persistGameModel()
+                            if(success) {
+                                // Validate the game versions after changes has been made to the settings.
+                                diablo.validateVersion()
+                                settingsPopup.close()
+                            }
+                        } else {
+                            // Show error.
+                            errored = true
 
-                        // TODO: Add error handling.
+                            // Remove error after a timeout.
+                            errorTimer.restart()
+                        }
                     }
                 }
             }
         }
+    }
+
+    // validateGames will validate that the input is correctly set.
+    function validateGames() {
+       for(var i = 0; i < gamesList.count; i++) {
+            var location = gamesList.model.data(gamesList.model.index(i, 0), gameRoles.location)
+            if(location.length == 0) {
+                return false
+            }
+        }
+        
+        return true
+    }
+
+    Timer {
+        id: errorTimer
+        interval: 5000; running: false; repeat: false
+        onTriggered: errored = false
     }
 }
