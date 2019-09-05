@@ -120,16 +120,32 @@ Item {
         }
 
         Item {
-            width: 350; height: parent.height
+            width: 325; height: parent.height
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right;
 
+            Dropdown{
+                id: gameInstances
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: playButton.top
+                anchors.bottomMargin: 5
+                currentIndex: 0
+                model: ["Slashdiablo", "Battle.net"]
+                height: 30
+                width: 300
+
+                onActivated: {
+                    diablo.setGateway(this.currentText)
+                }
+            }
+
             // Launch button.
             PlainButton {
+                id: playButton
                 label: "PLAY"
                 fontSize: 15
                 clickable: diablo.validVersion
-                width: 325; height: 50
+                width: 300; height: 50
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
