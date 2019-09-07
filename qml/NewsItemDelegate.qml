@@ -3,16 +3,17 @@ import QtQuick 2.12
 Item {
     id: newsItem
     width: 440
-    height: 120
+    height: (description.contentHeight + 70) // Content + Title height.
 
     Row {
         width: parent.width
-        height: 120
+        height: parent.height
         spacing: 10
         anchors.topMargin: 20
 
         Item {
-            width: newsItem.width * 0.70; height: 90
+            height: parent.height
+            width: newsItem.width * 0.70;
             anchors.verticalCenter: parent.verticalCenter
 
             Title {
@@ -24,7 +25,7 @@ Item {
             // Timestamp.
             Title {
                 id: timestamp
-                color: "#453a2c"
+                color: "#915a23"
                 text: model.date + " " + model.year
                 anchors.top: title.bottom
             }

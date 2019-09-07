@@ -65,12 +65,17 @@ func (s *Service) listenForGameStates() {
 
 // SetGateway will set the given gateway for the user.
 func (s *Service) SetGateway(gateway string) error {
+	// Set gateway in the OS specific way.
 	err := setGateway(gateway)
 	if err != nil {
 		return err
 	}
 
 	// Set gateway in the config.
+	err = s.configService.UpdateGateway(gateway)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -78,22 +83,15 @@ func (s *Service) SetGateway(gateway string) error {
 func (s *Service) mutateInstancesToLaunch(games []storage.Game) {
 	for i := 0; i < len(games); i++ {
 		var runningCount int
-		fmt.Println("-----------------------------------")
-		fmt.Println("CHECKING GAME WITH ID", games[i].ID)
 		for _, running := range s.runningGames {
 			if games[i].ID == running.GameID {
-				fmt.Println("FOUND MATCH", games[i].ID, running.GameID)
 				runningCount++
 			}
 		}
 
-		fmt.Println("RUNNING COUNT ", runningCount)
-
 		// If any games of this id is running already, subtract the number
 		// and mutate the game so the next time we launch, we launch the correct number.
 		games[i].Instances = games[i].Instances - runningCount
-
-		fmt.Println("INSTANCES TO LAUNCH IN MUTATE FUNC", games[i].Instances)
 	}
 }
 
@@ -109,7 +107,6 @@ func (s *Service) Exec() error {
 	s.mutateInstancesToLaunch(conf.Games)
 
 	for _, g := range conf.Games {
-		fmt.Println("INSTANCES TO LAUNCH", g.Instances)
 		for i := 0; i < g.Instances; i++ {
 			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
 			time.Sleep(1 * time.Second)
@@ -133,10 +130,6 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 	conf, err := s.configService.Read()
 	if err != nil {
 		return false, err
-	}
-
-	if conf.Gateway == "" {
-		s.SetGateway(GatewaySlashdiablo)
 	}
 
 	// Get current slash patch and compare.
@@ -396,6 +389,18 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 				state <- PatchState{Error: err}
 				return
 			}
+		}
+
+		// If gateway haven't been set yet, default it to Slashdiablo.
+		if conf.Gateway == "" {
+			state <- PatchState{Message: "Setting default gateway to Slashdiablo"}
+
+			err := s.SetGateway(GatewaySlashdiablo)
+			if err != nil {
+				state <- PatchState{Error: err}
+				return
+			}
+
 		}
 
 		done <- true

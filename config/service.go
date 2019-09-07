@@ -22,6 +22,8 @@ type Service interface {
 
 	// PersistGameModel will persist the current game model to the persistant store.
 	PersistGameModel() error
+
+	UpdateGateway(gateway string) error
 }
 
 type service struct {
@@ -159,6 +161,24 @@ func (s *service) PersistGameModel() error {
 			HD:            games[i].HD,
 		})
 	}
+
+	err = s.store.Write(conf)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UpdateGateway will update the Diablo gateway in the store.
+func (s *service) UpdateGateway(gateway string) error {
+	conf, err := s.store.Read()
+	if err != nil {
+		return err
+	}
+
+	// Update gateway.
+	conf.Gateway = gateway
 
 	err = s.store.Write(conf)
 	if err != nil {

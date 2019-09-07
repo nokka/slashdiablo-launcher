@@ -17,7 +17,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         color: "#000000"
-        opacity: 0.0
+        opacity: 0.3
     }
 
     // Main menu.

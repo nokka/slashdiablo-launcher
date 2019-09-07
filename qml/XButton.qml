@@ -51,7 +51,7 @@ Button {
             width: (parent.width-12)
             height: (parent.height-12)
             anchors.centerIn: parent
-            color: "#5E1617"
+            color: "#915a23"
         }
 
         // Most inner fill.
