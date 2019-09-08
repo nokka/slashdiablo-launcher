@@ -129,18 +129,18 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: playButton.top
                 anchors.bottomMargin: 5
-                currentIndex: 0
+                currentIndex: (diablo.gateway == "Slashdiablo" ? 0 : 1)
                 model: ["Slashdiablo", "Battle.net"]
                 height: 30
                 width: 300
 
                 onActivated: {
-                    diablo.setGateway(this.currentText)
+                    diablo.updateGateway(this.currentText)
                 }
             }
 
             // Launch button.
-            PlainButton {
+            XButton {
                 id: playButton
                 label: "PLAY"
                 fontSize: 15
@@ -195,6 +195,7 @@ Item {
     }
 
     Component.onCompleted: {
+        console.log(diablo.gateway)
         if(settings.games.rowCount() > 0) {
             diablo.validateVersion()
         }

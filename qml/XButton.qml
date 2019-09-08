@@ -21,7 +21,6 @@ Button {
 
     background: Rectangle {
         anchors.fill: parent
-        radius: 3
         
         // Outer border.
         gradient: Gradient {

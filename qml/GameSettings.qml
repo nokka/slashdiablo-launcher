@@ -81,7 +81,7 @@ Item {
 
                     TextField {
                         id: d2pathInput
-                        width: fileDialogBox.width * 0.80; height: 35
+                        width: fileDialogBox.width * 0.60; height: 35
                         font.pixelSize: 11
                         color: "#454545"
                         readOnly: true
@@ -101,6 +101,37 @@ Item {
                         cursorShape: Qt.PointingHandCursor
 
                         onClicked: d2PathDialog.open()
+                    }
+
+                    Item {
+                        width: (fileDialogBox.width - (d2pathInput.width + chooseD2Path.width)); height: 35
+
+                        Rectangle {
+                            color: "#1f1f1f"
+                            width: 45
+                            height: 35
+                            anchors.left: parent.left
+                            anchors.leftMargin: 5
+                            
+                            Text {
+                                anchors.centerIn: parent
+                                color: "#808080"
+                                text: "-w"
+                            }
+                        }
+
+                        Rectangle {
+                            color: "#915a23"
+                            width: 45
+                            height: 35
+                            anchors.right: parent.right
+                            
+                            Text {
+                                anchors.centerIn: parent
+                                color: "#ffffff"
+                                text: "-gfx"
+                            }
+                        }
                     }
 
                     // File dialog.

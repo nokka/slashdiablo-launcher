@@ -22,13 +22,14 @@ type DiabloBridge struct {
 	_ bool    `property:"validatingVersion"`
 	_ float32 `property:"patchProgress"`
 	_ string  `property:"status"`
+	_ string  `property:"gateway"`
 
 	// Slots.
 	_ func()               `slot:"launchGame"`
 	_ func()               `slot:"validateVersion"`
 	_ func()               `slot:"applyPatches"`
 	_ func(path string)    `slot:"applyDEP"`
-	_ func(gateway string) `slot:"setGateway"`
+	_ func(gateway string) `slot:"updateGateway"`
 }
 
 // Connect will connect the QML signals to functions in Go.
@@ -37,7 +38,7 @@ func (b *DiabloBridge) Connect() {
 	b.ConnectApplyPatches(b.applyPatches)
 	b.ConnectValidateVersion(b.validateVersion)
 	b.ConnectApplyDEP(b.applyDEP)
-	b.ConnectSetGateway(b.setGateway)
+	b.ConnectUpdateGateway(b.updateGateway)
 }
 
 func (b *DiabloBridge) launchGame() {
@@ -120,16 +121,19 @@ func (b *DiabloBridge) applyDEP(path string) {
 	}()
 }
 
-func (b *DiabloBridge) setGateway(gateway string) {
+func (b *DiabloBridge) updateGateway(gateway string) {
 	err := b.d2service.SetGateway(gateway)
 	if err != nil {
 		b.logger.Error(err)
 		// @TODO: Add QML signal.
 	}
+
+	// Gateway was successfully saved, set gateway on the bridge.
+	//b.SetGateway(gateway)
 }
 
 // NewDiablo ...
-func NewDiablo(d2s *d2.Service, logger log.Logger) *DiabloBridge {
+func NewDiablo(d2s *d2.Service, gateway string, logger log.Logger) *DiabloBridge {
 	b := NewDiabloBridge(nil)
 
 	// Set dependencies.
@@ -141,6 +145,7 @@ func NewDiablo(d2s *d2.Service, logger log.Logger) *DiabloBridge {
 	b.SetErrored(false)
 	b.SetValidVersion(false)
 	b.SetValidatingVersion(false)
+	b.SetGateway(gateway)
 
 	return b
 }
