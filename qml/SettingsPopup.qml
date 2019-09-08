@@ -45,7 +45,7 @@ Popup {
         // Bottom background.
         Image {
             width: 848
-            source: "assets/content-bot-bg-new.png";
+            source: "assets/stone_bg.png";
             fillMode: Image.Stretch;
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter

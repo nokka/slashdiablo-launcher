@@ -129,7 +129,7 @@ func (b *DiabloBridge) updateGateway(gateway string) {
 	}
 
 	// Gateway was successfully saved, set gateway on the bridge.
-	//b.SetGateway(gateway)
+	b.SetGateway(gateway)
 }
 
 // NewDiablo ...

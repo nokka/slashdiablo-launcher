@@ -133,114 +133,39 @@ Item {
         }
     }
 
-    // Status panel.
+    // Settings.
     Item {
-        height: parent.height
-        width: parent.width * 0.3215
+        width: 120; height: parent.height
         anchors.right: parent.right
+        anchors.rightMargin: 20
 
-        RowLayout {
-            id: statusMenu
-            anchors.fill: parent
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            spacing: 0
+        Item {
+            width: 120
+            height: 20
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
 
-            // Server status.
-            Item {
-                width: 110
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                height: parent.height
-                
-                Item {
-                    width: 110
-                    height: 20
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Title {
-                        text: "SERVER STATUS"    
-                        anchors.verticalCenter: parent.verticalCenter                  
-                    }
-
-                    // Status circle.
-                    Rectangle {
-                        width: 12
-                        height: 12
-                        color: "#0aa646"
-                        radius: (width * 0.5)
-                        border.color: "#61e897"
-                        border.width: 1
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.right: parent.right 
-                    }
-                }
+            Image {
+                id: optionsIcon
+                fillMode: Image.PreserveAspectFit
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                width: 13
+                height: 13
+                source: "assets/svg/options.svg"
             }
 
-            // Users online.
-            /*Item {
-                width: 80
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                height: parent.height
+            Title {
+                text: "GAME SETTINGS"
+                font.bold: true
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                anchors.rightMargin: 5
 
-                Item {
-                    width: 50
-                    height: 20
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    SText {
-                        text: "520"
-                        font.bold: true
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-
-                    Image {
-                        id: usersIcon
-                        fillMode: Image.PreserveAspectFit
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.right: parent.right
-                        width: 20
-                        height: 20
-                        source: "assets/svg/users.svg"
-                    }
-                }
-            }*/
-
-             // Settings.
-            Item {
-                width: 120
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                height: parent.height
-
-                Item {
-                    width: 120
-                    height: 20
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Image {
-                        id: optionsIcon
-                        fillMode: Image.PreserveAspectFit
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left
-                        width: 13
-                        height: 13
-                        source: "assets/svg/options.svg"
-                    }
-
-                    Title {
-                        text: "GAME SETTINGS"
-                        font.bold: true
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.right: parent.right
-                        anchors.rightMargin: 5
-
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: settingsPopup.open()
-                        }
-                    }
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: settingsPopup.open()
                 }
             }
         }

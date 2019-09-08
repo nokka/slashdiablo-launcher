@@ -22,7 +22,7 @@ type ConfigBridge struct {
 	// Slots.
 	_ func()                 `slot:"addGame"`
 	_ func(body string) bool `slot:"upsertGame"`
-	_ func(id int)           `slot:"deleteGame"`
+	_ func(id string)        `slot:"deleteGame"`
 	_ func() bool            `slot:"persistGameModel"`
 }
 
@@ -57,7 +57,7 @@ func (c *ConfigBridge) upsertGame(body string) bool {
 }
 
 // deleteGame will delete the given id from the game model.
-func (c *ConfigBridge) deleteGame(id int) {
+func (c *ConfigBridge) deleteGame(id string) {
 	err := c.config.DeleteGame(id)
 	if err != nil {
 		c.logger.Error(err)

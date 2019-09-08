@@ -28,7 +28,7 @@ type Service struct {
 
 type game struct {
 	PID    int
-	GameID int
+	GameID string
 }
 
 type execState struct {

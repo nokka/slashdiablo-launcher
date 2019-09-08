@@ -3,6 +3,7 @@ package config
 import (
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/nokka/slashdiablo-launcher/storage"
 )
 
@@ -18,7 +19,7 @@ type Service interface {
 	UpsertGame(request UpdateGameRequest) error
 
 	// DeleteGame will delete a game from the game model and the persistant store.
-	DeleteGame(id int) error
+	DeleteGame(id string) error
 
 	// PersistGameModel will persist the current game model to the persistant store.
 	PersistGameModel() error
@@ -54,7 +55,7 @@ func (s *service) AddGame() {
 
 	// Generate ID next in the sequence.
 	// TODO: Generate a stronger id.
-	g.ID = len(s.gameModel.Games()) + 1
+	g.ID = uuid.New().String()
 	g.Instances = 1
 
 	s.gameModel.AddGame(g)
@@ -62,7 +63,7 @@ func (s *service) AddGame() {
 
 // UpdateGameRequest is the data used to update a game in the game model.
 type UpdateGameRequest struct {
-	ID            int    `json:"id"`
+	ID            string `json:"id"`
 	Location      string `json:"location"`
 	Instances     int    `json:"instances"`
 	Maphack       bool   `json:"maphack"`
@@ -99,7 +100,7 @@ func (s *service) UpsertGame(request UpdateGameRequest) error {
 }
 
 // DeleteGame will delete the game from the config.
-func (s *service) DeleteGame(id int) error {
+func (s *service) DeleteGame(id string) error {
 	// Lock before we update the model preventing race conditions.
 	s.mutex.Lock()
 
