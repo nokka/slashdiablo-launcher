@@ -195,7 +195,12 @@ Item {
     }
 
     Component.onCompleted: {
-        console.log(diablo.gateway)
+        // Set default gateway if it hasn't been set.
+        if(diablo.gateway === "") {
+            diablo.updateGateway("Slashdiablo")
+        }
+
+        // If any games have been set, check their versions.
         if(settings.games.rowCount() > 0) {
             diablo.validateVersion()
         }
