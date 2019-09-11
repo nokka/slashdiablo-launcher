@@ -120,7 +120,7 @@ Item {
         }
 
         Item {
-            width: 325; height: parent.height
+            width: 300; height: parent.height
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right;
 
@@ -132,7 +132,7 @@ Item {
                 currentIndex: (diablo.gateway == "Slashdiablo" ? 0 : 1)
                 model: ["Slashdiablo", "Battle.net"]
                 height: 30
-                width: 300
+                width: 275
 
                 onActivated: {
                     diablo.updateGateway(this.currentText)
@@ -145,7 +145,7 @@ Item {
                 label: "PLAY"
                 fontSize: 15
                 clickable: diablo.validVersion
-                width: 300; height: 50
+                width: 275; height: 50
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 

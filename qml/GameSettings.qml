@@ -106,31 +106,19 @@ Item {
                     Item {
                         width: (fileDialogBox.width - (d2pathInput.width + chooseD2Path.width)); height: 35
 
-                        Rectangle {
-                            color: "#1f1f1f"
+                        ToggleButton {
+                            label: "-w"
                             width: 45
                             height: 35
                             anchors.left: parent.left
                             anchors.leftMargin: 5
-                            
-                            Text {
-                                anchors.centerIn: parent
-                                color: "#808080"
-                                text: "-w"
-                            }
                         }
 
-                        Rectangle {
-                            color: "#915a23"
+                        ToggleButton {
+                            label: "-gfx"
                             width: 45
                             height: 35
                             anchors.right: parent.right
-                            
-                            Text {
-                                anchors.centerIn: parent
-                                color: "#ffffff"
-                                text: "-gfx"
-                            }
                         }
                     }
 

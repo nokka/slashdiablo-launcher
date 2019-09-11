@@ -5,7 +5,7 @@ Item {
     id: derp
     property string activeMenuItem: "launch"
     property string menuGradientStart: "#00000000"
-    property string menuGradientStop: "#363636"
+    property string menuGradientStop: "#b5a791"
     property var menuSources: { 
         "launch": "LauncherView.qml",
         "rules": "RulesView.qml",
