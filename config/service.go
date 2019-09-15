@@ -63,12 +63,13 @@ func (s *service) AddGame() {
 
 // UpdateGameRequest is the data used to update a game in the game model.
 type UpdateGameRequest struct {
-	ID            string `json:"id"`
-	Location      string `json:"location"`
-	Instances     int    `json:"instances"`
-	Maphack       bool   `json:"maphack"`
-	OverrideBHCfg bool   `json:"override_bh_cfg"`
-	HD            bool   `json:"hd"`
+	ID            string   `json:"id"`
+	Location      string   `json:"location"`
+	Instances     int      `json:"instances"`
+	Maphack       bool     `json:"maphack"`
+	OverrideBHCfg bool     `json:"override_bh_cfg"`
+	HD            bool     `json:"hd"`
+	Flags         []string `json:"flags"`
 }
 
 // UpsertGame will upsert the game to the config.
@@ -90,6 +91,7 @@ func (s *service) UpsertGame(request UpdateGameRequest) error {
 			games[i].Maphack = request.Maphack
 			games[i].OverrideBHCfg = request.OverrideBHCfg
 			games[i].HD = request.HD
+			games[i].Flags = request.Flags
 		}
 	}
 
@@ -160,6 +162,7 @@ func (s *service) PersistGameModel() error {
 			Maphack:       games[i].Maphack,
 			OverrideBHCfg: games[i].OverrideBHCfg,
 			HD:            games[i].HD,
+			Flags:         games[i].Flags,
 		})
 	}
 

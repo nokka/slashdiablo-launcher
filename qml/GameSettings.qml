@@ -29,9 +29,11 @@ Item {
                 instances: (gameInstances.currentIndex+1),
                 maphack: maphackSwitch.checked,
                 override_bh_cfg: overrideMaphackCfgSwitch.checked,
-                hd: hdSwitch.checked
+                hd: hdSwitch.checked,
+                flags: ["-w", "-gfx"]
             }
 
+            console.log("updating game model")
             var success = settings.upsertGame(JSON.stringify(body))
             
             // TODO: Implement error handling.

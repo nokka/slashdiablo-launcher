@@ -12,6 +12,7 @@ const (
 	Maphack
 	OverrideBHCfg
 	HD
+	Flags
 )
 
 // GameModel ...
@@ -34,6 +35,7 @@ func (m *GameModel) init() {
 		Maphack:       core.NewQByteArray2("maphack", -1),
 		OverrideBHCfg: core.NewQByteArray2("override_bh_config", -1),
 		HD:            core.NewQByteArray2("hd", -1),
+		Flags:         core.NewQByteArray2("flags", -1),
 	})
 
 	m.ConnectData(m.data)
@@ -79,6 +81,8 @@ func (m *GameModel) data(index *core.QModelIndex, role int) *core.QVariant {
 		return core.NewQVariant1(item.OverrideBHCfg)
 	case HD:
 		return core.NewQVariant1(item.HD)
+	case Flags:
+		return core.NewQVariant1(item.Flags)
 	default:
 		return core.NewQVariant()
 	}
@@ -95,7 +99,7 @@ func (m *GameModel) addGame(g *Game) {
 func (m *GameModel) updateGame(index int) {
 	var fIndex = m.Index(0, 0, core.NewQModelIndex())
 	var lIndex = m.Index(index, 0, core.NewQModelIndex())
-	m.DataChanged(fIndex, lIndex, []int{Location, Instances, Maphack, OverrideBHCfg, HD})
+	m.DataChanged(fIndex, lIndex, []int{Location, Instances, Maphack, OverrideBHCfg, HD, Flags})
 }
 
 func (m *GameModel) removeGame(index int) {

@@ -2,6 +2,7 @@ package bridge
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/nokka/slashdiablo-launcher/config"
 	"github.com/nokka/slashdiablo-launcher/log"
@@ -46,6 +47,9 @@ func (c *ConfigBridge) upsertGame(body string) bool {
 		c.logger.Error(err)
 		return false
 	}
+
+	fmt.Println("REQUEST ----")
+	fmt.Println(request)
 
 	err := c.config.UpsertGame(request)
 	if err != nil {
