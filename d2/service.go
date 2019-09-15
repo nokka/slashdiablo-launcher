@@ -501,7 +501,7 @@ func (s *Service) applyMaphack(path string, state chan PatchState, progress chan
 
 func (s *Service) applyHDMod(path string, state chan PatchState, progress chan float32, manifestFiles []PatchFile) error {
 	// Update UI.
-	state <- PatchState{Message: "Checking HD mod"}
+	state <- PatchState{Message: "Checking HD mod..."}
 
 	// Figure out which files to patch.
 	patchFiles, patchLength, err := s.getFilesToPatch(manifestFiles, path, nil)

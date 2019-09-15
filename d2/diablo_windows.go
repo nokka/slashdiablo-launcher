@@ -60,8 +60,8 @@ func launch(path string, flags []string, done chan execState) (*int, error) {
 	// Localize the path.
 	localized := localizePath(path)
 
-	// Exec the Diablo II.exe.
-	cmd := exec.Command(localized+"\\Diablo II.exe", "-w")
+	// Exec the Diablo II.exe with the given command line args.
+	cmd := exec.Command(localized+"\\Diablo II.exe", flags...)
 	cmd.Dir = localized
 
 	// Collect the output from the command.
