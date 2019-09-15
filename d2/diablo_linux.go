@@ -8,7 +8,7 @@ func validate113cVersion(dir string) (bool, error) {
 }
 
 // launch will execute the Diablo II.exe in the given directory.
-func launch(path string, done chan execState) (*int, error) {
+func launch(path string, flags []string, done chan execState) (*int, error) {
 	id := 1
 	return &id, nil
 }

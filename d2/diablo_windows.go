@@ -56,7 +56,7 @@ func validate113cVersion(path string) (bool, error) {
 }
 
 // launch will execute the Diablo II.exe in the given directory.
-func launch(path string, done chan execState) (*int, error) {
+func launch(path string, flags []string, done chan execState) (*int, error) {
 	// Localize the path.
 	localized := localizePath(path)
 
@@ -152,7 +152,6 @@ func applyDEP(path string) error {
 		for scanner.Scan() {
 			line := scanner.Text()
 			linesWritten++
-			fmt.Println(line)
 
 			// Kill the go routine when all the ouput has been captured.
 			if linesWritten == 6 {
@@ -204,13 +203,11 @@ func setGateway(gateway string) error {
 	// Open the Battle.net configuration registry directory.
 	gatewayKey, err := registry.OpenKey(registry.CURRENT_USER, `Software\Battle.net\Configuration`, registry.QUERY_VALUE|registry.SET_VALUE)
 	if err != nil {
-		fmt.Println("OPEN KEY ERROR", err)
 		return err
 	}
 
 	// Set the gateway hex.
 	if err := gatewayKey.SetBinaryValue("Diablo II Battle.net Gateways", gatewayHex); err != nil {
-		fmt.Println("SETTING ERROR", err)
 		return err
 	}
 

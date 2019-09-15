@@ -21,6 +21,19 @@ Item {
         hdSwitch.update()
     }
 
+    function makeFlagList() {
+        var flags = []
+        if(windowModeFlag.active) {
+            flags.push("-w")
+        }
+        
+        if(gfxFlag.active) {
+            flags.push("-gfx")
+        }
+
+        return flags
+    }
+
     function updateGameModel() {
         if(game != undefined) {
             var body = {
@@ -30,10 +43,9 @@ Item {
                 maphack: maphackSwitch.checked,
                 override_bh_cfg: overrideMaphackCfgSwitch.checked,
                 hd: hdSwitch.checked,
-                flags: ["-w", "-gfx"]
+                flags: makeFlagList()
             }
-
-            console.log("updating game model")
+            
             var success = settings.upsertGame(JSON.stringify(body))
             
             // TODO: Implement error handling.
@@ -109,18 +121,22 @@ Item {
                         width: (fileDialogBox.width - (d2pathInput.width + chooseD2Path.width)); height: 35
 
                         ToggleButton {
+                            id: windowModeFlag
                             label: "-w"
                             width: 45
                             height: 35
                             anchors.left: parent.left
                             anchors.leftMargin: 5
+                            onClicked: updateGameModel()
                         }
 
                         ToggleButton {
+                            id: gfxFlag
                             label: "-gfx"
                             width: 45
                             height: 35
                             anchors.right: parent.right
+                            onClicked: updateGameModel()
                         }
                     }
 

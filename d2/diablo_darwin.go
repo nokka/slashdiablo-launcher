@@ -13,10 +13,9 @@ func validate113cVersion(dir string) (bool, error) {
 }
 
 // launch will execute the Diablo II.exe in the given directory.
-func launch(path string, done chan execState) (*int, error) {
-	fmt.Println(path)
-	id := 1
-	return &id, nil
+func launch(path string, flags []string, done chan execState) (*int, error) {
+	pid := 1
+	return &pid, nil
 }
 
 // localizePath will localize the path for the OS.

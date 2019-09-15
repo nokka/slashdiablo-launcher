@@ -50,11 +50,7 @@ func (s *Service) listenForGameStates() {
 			// Game exited, remove it from the slice based on pid.
 			for index, g := range s.runningGames {
 				if state.pid != nil && g.PID == *state.pid {
-					fmt.Println("Delete index", index)
 					s.runningGames = append(s.runningGames[:index], s.runningGames[index+1:]...)
-
-					fmt.Println("Running games after the delete")
-					fmt.Println(s.runningGames)
 				}
 			}
 
@@ -112,7 +108,7 @@ func (s *Service) Exec() error {
 			time.Sleep(1 * time.Second)
 
 			// The second argument is a channel, listened on by listenForGameStates().
-			pid, err := launch(g.Location, s.gameStates)
+			pid, err := launch(g.Location, g.Flags, s.gameStates)
 			if err != nil {
 				return err
 			}
