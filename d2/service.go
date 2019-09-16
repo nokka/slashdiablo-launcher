@@ -387,18 +387,6 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			}
 		}
 
-		// If gateway haven't been set yet, default it to Slashdiablo.
-		if conf.Gateway == "" {
-			state <- PatchState{Message: "Setting default gateway to Slashdiablo"}
-
-			err := s.SetGateway(GatewaySlashdiablo)
-			if err != nil {
-				state <- PatchState{Error: err}
-				return
-			}
-
-		}
-
 		done <- true
 	}()
 
