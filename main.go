@@ -23,7 +23,7 @@ import (
 func main() {
 	// Environment variables set when building.
 	var (
-		debugMode = envBool("DEBUG_MODE", false)
+		debugMode = envBool("DEBUG_MODE", true)
 	)
 
 	// Set app context.
@@ -118,8 +118,8 @@ func main() {
 	goqmlframeless.AllowMinimize(fw.WinId())
 
 	// Set the source for our drawable widget to our qml entrypoint.
-	qmlWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
-	//qmlWidget.SetSource(core.NewQUrl3("qrc:/qml/main.qml", 0))
+	//qmlWidget.SetSource(core.NewQUrl3("qml/main.qml", 0))
+	qmlWidget.SetSource(core.NewQUrl3("qrc:/qml/main.qml", 0))
 
 	fw.Show()
 	app.Exec()
