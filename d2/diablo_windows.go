@@ -109,7 +109,7 @@ func configureForOS(path string) error {
 	}
 
 	// Set Windows XP Service Pack 2 compatibility mode.
-	if err := compatibilityKey.SetStringValue(keyName, "~ RUNASADMIN WINXPSP2"); err != nil {
+	if err := compatibilityKey.SetStringValue(keyName, "~ WINXPSP2"); err != nil {
 		return err
 	}
 
