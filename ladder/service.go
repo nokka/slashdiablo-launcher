@@ -16,7 +16,7 @@ type service struct {
 	ladderModel *TopLadderModel
 }
 
-// GetLadder will fetch the ladder from the Slashdiablo API.
+// SetLadderCharacters will fetch the ladder from the Slashdiablo API.
 func (s *service) SetLadderCharacters(mode string) error {
 	characters, err := s.client.GetLadder(mode)
 	if err != nil {

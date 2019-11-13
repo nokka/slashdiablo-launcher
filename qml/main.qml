@@ -17,7 +17,7 @@ Rectangle {
     Item {
         id: background
         anchors.fill: parent;
-        Image { source: "assets/skull_original2.png"; fillMode: Image.Tile; anchors.fill: parent; }
+        Image { source: "assets/skull_original.png"; fillMode: Image.Tile; anchors.fill: parent; }
     }
 
     // Top bar for the entire app.

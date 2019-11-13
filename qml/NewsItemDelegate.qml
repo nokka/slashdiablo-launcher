@@ -44,11 +44,11 @@ Item {
     }
 
     // Border bottom.
-    /*Image {
+    Image {
         width: newsItem.width; height: 9
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         fillMode: Image.PreserveAspectFit
         source: "assets/item_bg.png"
-    }*/
+    }
 }

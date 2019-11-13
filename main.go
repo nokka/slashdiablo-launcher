@@ -14,6 +14,7 @@ import (
 	"github.com/nokka/slashdiablo-launcher/d2"
 	"github.com/nokka/slashdiablo-launcher/ladder"
 	"github.com/nokka/slashdiablo-launcher/log"
+	"github.com/nokka/slashdiablo-launcher/news"
 	"github.com/nokka/slashdiablo-launcher/storage"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/quick"
@@ -86,6 +87,7 @@ func main() {
 	// Models.
 	lm := ladder.NewTopLadderModel(nil)
 	gm := config.NewGameModel(nil)
+	nm := news.NewModel(nil)
 
 	// Setup clients.
 	sc := slashdiablo.NewClient()
@@ -95,6 +97,7 @@ func main() {
 	cs := config.NewService(store, gm)
 	d2s := d2.NewService(sc, cs, logger)
 	ls := ladder.NewService(lc, lm)
+	ns := news.NewService(sc, nm)
 
 	// Populate the game model with the game config
 	// before passing it to the config bridge.
@@ -104,6 +107,7 @@ func main() {
 	diabloBridge := bridge.NewDiablo(d2s, conf.Gateway, logger)
 	configBridge := bridge.NewConfig(cs, gm, logger)
 	ladderBridge := bridge.NewLadder(ls, lm, logger)
+	newsBridge := bridge.NewNews(ns, nm, logger)
 
 	// Add bridges to QML.
 	qmlWidget.RootContext().SetContextProperty("diablo", diabloBridge)
@@ -114,6 +118,9 @@ func main() {
 
 	qmlWidget.RootContext().SetContextProperty("ladder", ladderBridge)
 	ladderBridge.Connect()
+
+	qmlWidget.RootContext().SetContextProperty("news", newsBridge)
+	newsBridge.Connect()
 
 	// Make sure the window is allowed to minimize.
 	goqmlframeless.AllowMinimize(fw.WinId())

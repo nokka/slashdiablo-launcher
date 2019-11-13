@@ -6,7 +6,7 @@ import (
 	"github.com/therecipe/qt/core"
 )
 
-// LadderBridge is the connection between QML and the Go config.
+// LadderBridge is the connection between QML and the ladder model.
 type LadderBridge struct {
 	core.QObject
 
