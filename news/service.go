@@ -1,6 +1,9 @@
 package news
 
 import (
+	"encoding/json"
+	"io/ioutil"
+
 	"github.com/nokka/slashdiablo-launcher/clients/slashdiablo"
 )
 
@@ -14,17 +17,46 @@ type service struct {
 	newsModel *Model
 }
 
+// JSONItem represents a news item from JSON, before it's turned into a model item.
+type JSONItem struct {
+	Title string `json:"title"`
+	Text  string `json:"text"`
+	Date  string `json:"date"`
+	Year  string `json:"year"`
+}
+
 // SetNewsItems will fetch the news from the Slashdiablo server.
 func (s *service) SetNewsItems() error {
-	i := NewItem(nil)
-	i.Title = "derp"
-	i.Text = "Definitely news..."
-	i.Date = "8 NOV"
-	i.Year = "2019"
+	contents, err := s.client.GetNews()
+	if err != nil {
+		return err
+	}
 
-	s.newsModel.AddItem(i)
+	bytes, err := ioutil.ReadAll(contents)
+	if err != nil {
+		return err
+	}
+
+	var newsItems []JSONItem
+	if err := json.Unmarshal(bytes, &newsItems); err != nil {
+		return err
+	}
+
+	for _, i := range newsItems {
+		s.newsModel.AddItem(newItem(i))
+	}
 
 	return nil
+}
+
+// newItem will create a new QObject item that we can pass to the model.
+func newItem(item JSONItem) *Item {
+	i := NewItem(nil)
+	i.Title = item.Title
+	i.Text = item.Text
+	i.Date = item.Date
+	i.Year = item.Year
+	return i
 }
 
 // NewService returns a service with all the dependencies.
