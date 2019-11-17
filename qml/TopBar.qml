@@ -150,9 +150,9 @@ Item {
                 fillMode: Image.PreserveAspectFit
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
-                width: 13
-                height: 13
-                source: "assets/svg/options.svg"
+                width: 16
+                height: 16
+                source: "assets/cog.png"
             }
 
             Title {

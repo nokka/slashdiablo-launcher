@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/google/uuid"
@@ -155,6 +156,8 @@ func (s *service) PersistGameModel() error {
 
 	// Go through all games and populate a config slice.
 	for i := 0; i < len(games); i++ {
+		fmt.Println("FLAGS")
+		fmt.Println(games[i].Flags)
 		conf.Games = append(conf.Games, storage.Game{
 			ID:            games[i].ID,
 			Location:      games[i].Location,

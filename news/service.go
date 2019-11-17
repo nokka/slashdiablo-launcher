@@ -2,6 +2,7 @@ package news
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/nokka/slashdiablo-launcher/clients/slashdiablo"
@@ -42,7 +43,20 @@ func (s *service) SetNewsItems() error {
 		return err
 	}
 
+	newsItems = append(newsItems, JSONItem{})
+	newsItems = append(newsItems, JSONItem{})
+	newsItems = append(newsItems, JSONItem{})
+	newsItems = append(newsItems, JSONItem{})
+
+	if len(newsItems) > 3 {
+		newsItems = newsItems[:3]
+	}
+
 	for _, i := range newsItems {
+		// Shorten text if it's too long.
+		if len(i.Text) > 275 {
+			i.Text = fmt.Sprintf("%s...", i.Text[:272])
+		}
 		s.newsModel.AddItem(newItem(i))
 	}
 
