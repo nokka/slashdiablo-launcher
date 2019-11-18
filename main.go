@@ -25,7 +25,7 @@ func main() {
 	// Environment variables set when building.
 	var (
 		debugMode   = envBool("DEBUG_MODE", false)
-		environment = envString("ENVIRONMENT", "development")
+		environment = envString("ENVIRONMENT", "production")
 	)
 
 	// Set app context.
@@ -159,6 +159,7 @@ func populateGameModel(conf *storage.Config, gm *config.GameModel) {
 		g.Maphack = game.Maphack
 		g.OverrideBHCfg = game.OverrideBHCfg
 		g.HD = game.HD
+		g.Flags = game.Flags
 
 		gm.AddGame(g)
 	}

@@ -19,6 +19,12 @@ Item {
         maphackSwitch.update()
         overrideMaphackCfgSwitch.update()
         hdSwitch.update()
+        updateToggleBoxes()
+    }
+
+    function updateToggleBoxes() {
+        windowModeFlag.active = this.game.flags.includes("-w")
+        gfxFlag.active = this.game.flags.includes("-gfx")
     }
 
     function makeFlagList() {

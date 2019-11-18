@@ -140,7 +140,7 @@ Item {
             }
 
             // Launch button.
-            XButton {
+            PlainButton {
                 id: playButton
                 label: "PLAY"
                 fontSize: 15

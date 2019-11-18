@@ -9,13 +9,16 @@ Popup {
     property int itemHeight: 50
     property bool errored: false
 
+    // Game roles describe the model id in the backend.
+    // They can be found in the game model.
     property var gameRoles: { 
         "id": 257,
         "location": 258,
         "instances": 260,
         "maphack": 264,
         "override_bh_cfg": 272,
-        "hd": 288
+        "hd": 288,
+        "flags": 320
     }
 
     modal: true
@@ -96,7 +99,8 @@ Popup {
                                 "instances": model.data(model.index(this.currentIndex, 0), gameRoles.instances),
                                 "maphack": model.data(model.index(this.currentIndex, 0), gameRoles.maphack),
                                 "override_bh_cfg": model.data(model.index(this.currentIndex, 0), gameRoles.override_bh_cfg),
-                                "hd": model.data(model.index(this.currentIndex, 0), gameRoles.hd)
+                                "hd": model.data(model.index(this.currentIndex, 0), gameRoles.hd),
+                                "flags": model.data(model.index(this.currentIndex, 0), gameRoles.flags)
                             })
                         }
                     }
