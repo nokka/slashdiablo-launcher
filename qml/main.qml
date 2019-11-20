@@ -17,7 +17,7 @@ Item {
         id: background
         anchors.fill: parent;
         color: "#0a0a0d"
-        //Image { source: "assets/qq.png"; fillMode: Image.Tile; anchors.fill: parent;}
+        Image { source: "assets/testdetaljer.png"; fillMode: Image.Tile; anchors.fill: parent;}
     }
 
     // Top bar for the entire app.

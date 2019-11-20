@@ -25,7 +25,7 @@ func main() {
 	// Environment variables set when building.
 	var (
 		debugMode   = envBool("DEBUG_MODE", false)
-		environment = envString("ENVIRONMENT", "production")
+		environment = envString("ENVIRONMENT", "development")
 	)
 
 	// Set app context.
