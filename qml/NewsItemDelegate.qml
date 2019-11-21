@@ -25,7 +25,7 @@ Item {
             // Timestamp.
             Title {
                 id: timestamp
-                color: "#287a5a"
+                color: "#c2672f"
                 text: model.date + " " + model.year
                 anchors.top: title.bottom
             }

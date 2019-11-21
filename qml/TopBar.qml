@@ -149,13 +149,20 @@ Item {
                 id: optionsIcon
                 fillMode: Image.PreserveAspectFit
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.rightMargin: 15
                 width: 16
                 height: 16
                 source: "assets/cog.png"
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: settingsPopup.open()
+                }
             }
 
-            Title {
+            /*Title {
                 text: "GAME SETTINGS"
                 font.bold: true
                 anchors.verticalCenter: parent.verticalCenter
@@ -167,7 +174,7 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: settingsPopup.open()
                 }
-            }
+            }*/
         }
     }
 

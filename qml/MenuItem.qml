@@ -7,7 +7,7 @@ SText {
     font.family: beaufortbold.name
     font.bold: true
     font.pixelSize: 14
-    color: mousearea.containsMouse ? "#ffffe6" : "#c7cbd1"
+    color: mousearea.containsMouse ? "#ffffe6" : "#d4d4d4"
     
     MouseArea {
         id: mousearea
