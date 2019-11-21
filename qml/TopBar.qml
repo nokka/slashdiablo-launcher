@@ -4,8 +4,6 @@ import QtQuick.Layouts 1.3          // RowLayout
 Item {
     id: derp
     property string activeMenuItem: "launch"
-    property string menuGradientStart: "#00000000"
-    property string menuGradientStop: "#c7cbd1"
     property var menuSources: { 
         "launch": "LauncherView.qml",
         "rules": "RulesView.qml",
@@ -37,19 +35,11 @@ Item {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 height: parent.height
                 width: 100
-
-                Rectangle {
-                    visible: activeMenuItem == "launch"
-                    opacity: 0.1
-                    anchors.fill: parent
-                    gradient: Gradient {
-                           GradientStop { position: 0.2; color: menuGradientStart }
-                            GradientStop { position: 1.0; color: menuGradientStop }
-                    }
-                }
                 
                 MenuItem {
                     text: "LAUNCH"
+                    active: (activeMenuItem == "launch")
+
                     onClicked: function() {
                         activeMenuItem = "launch"
                         contentLoader.source = menuSources.launch
@@ -61,19 +51,10 @@ Item {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 height: parent.height
                 width: 100
-
-                Rectangle {
-                    visible: activeMenuItem == "community"
-                    opacity: 0.1
-                    anchors.fill: parent
-                    gradient: Gradient {
-                           GradientStop { position: 0.2; color: menuGradientStart }
-                            GradientStop { position: 1.0; color: menuGradientStop }
-                    }
-                }
                 
                 MenuItem {
                     text: "COMMUNITY"
+                    active: (activeMenuItem == "community")
 
                     onClicked: function() {
                         activeMenuItem = "community"
@@ -86,19 +67,10 @@ Item {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 height: parent.height
                 width: 100
-
-                Rectangle {
-                    visible: activeMenuItem == "rules"
-                    opacity: 0.1
-                    anchors.fill: parent
-                    gradient: Gradient {
-                           GradientStop { position: 0.2; color: menuGradientStart }
-                            GradientStop { position: 1.0; color: menuGradientStop }
-                    }
-                }
                 
                 MenuItem {
                     text: "RULES"
+                    active: (activeMenuItem == "rules")
 
                     onClicked: function() {
                         activeMenuItem = "rules"
@@ -111,19 +83,11 @@ Item {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 height: parent.height
                 width: 100
-
-                Rectangle {
-                    visible: activeMenuItem == "armory"
-                    opacity: 0.1
-                    anchors.fill: parent
-                    gradient: Gradient {
-                           GradientStop { position: 0.2; color: menuGradientStart }
-                            GradientStop { position: 1.0; color: menuGradientStop }
-                    }
-                }
             
                 MenuItem {
                     text: "ARMORY"
+                    active: (activeMenuItem == "armory")
+
                     onClicked: function() {
                         activeMenuItem = "armory"
                         contentLoader.source = menuSources.armory
@@ -153,7 +117,7 @@ Item {
                 anchors.rightMargin: 15
                 width: 16
                 height: 16
-                source: "assets/cog.png"
+                source: "assets/icons/cog.png"
 
                 MouseArea {
                     anchors.fill: parent
@@ -161,20 +125,6 @@ Item {
                     onClicked: settingsPopup.open()
                 }
             }
-
-            /*Title {
-                text: "GAME SETTINGS"
-                font.bold: true
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                anchors.rightMargin: 5
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: settingsPopup.open()
-                }
-            }*/
         }
     }
 

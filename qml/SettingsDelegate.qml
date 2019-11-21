@@ -7,7 +7,7 @@ Item {
 
     // Left active indicator border.
     Rectangle {
-        color: settingsDelegate.ListView.isCurrentItem ? "#d6651e" : "#21211f"
+        color: settingsDelegate.ListView.isCurrentItem ? "#a19a97" : "#57555e"
         width: 3
         height: parent.height
         anchors.left: parent.left
@@ -24,7 +24,7 @@ Item {
         anchors.topMargin: 10
 
         Title {
-            color: mousearea.containsMouse ? "#ffffe6" : "#f3e6d0"
+            color: settingsDelegate.ListView.isCurrentItem ? "#fff" : "#bababa"
             anchors.top: parent.top
             text: getName()
             font.pixelSize: 14

@@ -14,7 +14,7 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: 20
         anchors.horizontalCenter: parent.horizontalCenter
-        Image { source: "assets/logo-bg.png"; anchors.fill: parent; opacity: 1.0 }
+        Image { source: "assets/logo-bg.png"; anchors.fill: parent; fillMode: Image.Pad; opacity: 1.0 }
     }
 
     Item {
@@ -24,7 +24,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: 117
-        Image { source: "assets/logo-text.png"; anchors.fill: parent; opacity: 1.0 }
+        Image { source: "assets/logo-text.png"; anchors.fill: parent; fillMode: Image.Pad; opacity: 1.0 }
     }
 
     // Sidebar to the right.
@@ -48,6 +48,19 @@ Item {
         }
 
         NewsTable{}
+
+        Item {
+            width: 115
+            height: 40
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+
+            Title {
+                text: "v0.0.7"
+                font.pixelSize: 10
+                anchors.centerIn: parent
+            }
+        }
     }
         
     // Bottom bar.

@@ -340,10 +340,15 @@ Item {
                     Column {
                         id: depFixButton
                         width: 100
-                        XButton {
+                        
+                        PlainButton {
                             width: 100
                             height: 40
                             label: "Run"
+                            backgroundColor: "#1e1b26"
+                            colorHovered: "#0d0b14"
+                            borderColor: "#000000"
+                            
 
                            onClicked: {
                                diablo.applyDEP(d2pathInput.text)

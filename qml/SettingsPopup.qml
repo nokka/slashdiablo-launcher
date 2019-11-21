@@ -41,7 +41,7 @@ Popup {
 
     Rectangle {
         color: "#0f0f0f"
-        border.color: "#785A29"
+        border.color: "#1e1b26"
         border.width: 1
         anchors.fill: parent
 
@@ -71,7 +71,6 @@ Popup {
 
                 Title {
                     text: "GAME SETTINGS"
-                    color: "#c4b58b"
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.topMargin: 20
@@ -191,7 +190,7 @@ Popup {
                     }
                 }
                 
-                XButton {
+                PlainButton {
                     id: doneButton
                     visible: (gamesList.count > 0)
                     label: "DONE"
@@ -201,6 +200,9 @@ Popup {
                     anchors.left: parent.left
                     anchors.bottomMargin: -25
                     anchors.leftMargin: 65
+                    backgroundColor: "#1e1b26"
+                    colorHovered: "#0d0b14"
+                    borderColor: "#000000"
 
                     onClicked: {
                         // Reset error.

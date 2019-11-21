@@ -25,7 +25,7 @@ Item {
             // Timestamp.
             Title {
                 id: timestamp
-                color: "#c2672f"
+                color: "#a19a97"
                 text: model.date + " " + model.year
                 anchors.top: title.bottom
             }
@@ -33,7 +33,7 @@ Item {
             SText {
                 id: description
                 text: model.text
-                color: "#6d737d"
+                color: "#736c6a"
                 width: parent.width * 0.95
                 wrapMode: Text.WordWrap
                 anchors.top: timestamp.bottom

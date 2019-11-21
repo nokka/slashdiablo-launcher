@@ -11,7 +11,7 @@ Button {
     
     Text {
         text: label
-        color: active ? "#fff" : "#404040"
+        color: active ? "#57555e" : "#fff"
         font.family: beaufortbold.name
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
@@ -19,8 +19,8 @@ Button {
     }
 
     background: Rectangle {
-        color: active ? "#d6651e" : "#1a1a1a"
-        border.color: active ? "#a63700" : "#212121"
+        color: "#1e1b26"
+        border.color: "#000000"
         radius: 0
         border.width: 1
     }

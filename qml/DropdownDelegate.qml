@@ -8,7 +8,7 @@ ItemDelegate {
     contentItem: Title {
         id:textItem
         text: modelData
-        color: hovered ? "#ffffff" : "#f3e6d0"
+        color: hovered ? "#ffffff" : "#57555e"
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignLeft
     }

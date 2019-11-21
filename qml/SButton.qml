@@ -13,7 +13,7 @@ Button {
     
     Text {
         text: label
-        color: "#f3e6d0"
+        color: "#fff"
         font.family: roboto.name
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
@@ -31,7 +31,7 @@ Button {
         id: animateIn
         target: sbutton
         properties: "background.border.color";
-        to: "#665a46";
+        to: "#646466";
         duration: 100
     }
 

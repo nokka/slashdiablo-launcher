@@ -6,7 +6,7 @@ ComboBox {
 
     contentItem: Title {
         text: dropdown.displayText
-        color: dropdown.pressed ? "#969696" : "#f3e6d0"
+        color: dropdown.pressed ? "#57555e" : "#969696" 
         topPadding: 7
         leftPadding: 12
     }

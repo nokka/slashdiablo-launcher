@@ -9,10 +9,13 @@ Button {
     property string label: ""
     property bool clickable: true
     property bool enabled: clickable
+    property string backgroundColor: "#5c0202"
+    property string colorHovered: "#3b0000"
+    property string borderColor: "#000000"
     
     Text {
         text: label
-        color: clickable ? "#f3e6d0" : "#737373"
+        color: clickable ? "#fff" : "#737373"
         font.family: beaufortbold.name
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
@@ -21,7 +24,7 @@ Button {
 
     background: Rectangle {
         anchors.fill: parent
-        color: "#000000"
+        color: borderColor
         radius: 2
 
         // Inner fill.
@@ -30,7 +33,7 @@ Button {
             width: (parent.width-2)
             height: (parent.height-2)
             anchors.centerIn: parent
-            color: (hovered ? "#0391C4" : "#027EB4")
+            color: (hovered ? colorHovered : backgroundColor)
         }
     }
 
