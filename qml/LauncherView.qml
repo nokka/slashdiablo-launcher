@@ -43,7 +43,6 @@ Item {
         }
         Separator{
             width: 1
-            color: "#4a402c"
             anchors.right: undefined
             anchors.top: parent.top
         }

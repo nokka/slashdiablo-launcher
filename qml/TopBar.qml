@@ -5,7 +5,7 @@ Item {
     id: derp
     property string activeMenuItem: "launch"
     property string menuGradientStart: "#00000000"
-    property string menuGradientStop: "#b5a791"
+    property string menuGradientStop: "#c7cbd1"
     property var menuSources: { 
         "launch": "LauncherView.qml",
         "rules": "RulesView.qml",
@@ -171,7 +171,5 @@ Item {
         }
     }
 
-    Separator{
-        color: "#4a402c"
-    }
+    Separator{}
 }

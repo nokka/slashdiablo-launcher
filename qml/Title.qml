@@ -6,5 +6,5 @@ Text {
     font.family: beaufortbold.name
     font.pixelSize: 12
     font.bold: true
-    color: "#f3e6d0"
+    color: "#c7cbd1"
 } 

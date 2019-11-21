@@ -3,7 +3,7 @@ import QtQuick.Controls 2.5     // Button
 import QtGraphicalEffects 1.0   // Gradient
 
 Button {
-    id: xbutton
+    id: plainbutton
 
     property int fontSize: 15
     property string label: ""
@@ -21,11 +21,12 @@ Button {
 
     background: Rectangle {
         anchors.fill: parent
-        color: "#21060D"
-        radius: 5
+        color: "#000000"
+        radius: 2
 
         // Inner fill.
         Rectangle {
+            radius: 2
             width: (parent.width-2)
             height: (parent.height-2)
             anchors.centerIn: parent
