@@ -43,11 +43,6 @@ func (s *service) SetNewsItems() error {
 		return err
 	}
 
-	newsItems = append(newsItems, JSONItem{})
-	newsItems = append(newsItems, JSONItem{})
-	newsItems = append(newsItems, JSONItem{})
-	newsItems = append(newsItems, JSONItem{})
-
 	if len(newsItems) > 3 {
 		newsItems = newsItems[:3]
 	}

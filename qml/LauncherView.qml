@@ -56,7 +56,7 @@ Item {
             anchors.right: parent.right
 
             Title {
-                text: "v0.0.7"
+                text: "v0.0.8"
                 font.pixelSize: 10
                 anchors.centerIn: parent
             }

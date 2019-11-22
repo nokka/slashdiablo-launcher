@@ -23,8 +23,10 @@ Item {
     }
 
     function updateToggleBoxes() {
-        windowModeFlag.active = this.game.flags.includes("-w")
-        gfxFlag.active = this.game.flags.includes("-gfx")
+        if(this.game.flags != null) {
+            windowModeFlag.active = this.game.flags.includes("-w")
+            gfxFlag.active = this.game.flags.includes("-gfx")
+        }
     }
 
     function makeFlagList() {

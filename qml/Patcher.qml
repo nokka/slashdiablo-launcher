@@ -37,23 +37,24 @@ Item {
 
         ProgressBar {
             height: 8
-            value: diablo.patchProgress
+            value: diablo.patchProgress 
             width: parent.width
             anchors.verticalCenter: parent.verticalCenter
             
             style: ProgressBarStyle {
                 background: Rectangle {
                     radius: 3
-                    color: "#080805"
+                    color: "#1e1b26"
                     border.width: 1
-                    border.color: "#171714"
+                    border.color: "#000000"
+                    opacity: 0.6
                 }
                 
                 progress: Rectangle {
                     radius: 3
-                    color: "#e3530b"
+                    color: "#5c0202"
                     border.width: 1
-                    border.color: "#171714"
+                    border.color: "#000000"
                 }
             }
         }
@@ -61,6 +62,7 @@ Item {
         SText {
             anchors.bottom: parent.bottom;
             anchors.bottomMargin: 10
+            font.family: beaufortbold.name
             text: diablo.status
             font.pixelSize: 12
         }
@@ -91,7 +93,7 @@ Item {
             topPadding: 5
         }
 
-        XButton {
+        PlainButton {
             width: 120
             height: 40
             label: "TRY AGAIN"
