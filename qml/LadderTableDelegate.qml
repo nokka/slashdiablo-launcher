@@ -57,7 +57,7 @@ Item {
             height: row.height
 
             Text {
-                color: (model.status == "alive" ? "#174523" : "red")
+                color: (model.status == "alive" ? "#64d168" : "#fa5757")
                 font.pixelSize: 12
                 font.family: beaufortbold.name
                 text: model.status

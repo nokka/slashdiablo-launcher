@@ -5,6 +5,8 @@ import QtQuick.Dialogs 1.3      // FileDialog
 
 Item {
     property var game: {}
+    property bool depApplied: false
+    property bool depError: false
 
     function setGame(current) {
         // Set current game instance to the view.
@@ -349,12 +351,69 @@ Item {
                             label: "Run"
 
                             onClicked: {
-                                diablo.applyDEP(d2pathInput.text)
+                                var success = diablo.applyDEP(d2pathInput.text)
+
+                                console.log("DEP SUCCESS")
+                                if(success) {
+                                    depApplied = true
+                                    // Remove message after a timeout.
+                                    depAppliedTimer.restart()
+                                } else {
+                                    depError = true
+                                    // Remove message after a timeout.
+                                    depErrorTimer.restart()
+                                }
                             }
                         }
                     } 
                 }
+
+                // DEP success message.
+                Rectangle {
+                    visible: depApplied
+                    width: parent.width
+                    height: parent.height
+                    color: "#00632e"
+                    border.width: 1
+                    border.color: "#000000"
+
+                    SText {
+                        text: "DEP fix successfully applied - don't forget to reboot!"
+                        font.pixelSize: 11
+                        anchors.centerIn: parent
+                        color: "#ffffff"
+                    }
+                }
+
+                // DEP error message.
+                Rectangle {
+                    visible: depError
+                    width: parent.width
+                    height: parent.height
+                    color: "#8f3131"
+                    border.width: 1
+                    border.color: "#000000"
+
+                    SText {
+                        text: "There was an error while applying DEP, please try again!"
+                        font.pixelSize: 11
+                        anchors.centerIn: parent
+                        color: "#ffffff"
+                    }
+                }
             }
         }
+    }
+
+    Timer {
+        id: depAppliedTimer
+        interval: 3000; running: false; repeat: false
+        onTriggered: depApplied = false
+    }
+
+    Timer {
+        id: depErrorTimer
+        interval: 3000; running: false; repeat: false
+        onTriggered: depError = false
     }
 }

@@ -25,11 +25,11 @@ type DiabloBridge struct {
 	_ string  `property:"gateway"`
 
 	// Slots.
-	_ func()               `slot:"launchGame"`
-	_ func()               `slot:"validateVersion"`
-	_ func()               `slot:"applyPatches"`
-	_ func(path string)    `slot:"applyDEP"`
-	_ func(gateway string) `slot:"updateGateway"`
+	_ func()                 `slot:"launchGame"`
+	_ func()                 `slot:"validateVersion"`
+	_ func()                 `slot:"applyPatches"`
+	_ func(path string) bool `slot:"applyDEP"`
+	_ func(gateway string)   `slot:"updateGateway"`
 }
 
 // Connect will connect the QML signals to functions in Go.
@@ -110,15 +110,14 @@ func (b *DiabloBridge) validateVersion() {
 	}()
 }
 
-func (b *DiabloBridge) applyDEP(path string) {
-	// Do the work on another thread not to lock the GUI.
-	go func() {
-		err := b.d2service.ApplyDEP(path)
-		if err != nil {
-			b.logger.Error(err)
-			// @TODO: Add QML signal.
-		}
-	}()
+func (b *DiabloBridge) applyDEP(path string) bool {
+	err := b.d2service.ApplyDEP(path)
+	if err != nil {
+		b.logger.Error(err)
+		return false
+	}
+
+	return false
 }
 
 func (b *DiabloBridge) updateGateway(gateway string) {

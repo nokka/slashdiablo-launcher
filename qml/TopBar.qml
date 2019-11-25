@@ -3,7 +3,7 @@ import QtQuick.Layouts 1.3          // RowLayout
 
 Item {
     id: topbar
-    property string activeMenuItem: "ladder"
+    property string activeMenuItem: "launch"
     property var menuSources: { 
         "launch": "LauncherView.qml",
         "ladder": "LadderView.qml",
@@ -12,7 +12,7 @@ Item {
 
     // Main menu.
     Item {
-        width: 300
+        width: 330
         height: parent.height
         anchors.left: parent.left
         anchors.leftMargin: 20
@@ -58,15 +58,25 @@ Item {
             Item {
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 height: parent.height
-                width: 100
+                width: 130
                 
                 MenuItem {
+                    width: 110
                     text: "COMMUNITY"
                     active: (activeMenuItem == "community")
 
                     onClicked: function() {
-                        activeMenuItem = "community"
-                        contentLoader.source = menuSources.community
+                        Qt.openUrlExternally("https://www.reddit.com/r/slashdiablo/")
+                    }
+
+                    Image {
+                        id: linkoutIcon
+                        fillMode: Image.PreserveAspectFit
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        width: 16
+                        height: 16
+                        source: "assets/icons/linkout.png"
                     }
                 }
             }
@@ -90,7 +100,6 @@ Item {
                 fillMode: Image.PreserveAspectFit
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
-                anchors.rightMargin: 15
                 width: 16
                 height: 16
                 source: "assets/icons/cog.png"

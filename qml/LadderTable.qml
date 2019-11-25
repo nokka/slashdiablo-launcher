@@ -11,10 +11,15 @@ Item {
 
 	property string activeMode: "exp"
 
+	function getLadderByMode(mode) {
+        ladder.characters.clear()
+		ladder.getLadder(mode)
+    }
+
 	ColumnLayout {
 		anchors.fill: parent
-		anchors.leftMargin: 10
-		anchors.rightMargin: 10
+		anchors.leftMargin: 50
+		anchors.rightMargin: 50
 
 		Item {
 			Layout.alignment: Qt.AlignCenter
@@ -34,12 +39,13 @@ Item {
 					activatable: true
 					fontSize: 12
 					active: (activeMode == "standard")
-					backgroundColor: "#00000000"
-					colorHovered: "#00000000"
+					backgroundColor: "#000000"
+					colorHovered: "#000000"
 					anchors.verticalCenter: parent.verticalCenter
 
 					onClicked: {
 						activeMode = "standard"
+						getLadderByMode("standard")
 					}
 				}
 
@@ -50,12 +56,13 @@ Item {
 					fontSize: 12
 					activatable: true
 					active: (activeMode == "hardcore")
-					backgroundColor: "#00000000"
-					colorHovered: "#00000000"
+					backgroundColor: "#000000"
+					colorHovered: "#000000"
 					anchors.verticalCenter: parent.verticalCenter
 					
 					onClicked: {
 						activeMode = "hardcore"
+						getLadderByMode("hardcore")
 					}
 				}
 
@@ -66,12 +73,13 @@ Item {
 					fontSize: 12
 					activatable: true
 					active: (activeMode == "exp")
-					backgroundColor: "#00000000"
-					colorHovered: "#00000000"
+					backgroundColor: "#000000"
+					colorHovered: "#000000"
 					anchors.verticalCenter: parent.verticalCenter
 					
 					onClicked: {
 						activeMode = "exp"
+						getLadderByMode("exp")
 					}
 				}
 
@@ -81,13 +89,14 @@ Item {
 					label: "EXP HC"
 					fontSize: 12
 					activatable: true
-					active: (activeMode == "exp_hc")
-					backgroundColor: "#00000000"
-					colorHovered: "#00000000"
+					active: (activeMode == "exphardcore")
+					backgroundColor: "#000000"
+					colorHovered: "#000000"
 					anchors.verticalCenter: parent.verticalCenter
 					
 					onClicked: {
-						activeMode = "exp_hc"
+						activeMode = "exphardcore"
+						getLadderByMode("exphardcore")
 					}
 				}
 			}
@@ -210,7 +219,6 @@ Item {
 	}
 
 	Component.onCompleted: {
-		ladder.characters.clear()
-		ladder.getLadder("exp")
+		getLadderByMode("exp")
 	}
 }

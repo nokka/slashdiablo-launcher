@@ -17,7 +17,7 @@ Item {
         id: background
         anchors.fill: parent;
         color: "#0a0a0d"
-        Image { source: "assets/NewSkull.png"; fillMode: Image.PreserveAspectCrop; anchors.fill: parent;}
+        Image { source: "assets/bg.png"; fillMode: Image.PreserveAspectCrop; anchors.fill: parent;}
     }
 
     // Top bar for the entire app.
@@ -38,7 +38,7 @@ Item {
         Loader {
             id: contentLoader
             anchors.fill: parent
-            source: "LadderView.qml"
+            source: "LauncherView.qml"
         }
     }
 
