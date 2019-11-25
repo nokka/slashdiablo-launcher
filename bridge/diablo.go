@@ -72,7 +72,7 @@ func (b *DiabloBridge) applyPatches() {
 				b.SetPatchProgress(percentage)
 			case current := <-state:
 				if current.Error != nil {
-					// Log the error to persistant logging store.
+					// Log the error to persistent logging store.
 					b.logger.Error(current.Error)
 
 					// Update bridge state.

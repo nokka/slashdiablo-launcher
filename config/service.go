@@ -15,13 +15,13 @@ type Service interface {
 	// AddGame adds a new game to the game model.
 	AddGame()
 
-	// UpsertGame updates or creates a new game to the persistant store.
+	// UpsertGame updates or creates a new game to the persistent store.
 	UpsertGame(request UpdateGameRequest) error
 
-	// DeleteGame will delete a game from the game model and the persistant store.
+	// DeleteGame will delete a game from the game model and the persistent store.
 	DeleteGame(id string) error
 
-	// PersistGameModel will persist the current game model to the persistant store.
+	// PersistGameModel will persist the current game model to the persistent store.
 	PersistGameModel() error
 
 	UpdateGateway(gateway string) error
@@ -140,7 +140,7 @@ func (s *service) DeleteGame(id string) error {
 	return nil
 }
 
-// PersistGameModel will persist the current game model to the persistant store.
+// PersistGameModel will persist the current game model to the persistent store.
 func (s *service) PersistGameModel() error {
 	conf, err := s.store.Read()
 	if err != nil {
