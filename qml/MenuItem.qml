@@ -9,7 +9,7 @@ SText {
     font.bold: true
     font.pixelSize: 14
     color: active ? "#c7cbd1" : "#3b3b3b"
-    // d4d4d4
+    
     MouseArea {
         id: mousearea
         anchors.fill: parent

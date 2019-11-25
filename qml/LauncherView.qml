@@ -34,13 +34,6 @@ Item {
         height: parent.height
         anchors.right: parent.right
 
-        // Background.
-        Rectangle {
-            width: parent.width
-            height: parent.height
-            color: "#000000"
-            opacity: 0.3
-        }
         Separator{
             width: 1
             anchors.right: undefined

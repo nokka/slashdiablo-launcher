@@ -7,7 +7,7 @@ Item {
 
     // Left active indicator border.
     Rectangle {
-        color: settingsDelegate.ListView.isCurrentItem ? "#a19a97" : "#57555e"
+        color: settingsDelegate.ListView.isCurrentItem ? "#ab4432" : "#57555e"
         width: 3
         height: parent.height
         anchors.left: parent.left

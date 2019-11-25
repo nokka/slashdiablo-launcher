@@ -152,7 +152,7 @@ func applyDEP(path string) error {
 		for scanner.Scan() {
 			linesWritten++
 
-			// Kill the go routine when all the ouput has been captured.
+			// Kill the go routine when all the output has been captured.
 			if linesWritten == 6 {
 				return
 			}

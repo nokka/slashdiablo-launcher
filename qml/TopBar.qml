@@ -2,20 +2,13 @@ import QtQuick 2.12                 // Item
 import QtQuick.Layouts 1.3          // RowLayout
 
 Item {
-    id: derp
-    property string activeMenuItem: "launch"
+    id: topbar
+    property string activeMenuItem: "ladder"
     property var menuSources: { 
         "launch": "LauncherView.qml",
-        "rules": "RulesView.qml",
+        "ladder": "LadderView.qml",
         "community": "CommunityView.qml",
         "armory": "ArmoryView.qml"
-    }
-
-    // Background.
-    Rectangle {
-        anchors.fill: parent
-        color: "#000000"
-        opacity: 0.3
     }
 
     // Main menu.
@@ -53,12 +46,12 @@ Item {
                 width: 100
                 
                 MenuItem {
-                    text: "COMMUNITY"
-                    active: (activeMenuItem == "community")
+                    text: "LADDER"
+                    active: (activeMenuItem == "ladder")
 
                     onClicked: function() {
-                        activeMenuItem = "community"
-                        contentLoader.source = menuSources.community
+                        activeMenuItem = "ladder"
+                        contentLoader.source = menuSources.ladder
                     }
                 }
             }
@@ -69,12 +62,12 @@ Item {
                 width: 100
                 
                 MenuItem {
-                    text: "RULES"
-                    active: (activeMenuItem == "rules")
+                    text: "COMMUNITY"
+                    active: (activeMenuItem == "community")
 
                     onClicked: function() {
-                        activeMenuItem = "rules"
-                        contentLoader.source = menuSources.rules
+                        activeMenuItem = "community"
+                        contentLoader.source = menuSources.community
                     }
                 }
             }

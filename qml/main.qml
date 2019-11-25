@@ -38,7 +38,7 @@ Item {
         Loader {
             id: contentLoader
             anchors.fill: parent
-            source: "LauncherView.qml"
+            source: "LadderView.qml"
         }
     }
 

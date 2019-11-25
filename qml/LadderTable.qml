@@ -4,16 +4,12 @@ import QtQuick.Layouts 1.3		//ColumnLayout
 
 Item {
     id: ladderTableBox
-	width: parent.width * 0.32
+	width: parent.width
     height: parent.height
-	
-	Rectangle {
-		anchors.fill: parent
-		color: "#030202"
-	}
-
     anchors.top: parent.top
     anchors.right: parent.right
+
+	property string activeMode: "exp"
 
 	ColumnLayout {
 		anchors.fill: parent
@@ -23,15 +19,88 @@ Item {
 		// Shown when there's characters to show.
 		Item {
 			visible: (!ladder.loading && !ladder.error)
-			Layout.alignment: Qt.AlignHCenter
-			height: 35
+			Layout.alignment: Qt.AlignLeft
+			height: 100
 			width: 285
-			
-			Title {
-				text: "LADDER TOP 10"
-				font.pixelSize: 13
-				font.bold: true
-				topPadding: 17
+			Column {
+				Row {
+					height: 50
+					spacing: 10
+
+					Layout.alignment: Qt.AlignCenter
+
+					ModeItem {
+						width: 90
+						height: 40
+						label: "STANDARD"
+
+						onClicked: {
+							active = true
+						}
+					}
+
+					ModeItem {
+						width: 90
+						height: 40
+						label: "HARDCORE"
+						
+						onClicked: {}
+					}
+				}
+
+				// Header to the list.
+				Row {
+					id: header
+					height: 50
+					Layout.alignment: Qt.AlignBottom
+
+					LadderCell {
+						width: ladderList.width * 0.10
+						height: 50
+						content: "Rank"
+					}
+
+					LadderCell {
+						width: ladderList.width * 0.10
+						height: 50
+						content: "Level"
+					}
+
+					LadderCell {
+						width: ladderList.width * 0.10
+						height: 50
+						content: "Class"
+					}
+
+					LadderCell {
+						width: ladderList.width * 0.40
+						height: 50
+						content: "Level"
+					}
+
+					LadderCell {
+						width: ladderList.width * 0.10
+						height: 50
+						content: "Title"
+					}
+
+					Item {
+						width: ladderList.width * 0.20
+						height: 50
+
+						Text {
+							color: "#b5b5b5"
+							font.pixelSize: 12
+							font.bold: true
+							font.family: beaufortbold.name
+							text: "Status"
+							anchors.verticalCenter: parent.verticalCenter
+							anchors.right: parent.right
+						}
+
+						Separator{}
+					}
+				}
 			}
 		}
 		

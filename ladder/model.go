@@ -10,6 +10,8 @@ const (
 	Name
 	Class
 	Level
+	Title
+	Status
 )
 
 // TopLadderModel ...
@@ -27,10 +29,12 @@ type TopLadderModel struct {
 
 func (m *TopLadderModel) init() {
 	m.SetRoles(map[int]*core.QByteArray{
-		Rank:  core.NewQByteArray2("rank", -1),
-		Name:  core.NewQByteArray2("name", -1),
-		Class: core.NewQByteArray2("class", -1),
-		Level: core.NewQByteArray2("level", -1),
+		Rank:   core.NewQByteArray2("rank", -1),
+		Name:   core.NewQByteArray2("name", -1),
+		Class:  core.NewQByteArray2("class", -1),
+		Level:  core.NewQByteArray2("level", -1),
+		Title:  core.NewQByteArray2("title", -1),
+		Status: core.NewQByteArray2("status", -1),
 	})
 
 	m.ConnectData(m.data)
@@ -73,6 +77,10 @@ func (m *TopLadderModel) data(index *core.QModelIndex, role int) *core.QVariant 
 		return core.NewQVariant1(item.Class[:3])
 	case Level:
 		return core.NewQVariant1(item.Level)
+	case Title:
+		return core.NewQVariant1(item.Title)
+	case Status:
+		return core.NewQVariant1(item.Status)
 	default:
 		return core.NewQVariant()
 	}

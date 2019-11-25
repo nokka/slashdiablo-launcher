@@ -2,6 +2,7 @@ package ladder
 
 import (
 	"errors"
+	"fmt"
 
 	ladderClient "github.com/nokka/slashdiablo-launcher/clients/ladder"
 )
@@ -39,11 +40,14 @@ func (s *service) SetLadderCharacters(mode string) error {
 
 // newCharacter will create a new QObject character that we can pass to the model.
 func newCharacter(char ladderClient.Character) *Character {
+	fmt.Println(fmt.Sprintf("+%v \n", char))
 	c := NewCharacter(nil)
 	c.Rank = char.Rank
 	c.Name = char.Name
 	c.Class = char.Class
 	c.Level = char.Level
+	c.Title = char.Title
+	c.Status = char.Status
 	return c
 }
 

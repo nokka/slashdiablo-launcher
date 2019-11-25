@@ -15,10 +15,12 @@ type Client struct {
 
 // Character represents a ladder character.
 type Character struct {
-	Name  string
-	Class string
-	Level int
-	Rank  int
+	Name   string `json:"name"`
+	Class  string `json:"class"`
+	Level  int    `json:"level"`
+	Rank   int    `json:"rank"`
+	Title  string `json:"prefix"`
+	Status string `json:"status"`
 }
 
 type ladderResponse struct {

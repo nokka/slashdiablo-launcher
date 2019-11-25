@@ -1,53 +1,72 @@
 import QtQuick 2.12
 
-Rectangle {
-    property int fontSize: 12
+Item {
+    id: row
     width: parent.width
-    height: 36
-    color: "#00000000"
+    height: 35
 
-    Title {
-        id: rankItem
-        width: 15
-        font.pixelSize: fontSize
-        color: "#9e998b"
-        text: model.rank
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.leftMargin: 10
+    Rectangle {
+        anchors.fill: parent
+        color: (model.index % 2 == 0 ? "#000000" : "#080505")
+        opacity: 0.2
     }
 
-    Text {
-        id: classItem 
-        width: 30
-        font.family: roboto.name
-        font.pixelSize: fontSize
-        color: "#3d3b36"
-        text: model.class
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.leftMargin: rankItem.width + 20
-    }
+    Row {
 
-    Title {
-        color: mousearea.containsMouse ? "#ffffe6" : "#c4b58b"
-        font.pixelSize: 11
-        text: model.name
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.leftMargin: classItem.width + 40
+        LadderCell {
+            width: row.width * 0.10
+            height: row.height
+            content: model.rank
+        }
 
-    }
+        LadderCell {
+            width: row.width * 0.10
+            height: row.height
+            content: model.level
+        }
 
-    Text {
-        //color: "#069499"
-        color: "#ab4432"
-        font.family: roboto.name
-        font.pixelSize: fontSize
-        text: model.level
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.rightMargin: 20
-        anchors.right: parent.right
+        LadderCell {
+            width: row.width * 0.10
+            height: row.height
+            content: model.class
+        }
+
+        Item { 
+            width: row.width * 0.40
+            height: row.height
+
+            Text {
+                color: mousearea.containsMouse ? "#ffffe6" : "#c4b58b"
+                font.pixelSize: 12
+                font.family: beaufortbold.name
+                text: model.name
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            Separator{}
+        }
+
+        LadderCell {
+            width: row.width * 0.10
+            height: row.height
+            content: model.title
+        }
+
+        Item { 
+            width: row.width * 0.20
+            height: row.height
+
+            Text {
+                color: (model.status == "alive" ? "#174523" : "red")
+                font.pixelSize: 12
+                font.family: beaufortbold.name
+                text: model.status
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+            }
+
+            Separator{}
+        }
     }
 
     MouseArea {
@@ -58,17 +77,5 @@ Rectangle {
             Qt.openUrlExternally("https://armory.slashdiablo.net/character/"+model.name.toLowerCase())
         }
         hoverEnabled: true
-    }
-
-    // Border bottom.
-    Image {
-        width: parent.width; height: 9
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: -7
-        fillMode: Image.Stretch
-        source: "assets/item_bg.png"
-        opacity: 0.7
     }
 }
