@@ -146,8 +146,9 @@ Item {
                 id: playButton
                 label: "PLAY"
                 fontSize: 15
-                clickable: diablo.validVersion
                 width: 275; height: 50
+                backgroundColor: "#5c0202"
+                colorHovered: "#3b0000"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 

@@ -16,7 +16,7 @@ Item {
         LadderCell {
             width: row.width * 0.10
             height: row.height
-            content: model.rank
+            content: "#" + model.rank
         }
 
         LadderCell {

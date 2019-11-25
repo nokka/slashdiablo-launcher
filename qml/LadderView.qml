@@ -1,8 +1,9 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.5
+import QtGraphicalEffects 1.13
 
 Rectangle {
-    color: "#000"
+    color: "#030202"
 
     Item {
         id: ladderView

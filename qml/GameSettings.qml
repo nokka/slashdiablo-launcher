@@ -347,13 +347,9 @@ Item {
                             width: 100
                             height: 40
                             label: "Run"
-                            backgroundColor: "#1e1b26"
-                            colorHovered: "#0d0b14"
-                            borderColor: "#000000"
-                            
 
-                           onClicked: {
-                               diablo.applyDEP(d2pathInput.text)
+                            onClicked: {
+                                diablo.applyDEP(d2pathInput.text)
                             }
                         }
                     } 

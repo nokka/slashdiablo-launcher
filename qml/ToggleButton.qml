@@ -11,7 +11,7 @@ Button {
     
     Text {
         text: label
-        color: active ? "#57555e" : "#fff"
+        color: active ? "#fff" : "#57555e"
         font.family: beaufortbold.name
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter

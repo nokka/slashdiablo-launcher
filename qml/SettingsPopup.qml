@@ -200,9 +200,6 @@ Popup {
                     anchors.left: parent.left
                     anchors.bottomMargin: -25
                     anchors.leftMargin: 65
-                    backgroundColor: "#1e1b26"
-                    colorHovered: "#0d0b14"
-                    borderColor: "#000000"
 
                     onClicked: {
                         // Reset error.

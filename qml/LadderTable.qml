@@ -16,90 +16,142 @@ Item {
 		anchors.leftMargin: 10
 		anchors.rightMargin: 10
 
+		Item {
+			Layout.alignment: Qt.AlignCenter
+			height: 55
+			width: 306
+
+			Row {
+				height: 55
+				spacing: 10
+
+				Layout.alignment: Qt.AlignCenter
+
+				PlainButton {
+					width: 90
+					height: 40
+					label: "STANDARD"
+					activatable: true
+					fontSize: 12
+					active: (activeMode == "standard")
+					backgroundColor: "#00000000"
+					colorHovered: "#00000000"
+					anchors.verticalCenter: parent.verticalCenter
+
+					onClicked: {
+						activeMode = "standard"
+					}
+				}
+
+				PlainButton {
+					width: 90
+					height: 40
+					label: "HARDCORE"
+					fontSize: 12
+					activatable: true
+					active: (activeMode == "hardcore")
+					backgroundColor: "#00000000"
+					colorHovered: "#00000000"
+					anchors.verticalCenter: parent.verticalCenter
+					
+					onClicked: {
+						activeMode = "hardcore"
+					}
+				}
+
+				PlainButton {
+					width: 36
+					height: 40
+					label: "EXP"
+					fontSize: 12
+					activatable: true
+					active: (activeMode == "exp")
+					backgroundColor: "#00000000"
+					colorHovered: "#00000000"
+					anchors.verticalCenter: parent.verticalCenter
+					
+					onClicked: {
+						activeMode = "exp"
+					}
+				}
+
+				PlainButton {
+					width: 60
+					height: 40
+					label: "EXP HC"
+					fontSize: 12
+					activatable: true
+					active: (activeMode == "exp_hc")
+					backgroundColor: "#00000000"
+					colorHovered: "#00000000"
+					anchors.verticalCenter: parent.verticalCenter
+					
+					onClicked: {
+						activeMode = "exp_hc"
+					}
+				}
+			}
+
+			Separator{}
+		}
+
 		// Shown when there's characters to show.
 		Item {
 			visible: (!ladder.loading && !ladder.error)
 			Layout.alignment: Qt.AlignLeft
-			height: 100
-			width: 285
-			Column {
-				Row {
-					height: 50
-					spacing: 10
+			height: 40
 
-					Layout.alignment: Qt.AlignCenter
+			// Header to the list.
+			Row {
+				id: header
+				height: 40
+				Layout.alignment: Qt.AlignBottom
 
-					ModeItem {
-						width: 90
-						height: 40
-						label: "STANDARD"
-
-						onClicked: {
-							active = true
-						}
-					}
-
-					ModeItem {
-						width: 90
-						height: 40
-						label: "HARDCORE"
-						
-						onClicked: {}
-					}
+				LadderCell {
+					width: ladderList.width * 0.10
+					height: parent.height
+					content: "Rank"
 				}
 
-				// Header to the list.
-				Row {
-					id: header
-					height: 50
-					Layout.alignment: Qt.AlignBottom
+				LadderCell {
+					width: ladderList.width * 0.10
+					height: parent.height
+					content: "Level"
+				}
 
-					LadderCell {
-						width: ladderList.width * 0.10
-						height: 50
-						content: "Rank"
+				LadderCell {
+					width: ladderList.width * 0.10
+					height: parent.height
+					content: "Class"
+				}
+
+				LadderCell {
+					width: ladderList.width * 0.40
+					height: parent.height
+					content: "Level"
+				}
+
+				LadderCell {
+					width: ladderList.width * 0.10
+					height: parent.height
+					content: "Title"
+				}
+
+				Item {
+					width: ladderList.width * 0.20
+					height: parent.height
+
+					Text {
+						color: "#b5b5b5"
+						font.pixelSize: 12
+						font.bold: true
+						font.family: beaufortbold.name
+						text: "Status"
+						anchors.verticalCenter: parent.verticalCenter
+						anchors.right: parent.right
 					}
 
-					LadderCell {
-						width: ladderList.width * 0.10
-						height: 50
-						content: "Level"
-					}
-
-					LadderCell {
-						width: ladderList.width * 0.10
-						height: 50
-						content: "Class"
-					}
-
-					LadderCell {
-						width: ladderList.width * 0.40
-						height: 50
-						content: "Level"
-					}
-
-					LadderCell {
-						width: ladderList.width * 0.10
-						height: 50
-						content: "Title"
-					}
-
-					Item {
-						width: ladderList.width * 0.20
-						height: 50
-
-						Text {
-							color: "#b5b5b5"
-							font.pixelSize: 12
-							font.bold: true
-							font.family: beaufortbold.name
-							text: "Status"
-							anchors.verticalCenter: parent.verticalCenter
-							anchors.right: parent.right
-						}
-
-						Separator{}
-					}
+					Separator{}
 				}
 			}
 		}
