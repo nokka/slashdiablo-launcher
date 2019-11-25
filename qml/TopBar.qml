@@ -7,8 +7,7 @@ Item {
     property var menuSources: { 
         "launch": "LauncherView.qml",
         "ladder": "LadderView.qml",
-        "community": "CommunityView.qml",
-        "armory": "ArmoryView.qml"
+        "community": "CommunityView.qml"
     }
 
     // Main menu.
@@ -68,22 +67,6 @@ Item {
                     onClicked: function() {
                         activeMenuItem = "community"
                         contentLoader.source = menuSources.community
-                    }
-                }
-            }
-
-            Item {
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                height: parent.height
-                width: 100
-            
-                MenuItem {
-                    text: "ARMORY"
-                    active: (activeMenuItem == "armory")
-
-                    onClicked: function() {
-                        activeMenuItem = "armory"
-                        contentLoader.source = menuSources.armory
                     }
                 }
             }
