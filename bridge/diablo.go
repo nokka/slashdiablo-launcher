@@ -58,7 +58,7 @@ func (b *DiabloBridge) applyPatches() {
 	b.SetPatching(true)
 	b.SetValidVersion(false)
 
-	// Run this on a seperate thread so we don't block the UI.
+	// Run this on a separate thread so we don't block the UI.
 	go func() {
 		done := make(chan bool, 1)
 
