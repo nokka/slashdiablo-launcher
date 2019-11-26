@@ -353,7 +353,6 @@ Item {
                             onClicked: {
                                 var success = diablo.applyDEP(d2pathInput.text)
 
-                                console.log("DEP SUCCESS")
                                 if(success) {
                                     depApplied = true
                                     // Remove message after a timeout.

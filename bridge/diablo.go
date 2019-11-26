@@ -117,7 +117,7 @@ func (b *DiabloBridge) applyDEP(path string) bool {
 		return false
 	}
 
-	return false
+	return true
 }
 
 func (b *DiabloBridge) updateGateway(gateway string) {
