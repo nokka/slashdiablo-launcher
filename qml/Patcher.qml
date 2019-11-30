@@ -191,9 +191,7 @@ Item {
             anchors.top: parent.top
             anchors.right: parent.right
 
-            onClicked: {
-                diablo.applyPatches()
-            }
+            onClicked: diablo.applyPatches()
         }
     }
 

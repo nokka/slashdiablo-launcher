@@ -63,6 +63,7 @@ Popup {
 
              // Left column.
             Item {
+                visible: (gamesList.count > 0)
                 Layout.fillWidth: true
                 Layout.minimumWidth: 300
                 Layout.preferredWidth: 300
@@ -136,18 +137,203 @@ Popup {
 
                 // Visible if there are no games set up.
                 Item {
+                    id: intro
                     visible: (gamesList.count == 0)
+                    width: 620
+                    height: (parent.height * 0.80)
                     anchors.centerIn: parent
-                    width: (parent.width * 0.80)
 
-                    SText {
-                        text: "Before you can play, you need to setup your game location in the menu to the left."
-                        width: parent.width
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left
-                        font.pixelSize: 15
-                        wrapMode: Text.WordWrap 
+                    Column {
+                        spacing: 2
+
+                        Item {
+                            height: 44
+                            width: intro.width
+
+                            Title {
+                               text: "WELCOME TO SLASHDIABLO LAUNCHER"
+                               font.pixelSize: 20
+                            }
+
+                            Separator{}
+                        }
+
+                        Item {
+                            height: 60
+                            width: intro.width
+
+                            SText {
+                                text: "Before you can play, you need to setup your game locations in the menu to the left. You can setup multiple game directories with different settings such as HD mod or maphack."
+                                width: parent.width
+                                anchors.top: parent.top
+                                anchors.left: parent.left
+                                anchors.topMargin: 10
+                                font.pixelSize: 12
+                                color: "#a3a3a3"
+                                wrapMode: Text.WordWrap 
+                            }
+                        }
+
+                        Item {
+                            height: 30
+                            width: intro.width
+
+                            Title {
+                               text: "HOW IT WORKS"
+                               font.pixelSize: 16
+                            }
+
+                            Separator{}
+                        }
+
+                        Item {
+                            height: 40
+                            width: intro.width
+
+                            Row {
+                                height: parent.height
+                                spacing: 10
+
+                                Rectangle {
+                                    color: "#ab4432"
+                                    width: 24
+                                    height: 24
+                                    radius: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Title {
+                                        text: "1"
+                                        color: "#fff"
+                                        anchors.centerIn: parent
+                                    }
+                                }
+
+                                SText {
+                                    text: "Setup one or multiple games you have installed"
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    color: "#a3a3a3"
+                                }
+                                
+                            }
+
+                            Separator{}
+                        }
+
+                        Item {
+                            height: 40
+                            width: intro.width
+
+                            Row {
+                                height: parent.height
+                                spacing: 10
+
+                                Rectangle {
+                                    color: "#ab4432"
+                                    width: 24
+                                    height: 24
+                                    radius: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Title {
+                                        text: "2"
+                                        color: "#fff"
+                                        anchors.centerIn: parent
+                                    }
+                                }
+
+                                SText {
+                                    text: "Choose how many instances to launch and if you want HD mod or maphack included"
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    color: "#a3a3a3"
+                                }
+                                
+                            }
+
+                            Separator{}
+                        }
+
+                        Item {
+                            height: 40
+                            width: intro.width
+
+                            Row {
+                                height: parent.height
+                                spacing: 10
+
+                                Rectangle {
+                                    color: "#ab4432"
+                                    width: 24
+                                    height: 24
+                                    radius: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Title {
+                                        text: "3"
+                                        color: "#fff"
+                                        anchors.centerIn: parent
+                                    }
+                                }
+
+                                SText {
+                                    text: "The launcher will figure out if you need to patch the games to be up to date with Slashdiablo"
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    color: "#a3a3a3"
+                                }
+                                
+                            }
+
+                            Separator{}
+                        }
+
+                        Item {
+                            height: 40
+                            width: intro.width
+
+                            Row {
+                                height: parent.height
+                                spacing: 10
+
+                                Rectangle {
+                                    color: "#ab4432"
+                                    width: 24
+                                    height: 24
+                                    radius: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Title {
+                                        text: "4"
+                                        color: "#fff"
+                                        anchors.centerIn: parent
+                                    }
+                                }
+
+                                SText {
+                                    text: "After patching is ready hit the PLAY button"
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    color: "#a3a3a3"
+                                }
+                                
+                            }
+
+                            Separator{}
+                        }
+
+                        Item {
+                            height: 80
+                            width: intro.width
+
+                            PlainButton {
+                                width: 200
+                                height: 50
+                                label: "GET STARTED"
+                                anchors.top: parent.top
+                                anchors.topMargin: 15
+
+                                onClicked: settings.addGame()
+                            }
+                        }
                     }
+                
                 }
 
                  // Settings shown if there are games already setup    
