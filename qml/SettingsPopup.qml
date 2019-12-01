@@ -163,7 +163,7 @@ Popup {
                             width: intro.width
 
                             SText {
-                                text: "Before you can play, you need to setup your game locations in the menu to the left. You can setup multiple game directories with different settings such as HD mod or maphack."
+                                text: "Before you can play, you need to setup your game locations. You can setup multiple game directories with different settings such as HD mod or maphack."
                                 width: parent.width
                                 anchors.top: parent.top
                                 anchors.left: parent.left
@@ -308,7 +308,7 @@ Popup {
                                 }
 
                                 SText {
-                                    text: "After patching is ready hit the PLAY button"
+                                    text: "After patching is done you're ready to play"
                                     anchors.verticalCenter: parent.verticalCenter
                                     color: "#a3a3a3"
                                 }
