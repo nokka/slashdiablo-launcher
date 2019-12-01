@@ -109,7 +109,7 @@ Popup {
                 // Add new game button.
                 Title {
                     visible: (gamesList.count <= 3)
-                    text: "+ Add new game"
+                    text: "+ Add Diablo II install"
                     anchors.top: gamesList.bottom
                     anchors.left: parent.left
                     anchors.topMargin: 20
@@ -209,7 +209,7 @@ Popup {
                                 }
 
                                 SText {
-                                    text: "Setup one or multiple games you have installed"
+                                    text: "Setup one or multiple Diablo II games you have installed"
                                     anchors.verticalCenter: parent.verticalCenter
                                     color: "#a3a3a3"
                                 }
@@ -242,7 +242,7 @@ Popup {
                                 }
 
                                 SText {
-                                    text: "Choose how many instances to launch and if you want HD mod or maphack included"
+                                    text: "Choose how many instances to launch and if you want HD or maphack included"
                                     anchors.verticalCenter: parent.verticalCenter
                                     color: "#a3a3a3"
                                 }

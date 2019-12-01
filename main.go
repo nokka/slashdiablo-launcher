@@ -25,14 +25,14 @@ func main() {
 	// Environment variables set when building.
 	var (
 		debugMode   = envBool("DEBUG_MODE", false)
-		environment = envString("ENVIRONMENT", "development")
+		environment = envString("ENVIRONMENT", "production")
 	)
 
 	// Set app context.
 	core.QCoreApplication_SetApplicationName("Slashdiablo launcher")
 	core.QCoreApplication_SetOrganizationName("slashdiablo.com")
 	core.QCoreApplication_SetOrganizationDomain("slashdiablo.com")
-	core.QCoreApplication_SetApplicationVersion("0.0.9")
+	core.QCoreApplication_SetApplicationVersion("0.0.11")
 
 	// Enable high dpi scaling, useful for devices with high pixel density displays.
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
@@ -42,11 +42,10 @@ func main() {
 
 	// Create new frameless window.
 	fw := goqmlframeless.NewWindow(goqmlframeless.Options{
-		Width:        1024,
-		Height:       600,
-		Alpha:        1.0,
-		Color:        goqmlframeless.RGB{R: 3, G: 2, B: 2},
-		BorderRadius: 5,
+		Width:  1024,
+		Height: 600,
+		Alpha:  1.0,
+		Color:  goqmlframeless.RGB{R: 3, G: 2, B: 2},
 	})
 
 	// QML Widget that will be used to draw on.
