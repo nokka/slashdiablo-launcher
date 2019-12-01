@@ -9,22 +9,22 @@ Item {
     
     Item {
         id: logobg
-        width: 234
-        height: 267
+        width: 210.6
+        height: 240.3
         anchors.top: parent.top
         anchors.topMargin: 20
         anchors.horizontalCenter: parent.horizontalCenter
-        Image { source: "assets/logo-bg.png"; anchors.fill: parent; fillMode: Image.Pad; opacity: 1.0 }
+        Image { source: "assets/logo-bg.png"; anchors.fill: parent; fillMode: Image.PreserveAspectFit; opacity: 1.0 }
     }
 
     Item {
         id: logotext
-        width: 240
-        height: 71
+        width: 216
+        height: 63.9
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: 117
-        Image { source: "assets/logo-text.png"; anchors.fill: parent; fillMode: Image.Pad; opacity: 1.0 }
+        anchors.topMargin: 109
+        Image { source: "assets/logo-text.png"; anchors.fill: parent; fillMode: Image.PreserveAspectFit; opacity: 1.0 }
     }
 
     // Sidebar to the right.
