@@ -27,7 +27,8 @@ Item {
     function updateToggleBoxes() {
         if(this.game.flags != null) {
             windowModeFlag.active = this.game.flags.includes("-w")
-            gfxFlag.active = this.game.flags.includes("-gfx")
+            gfxFlag.active = this.game.flags.includes("-3dfx")
+            skipFlag.active = this.game.flags.includes("-skiptobnet")
         }
     }
 
@@ -38,7 +39,11 @@ Item {
         }
         
         if(gfxFlag.active) {
-            flags.push("-gfx")
+            flags.push("-3dfx")
+        }
+
+        if(skipFlag.active) {
+            flags.push("-skiptobnet")
         }
 
         return flags
@@ -56,9 +61,7 @@ Item {
                 flags: makeFlagList()
             }
             
-            var success = settings.upsertGame(JSON.stringify(body))
-            
-            // TODO: Implement error handling.
+            settings.upsertGame(JSON.stringify(body))
         }
     }
 
@@ -105,7 +108,7 @@ Item {
 
                     TextField {
                         id: d2pathInput
-                        width: fileDialogBox.width * 0.60; height: 35
+                        width: fileDialogBox.width * 0.55; height: 35
                         font.pixelSize: 11
                         color: "#454545"
                         readOnly: true
@@ -121,7 +124,7 @@ Item {
                         label: "Open"
                         borderRadius: 0
                         borderColor: "#373737"
-                        width: fileDialogBox.width * 0.20; height: 35
+                        width: fileDialogBox.width * 0.15; height: 35
                         cursorShape: Qt.PointingHandCursor
 
                         onClicked: d2PathDialog.open()
@@ -130,23 +133,33 @@ Item {
                     Item {
                         width: (fileDialogBox.width - (d2pathInput.width + chooseD2Path.width)); height: 35
 
-                        ToggleButton {
-                            id: windowModeFlag
-                            label: "-w"
-                            width: 45
-                            height: 35
-                            anchors.left: parent.left
-                            anchors.leftMargin: 5
-                            onClicked: updateGameModel()
-                        }
+                        Row {
+                            spacing: 2
+                            leftPadding: 2
 
-                        ToggleButton {
-                            id: gfxFlag
-                            label: "-gfx"
-                            width: 45
-                            height: 35
-                            anchors.right: parent.right
-                            onClicked: updateGameModel()
+                            ToggleButton {
+                                id: windowModeFlag
+                                label: "-w"
+                                width: 47
+                                height: 35
+                                onClicked: updateGameModel()
+                            }
+
+                            ToggleButton {
+                                id: gfxFlag
+                                label: "-3dfx"
+                                width: 47
+                                height: 35
+                                onClicked: updateGameModel()
+                            }
+
+                            ToggleButton {
+                                id: skipFlag
+                                label: "-skip"
+                                width: 47
+                                height: 35
+                                onClicked: updateGameModel()
+                            }
                         }
                     }
 

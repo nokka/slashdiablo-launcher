@@ -66,7 +66,7 @@ Item {
                     active: (activeMenuItem == "community")
 
                     onClicked: function() {
-                        Qt.openUrlExternally("https://www.reddit.com/r/slashdiablo/")
+                        Qt.openUrlExternally("https://old.reddit.com/r/slashdiablo/")
                     }
 
                     Image {
