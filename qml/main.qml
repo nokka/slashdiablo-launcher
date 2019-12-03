@@ -1,5 +1,4 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.5
 
 Item {
     id: root
@@ -8,7 +7,6 @@ Item {
     // Load fonts.
     FontLoader { id: roboto; source: "assets/fonts/Roboto-Regular.ttf" }
     FontLoader { id: robotobold; source: "assets/fonts/Roboto-Bold.ttf" }
-
     FontLoader { id: beaufort; source: "assets/fonts/Beaufort-Regular.ttf" }
     FontLoader { id: beaufortbold; source: "assets/fonts/Beaufort-Bold.ttf" }
 

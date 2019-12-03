@@ -1,6 +1,4 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.5
-import QtQuick.Layouts 1.3		//ColumnLayout
 
 Item {
     id: launchView
@@ -57,10 +55,15 @@ Item {
     }
         
     // Bottom bar.
-    BottomBar{
+    Item {
         id: bottombar
         width: (parent.width-sidebar.width); height: 80
         anchors.bottom: parent.bottom;
+
+        // Patcher including progress bar.
+        Patcher{
+            width: 650
+        }
     }
 
 }

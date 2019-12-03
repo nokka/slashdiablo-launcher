@@ -1,4 +1,5 @@
 import QtQuick 2.12
+
 Item {
     property int fontSize: 12
     property string fontFamily: beaufortbold.name

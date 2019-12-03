@@ -1,5 +1,5 @@
-import QtQuick 2.12 // Rectangle
-import QtQuick.Controls 2.5 // ItemDelegate
+import QtQuick 2.12
+import QtQuick.Controls 2.5
 
 ItemDelegate {
     width: parent.width

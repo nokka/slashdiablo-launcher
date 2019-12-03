@@ -1,4 +1,4 @@
-import QtQuick 2.12				//Item
+import QtQuick 2.12
 
 Item {
     id: settingsDelegate

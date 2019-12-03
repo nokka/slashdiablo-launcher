@@ -1,4 +1,4 @@
-import QtQuick 2.12     // MouseArea
+import QtQuick 2.12
 
 SText {
     property var onClicked: function () {}

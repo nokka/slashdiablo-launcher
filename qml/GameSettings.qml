@@ -54,7 +54,7 @@ Item {
             var body = {
                 id: game.id,
                 location: d2pathInput.text,
-                instances: (gameInstances.currentIndex+1),
+                instances: (gameInstances.currentIndex),
                 maphack: maphackSwitch.checked,
                 override_bh_cfg: overrideMaphackCfgSwitch.checked,
                 hd: hdSwitch.checked,
@@ -212,7 +212,7 @@ Item {
                         Dropdown{
                             id: gameInstances
                             currentIndex: (game != undefined ? (game.instances-1) : 0)
-                            model: [ 1, 2, 3, 4 ]
+                            model: [ 0, 1, 2, 3, 4 ]
                             height: 30
                             width: 60
 

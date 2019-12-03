@@ -1,4 +1,4 @@
-import QtQuick 2.12     // Text
+import QtQuick 2.12
 
 // SText is the default text used everywhere.
 

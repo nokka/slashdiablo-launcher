@@ -1,4 +1,4 @@
-import QtQuick 2.12     // Text
+import QtQuick 2.12
 
 // Title is the default title used everywhere.
 

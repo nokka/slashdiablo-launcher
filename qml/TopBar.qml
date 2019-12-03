@@ -1,5 +1,5 @@
-import QtQuick 2.12                 // Item
-import QtQuick.Layouts 1.3          // RowLayout
+import QtQuick 2.12
+import QtQuick.Layouts 1.3
 
 Item {
     id: topbar
