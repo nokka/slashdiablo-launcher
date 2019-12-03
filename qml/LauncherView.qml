@@ -49,7 +49,7 @@ Item {
             anchors.right: parent.right
 
             Title {
-                text: "v0.0.11"
+                text: settings.buildVersion
                 font.pixelSize: 10
                 anchors.centerIn: parent
             }

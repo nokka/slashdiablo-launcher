@@ -24,8 +24,9 @@ import (
 func main() {
 	// Environment variables set when building.
 	var (
-		debugMode   = envBool("DEBUG_MODE", false)
-		environment = envString("ENVIRONMENT", "development")
+		debugMode    = envBool("DEBUG_MODE", false)
+		environment  = envString("ENVIRONMENT", "development")
+		buildVersion = envString("BUILD_VERSION", "v1.0.0")
 	)
 
 	// Set app context.
@@ -121,6 +122,9 @@ func main() {
 
 	qmlWidget.RootContext().SetContextProperty("news", newsBridge)
 	newsBridge.Connect()
+
+	// Set build version on the bridge to inform the gui.
+	configBridge.SetBuildVersion(buildVersion)
 
 	// Make sure the window is allowed to minimize.
 	goqmlframeless.AllowMinimize(fw.WinId())

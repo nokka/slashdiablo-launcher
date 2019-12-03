@@ -19,6 +19,9 @@ type ConfigBridge struct {
 	// Models.
 	GameModel *core.QAbstractListModel `property:"games"`
 
+	// Properties.
+	_ string `property:"buildVersion"`
+
 	// Slots.
 	_ func()                 `slot:"addGame"`
 	_ func(body string) bool `slot:"upsertGame"`
