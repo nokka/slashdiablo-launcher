@@ -2,7 +2,6 @@
 # Slashdiablo launcher
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/nokka/slashdiablo-launcher)](https://goreportcard.com/report/github.com/nokka/slashdiablo-launcher)
-
 [![GoDoc](https://godoc.org/github.com/nokka/slashdiablo-launcher?status.svg)](https://godoc.org/github.com/nokka/slashdiablo-launcher)
 
   
