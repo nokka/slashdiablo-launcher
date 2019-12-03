@@ -15,7 +15,7 @@ const (
 	Flags
 )
 
-// GameModel ...
+// GameModel represents a Diablo game.
 type GameModel struct {
 	core.QAbstractListModel
 

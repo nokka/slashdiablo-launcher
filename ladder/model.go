@@ -4,7 +4,7 @@ import (
 	"github.com/therecipe/qt/core"
 )
 
-// Model Roles
+// Model Roles.
 const (
 	Rank = int(core.Qt__UserRole) + 1<<iota
 	Name
@@ -14,7 +14,7 @@ const (
 	Status
 )
 
-// TopLadderModel ...
+// TopLadderModel represents the in game ladder model.
 type TopLadderModel struct {
 	core.QAbstractListModel
 
@@ -86,7 +86,6 @@ func (m *TopLadderModel) data(index *core.QModelIndex, role int) *core.QVariant 
 	}
 }
 
-// AddCharacter adds a character to the model.
 func (m *TopLadderModel) addCharacter(c *Character) {
 	m.BeginInsertRows(core.NewQModelIndex(), len(m.Characters()), len(m.Characters()))
 	m.SetCharacters(append(m.Characters(), c))

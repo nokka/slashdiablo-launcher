@@ -2,7 +2,7 @@ package ladder
 
 import "github.com/therecipe/qt/core"
 
-// Character ...
+// Character represents a Diablo character in the model.
 type Character struct {
 	core.QObject
 

@@ -4,7 +4,7 @@ import (
 	"github.com/therecipe/qt/core"
 )
 
-// Model Roles
+// Model Roles.
 const (
 	Title = int(core.Qt__UserRole) + 1<<iota
 	Text
@@ -12,7 +12,7 @@ const (
 	Year
 )
 
-// Model ...
+// Model is the news model used for news items.
 type Model struct {
 	core.QAbstractListModel
 
