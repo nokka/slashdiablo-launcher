@@ -7,7 +7,7 @@
   
 
 ## About
-Slashdiablo launcher is a cross platform game launcher for Diablo II and specifically the [Slashdiablo]([https://old.reddit.com/r/slashdiablo/) community. It was built to help new players install patches, updating gateways and help with other technical issues to lower the barrier of entry into the Slashdiablo community, while also assisting more experienced players with more advanced settings such as HD mods and launching multiple boxes.
+Slashdiablo launcher is a cross platform game launcher for Diablo II and specifically the [Slashdiablo](https://old.reddit.com/r/slashdiablo/) community. It was built to help new players install patches, updating gateways and help with other technical issues to lower the barrier of entry into the Slashdiablo community, while also assisting more experienced players with more advanced settings such as HD mods and launching multiple boxes.
 
 
   
