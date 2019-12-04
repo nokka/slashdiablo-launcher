@@ -21,6 +21,9 @@ Item {
 			visible: (!news.loading && !news.error)
 			height: 320
 
+			// Disable scroll.
+			interactive: false
+
 			Layout.fillWidth: true
 			Layout.fillHeight: true
 

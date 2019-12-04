@@ -21,14 +21,18 @@ Item {
         maphackSwitch.update()
         overrideMaphackCfgSwitch.update()
         hdSwitch.update()
-        updateToggleBoxes()
+        updateToggleBoxes(current)
     }
 
-    function updateToggleBoxes() {
-        if(this.game.flags != null) {
-            windowModeFlag.active = this.game.flags.includes("-w")
-            gfxFlag.active = this.game.flags.includes("-3dfx")
-            skipFlag.active = this.game.flags.includes("-skiptobnet")
+    function updateToggleBoxes(current) {
+        if(current.flags != null) {
+            windowModeFlag.active = current.flags.includes("-w")
+            gfxFlag.active = current.flags.includes("-3dfx")
+            skipFlag.active = current.flags.includes("-skiptobnet")
+        } else {
+            windowModeFlag.active = false
+            gfxFlag.active = false
+            skipFlag.active = false
         }
     }
 
@@ -54,7 +58,7 @@ Item {
             var body = {
                 id: game.id,
                 location: d2pathInput.text,
-                instances: (gameInstances.currentIndex),
+                instances: (gameInstances.currentIndex+1),
                 maphack: maphackSwitch.checked,
                 override_bh_cfg: overrideMaphackCfgSwitch.checked,
                 hd: hdSwitch.checked,
@@ -212,7 +216,7 @@ Item {
                         Dropdown{
                             id: gameInstances
                             currentIndex: (game != undefined ? (game.instances-1) : 0)
-                            model: [ 0, 1, 2, 3, 4 ]
+                            model: [ 1, 2, 3, 4 ]
                             height: 30
                             width: 60
 

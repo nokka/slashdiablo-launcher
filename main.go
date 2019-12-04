@@ -33,7 +33,7 @@ func main() {
 	core.QCoreApplication_SetApplicationName("Slashdiablo launcher")
 	core.QCoreApplication_SetOrganizationName("slashdiablo.net")
 	core.QCoreApplication_SetOrganizationDomain("slashdiablo.net")
-	core.QCoreApplication_SetApplicationVersion("0.0.11")
+	core.QCoreApplication_SetApplicationVersion("1.0.0")
 
 	// Enable high dpi scaling, useful for devices with high pixel density displays.
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)

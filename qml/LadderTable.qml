@@ -174,6 +174,9 @@ Item {
 			Layout.fillWidth: true
 			Layout.fillHeight: true
 
+			// Disable scroll.
+			interactive: false
+
 			model: ladder.characters
 			delegate: LadderTableDelegate{}
 		}

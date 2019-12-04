@@ -87,6 +87,9 @@ Popup {
                     anchors.right: parent.right
                     anchors.topMargin: 50
 
+                    // Disable scroll.
+			        interactive: false
+
                     model: settings.games
                     delegate: SettingsDelegate{}
 
