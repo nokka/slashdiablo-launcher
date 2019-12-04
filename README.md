@@ -45,7 +45,7 @@ $ brew install qt
 ```
 
 #### Windows
-Use the [installer]([https://download.qt.io/official_releases/qt/5.13/5.13.0/qt-opensource-windows-x86-5.13.0.exe](https://download.qt.io/official_releases/qt/5.13/5.13.0/qt-opensource-windows-x86-5.13.0.exe)) provided by Qt (Make sure you install the MinGW build of Qt).
+Use the [installer](https://download.qt.io/official_releases/qt/5.13/5.13.0/qt-opensource-windows-x86-5.13.0.exe) provided by Qt (Make sure you install the MinGW build of Qt).
 
 #### Building Slashdiablo launcher
 
