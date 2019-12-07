@@ -51,7 +51,7 @@ func (b *LadderBridge) getLadder(mode string) {
 	return
 }
 
-// NewLadder ...
+// NewLadder creates a new ladder bridge with all dependencies set up.
 func NewLadder(ls ladder.Service, lm *ladder.TopLadderModel, logger log.Logger) *LadderBridge {
 	l := NewLadderBridge(nil)
 

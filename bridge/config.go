@@ -76,7 +76,7 @@ func (c *ConfigBridge) persistGameModel() bool {
 	return true
 }
 
-// NewConfig ...
+// NewConfig returns a new config bridge with all dependencies set up.
 func NewConfig(cs config.Service, gm *config.GameModel, logger log.Logger) *ConfigBridge {
 	configBridge := NewConfigBridge(nil)
 

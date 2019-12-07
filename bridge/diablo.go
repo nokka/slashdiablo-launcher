@@ -12,7 +12,7 @@ type DiabloBridge struct {
 	core.QObject
 
 	// Dependencies.
-	d2service *d2.Service
+	d2service d2.Service
 	logger    log.Logger
 
 	// Properties.
@@ -47,7 +47,6 @@ func (b *DiabloBridge) launchGame() {
 		err := b.d2service.Exec()
 		if err != nil {
 			b.logger.Error(err)
-			// @TODO: Add QML signal.
 		}
 	}()
 
@@ -124,15 +123,14 @@ func (b *DiabloBridge) updateGateway(gateway string) {
 	err := b.d2service.SetGateway(gateway)
 	if err != nil {
 		b.logger.Error(err)
-		// @TODO: Add QML signal.
 	}
 
 	// Gateway was successfully saved, set gateway on the bridge.
 	b.SetGateway(gateway)
 }
 
-// NewDiablo ...
-func NewDiablo(d2s *d2.Service, gateway string, logger log.Logger) *DiabloBridge {
+// NewDiablo returns a new Diablo bridge with all dependencies set up.
+func NewDiablo(d2s d2.Service, gateway string, logger log.Logger) *DiabloBridge {
 	b := NewDiabloBridge(nil)
 
 	// Set dependencies.

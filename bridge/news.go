@@ -51,7 +51,7 @@ func (b *NewsBridge) getNews() {
 	return
 }
 
-// NewNews ...
+// NewNews sets up a news bridge with all dependencies.
 func NewNews(ns news.Service, nm *news.Model, logger log.Logger) *NewsBridge {
 	l := NewNewsBridge(nil)
 

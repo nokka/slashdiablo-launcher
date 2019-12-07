@@ -8,10 +8,10 @@ Item {
     height: size
 
     property int size: 50               // The size of the circle in pixel
-    property real arcBegin: 0            // start arc angle in degree
-    property real arcEnd: 120            // end arc angle in degree
+    property real arcBegin: 0           // start arc angle in degree
+    property real arcEnd: 120           // end arc angle in degree
     property real arcOffset: 0          // rotation
-    property bool isPie: false           // paint a pie instead of an arc
+    property bool isPie: false          // paint a pie instead of an arc
     property bool showBackground: true  // a full circle as a background of the arc
     property real lineWidth: 5          // width of the line
     property string colorCircle: "#c9b085"

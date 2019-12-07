@@ -16,8 +16,26 @@ import (
 	"github.com/nokka/slashdiablo-launcher/storage"
 )
 
+// Service is responsible for all things related to the Slashdiablo ladder.
+type Service interface {
+	// Exec is responsible for executing the Diablo II game.
+	Exec() error
+
+	// ValidateGameVersions will make sure the game is up to date with expected patch.
+	ValidateGameVersions() (bool, error)
+
+	// Patch will patch Diablo II to the correct version.
+	Patch(done chan bool) (<-chan float32, <-chan PatchState)
+
+	// ApplyDEP will apply Windows specific fix for DEP.
+	ApplyDEP(path string) error
+
+	// SetGateway is responsible for setting Battle.net gateway.
+	SetGateway(gateway string) error
+}
+
 // Service is responsible for all things related to Diablo II.
-type Service struct {
+type service struct {
 	slashdiabloClient slashdiablo.Client
 	configService     config.Service
 	logger            log.Logger
@@ -36,63 +54,8 @@ type execState struct {
 	err error
 }
 
-func (s *Service) listenForGameStates() {
-	for {
-		select {
-		case state := <-s.gameStates:
-			// Something went wrong while execing, log error.
-			if state.err != nil {
-				s.logger.Error(fmt.Errorf("Diablo II exec with code: %s", state.err))
-			}
-
-			s.mux.Lock()
-
-			// Game exited, remove it from the slice based on pid.
-			for index, g := range s.runningGames {
-				if state.pid != nil && g.PID == *state.pid {
-					s.runningGames = append(s.runningGames[:index], s.runningGames[index+1:]...)
-				}
-			}
-
-			s.mux.Unlock()
-		}
-	}
-}
-
-// SetGateway will set the given gateway for the user.
-func (s *Service) SetGateway(gateway string) error {
-	// Set gateway in the OS specific way.
-	err := setGateway(gateway)
-	if err != nil {
-		return err
-	}
-
-	// Set gateway in the config.
-	err = s.configService.UpdateGateway(gateway)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *Service) mutateInstancesToLaunch(games []storage.Game) {
-	for i := 0; i < len(games); i++ {
-		var runningCount int
-		for _, running := range s.runningGames {
-			if games[i].ID == running.GameID {
-				runningCount++
-			}
-		}
-
-		// If any games of this id is running already, subtract the number
-		// and mutate the game so the next time we launch, we launch the correct number.
-		games[i].Instances = games[i].Instances - runningCount
-	}
-}
-
 // Exec will exec Diablo 2 installs.
-func (s *Service) Exec() error {
+func (s *service) Exec() error {
 	conf, err := s.configService.Read()
 	if err != nil {
 		return err
@@ -107,7 +70,7 @@ func (s *Service) Exec() error {
 			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
 			time.Sleep(1 * time.Second)
 
-			// The second argument is a channel, listened on by listenForGameStates().
+			// The third argument is a channel, listened on by listenForGameStates().
 			pid, err := launch(g.Location, g.Flags, s.gameStates)
 			if err != nil {
 				return err
@@ -122,7 +85,7 @@ func (s *Service) Exec() error {
 }
 
 // ValidateGameVersions will check if the games are up to date.
-func (s *Service) ValidateGameVersions() (bool, error) {
+func (s *service) ValidateGameVersions() (bool, error) {
 	conf, err := s.configService.Read()
 	if err != nil {
 		return false, err
@@ -232,7 +195,7 @@ func (s *Service) ValidateGameVersions() (bool, error) {
 	return upToDate, nil
 }
 
-func (s *Service) resetPatch(path string, files []PatchFile, filesToIgnore []string) error {
+func (s *service) resetPatch(path string, files []PatchFile, filesToIgnore []string) error {
 	// Check how many files aren't up to date.
 	missmatchedFiles, _, err := s.getFilesToPatch(files, path, filesToIgnore)
 	if err != nil {
@@ -281,7 +244,7 @@ func (s *Service) resetPatch(path string, files []PatchFile, filesToIgnore []str
 }
 
 // Patch will check for updates and if found, patch the game, both D2 and HD version.
-func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
+func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 	progress := make(chan float32)
 	state := make(chan PatchState)
 
@@ -394,12 +357,67 @@ func (s *Service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 }
 
 // ApplyDEP will run  data execution prevention (DEP) on the Game.exe in the path.
-func (s *Service) ApplyDEP(path string) error {
+func (s *service) ApplyDEP(path string) error {
 	// Run OS specific fix.
 	return applyDEP(path)
 }
 
-func (s *Service) apply113c(path string, state chan PatchState, progress chan float32) error {
+// SetGateway will set the given gateway for the user.
+func (s *service) SetGateway(gateway string) error {
+	// Set gateway in the OS specific way.
+	err := setGateway(gateway)
+	if err != nil {
+		return err
+	}
+
+	// Set gateway in the config.
+	err = s.configService.UpdateGateway(gateway)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *service) mutateInstancesToLaunch(games []storage.Game) {
+	for i := 0; i < len(games); i++ {
+		var runningCount int
+		for _, running := range s.runningGames {
+			if games[i].ID == running.GameID {
+				runningCount++
+			}
+		}
+
+		// If any games of this id is running already, subtract the number
+		// and mutate the game so the next time we launch, we launch the correct number.
+		games[i].Instances = games[i].Instances - runningCount
+	}
+}
+
+func (s *service) listenForGameStates() {
+	for {
+		select {
+		case state := <-s.gameStates:
+			// Something went wrong while execing, log error.
+			if state.err != nil {
+				s.logger.Error(fmt.Errorf("Diablo II exec with code: %s", state.err))
+			}
+
+			s.mux.Lock()
+
+			// Game exited, remove it from the slice based on pid.
+			for index, g := range s.runningGames {
+				if state.pid != nil && g.PID == *state.pid {
+					s.runningGames = append(s.runningGames[:index], s.runningGames[index+1:]...)
+				}
+			}
+
+			s.mux.Unlock()
+		}
+	}
+}
+
+func (s *service) apply113c(path string, state chan PatchState, progress chan float32) error {
 	state <- PatchState{Message: "Checking game version..."}
 
 	// Download manifest from patch repository.
@@ -430,7 +448,7 @@ func (s *Service) apply113c(path string, state chan PatchState, progress chan fl
 	return nil
 }
 
-func (s *Service) applySlashPatch(path string, state chan PatchState, progress chan float32) error {
+func (s *service) applySlashPatch(path string, state chan PatchState, progress chan float32) error {
 	state <- PatchState{Message: "Checking Slashdiablo patch..."}
 
 	// Download manifest from patch repository.
@@ -462,7 +480,7 @@ func (s *Service) applySlashPatch(path string, state chan PatchState, progress c
 	return nil
 }
 
-func (s *Service) applyMaphack(path string, state chan PatchState, progress chan float32, manifestFiles []PatchFile, ignoredFiles []string) error {
+func (s *service) applyMaphack(path string, state chan PatchState, progress chan float32, manifestFiles []PatchFile, ignoredFiles []string) error {
 	state <- PatchState{Message: "Checking maphack..."}
 
 	// Figure out which files to patch.
@@ -487,7 +505,7 @@ func (s *Service) applyMaphack(path string, state chan PatchState, progress chan
 	return nil
 }
 
-func (s *Service) applyHDMod(path string, state chan PatchState, progress chan float32, manifestFiles []PatchFile) error {
+func (s *service) applyHDMod(path string, state chan PatchState, progress chan float32, manifestFiles []PatchFile) error {
 	// Update UI.
 	state <- PatchState{Message: "Checking HD mod..."}
 
@@ -514,7 +532,7 @@ func (s *Service) applyHDMod(path string, state chan PatchState, progress chan f
 	return nil
 }
 
-func (s *Service) doPatch(patchFiles []string, patchLength int64, remoteDir string, path string, progress chan float32) error {
+func (s *service) doPatch(patchFiles []string, patchLength int64, remoteDir string, path string, progress chan float32) error {
 	// Reset progress.
 	progress <- 0.00
 
@@ -554,7 +572,7 @@ func (s *Service) doPatch(patchFiles []string, patchLength int64, remoteDir stri
 	return nil
 }
 
-func (s *Service) downloadFile(fileName string, remoteDir string, path string, counter *WriteCounter) error {
+func (s *service) downloadFile(fileName string, remoteDir string, path string, counter *WriteCounter) error {
 	out, err := os.Create(path)
 	if err != nil {
 		return err
@@ -576,7 +594,7 @@ func (s *Service) downloadFile(fileName string, remoteDir string, path string, c
 	return nil
 }
 
-func (s *Service) cleanUpFailedPatch(dir string) error {
+func (s *service) cleanUpFailedPatch(dir string) error {
 	files, err := ioutil.ReadDir(localizePath(dir))
 	if err != nil {
 		return err
@@ -595,7 +613,7 @@ func (s *Service) cleanUpFailedPatch(dir string) error {
 	return nil
 }
 
-func (s *Service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnore []string) ([]string, int64, error) {
+func (s *service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnore []string) ([]string, int64, error) {
 	shouldPatch := make([]string, 0)
 	var totalContentLength int64
 
@@ -646,7 +664,7 @@ func (s *Service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnor
 	return shouldPatch, totalContentLength, nil
 }
 
-func (s *Service) getManifest(path string) (*Manifest, error) {
+func (s *service) getManifest(path string) (*Manifest, error) {
 	contents, err := s.slashdiabloClient.GetFile(path)
 	if err != nil {
 		return nil, err
@@ -689,8 +707,8 @@ func NewService(
 	slashdiabloClient slashdiablo.Client,
 	configuration config.Service,
 	logger log.Logger,
-) *Service {
-	s := &Service{
+) Service {
+	s := &service{
 		slashdiabloClient: slashdiabloClient,
 		configService:     configuration,
 		logger:            logger,

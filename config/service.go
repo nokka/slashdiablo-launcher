@@ -24,6 +24,7 @@ type Service interface {
 	// PersistGameModel will persist the current game model to the persistent store.
 	PersistGameModel() error
 
+	// UpdateGateway will update the gateway in the persistent store.
 	UpdateGateway(gateway string) error
 }
 
@@ -53,8 +54,7 @@ func (s *service) AddGame() {
 
 	g := NewGame(nil)
 
-	// Generate ID next in the sequence.
-	// TODO: Generate a stronger id.
+	// Generate an ID for the new game.
 	g.ID = uuid.New().String()
 	g.Instances = 1
 
