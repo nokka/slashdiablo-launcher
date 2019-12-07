@@ -10,6 +10,7 @@ const (
 	Text
 	Date
 	Year
+	Link
 )
 
 // Model is the news model used for news items.
@@ -31,6 +32,7 @@ func (m *Model) init() {
 		Text:  core.NewQByteArray2("text", -1),
 		Date:  core.NewQByteArray2("date", -1),
 		Year:  core.NewQByteArray2("year", -1),
+		Link:  core.NewQByteArray2("link", -1),
 	})
 
 	m.ConnectData(m.data)
@@ -73,6 +75,8 @@ func (m *Model) data(index *core.QModelIndex, role int) *core.QVariant {
 		return core.NewQVariant1(item.Date)
 	case Year:
 		return core.NewQVariant1(item.Year)
+	case Link:
+		return core.NewQVariant1(item.Link)
 	default:
 		return core.NewQVariant()
 	}

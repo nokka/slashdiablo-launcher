@@ -24,6 +24,7 @@ type JSONItem struct {
 	Text  string `json:"text"`
 	Date  string `json:"date"`
 	Year  string `json:"year"`
+	Link  string `json:"link"`
 }
 
 // SetNewsItems will fetch the news from the Slashdiablo server.
@@ -65,6 +66,8 @@ func newItem(item JSONItem) *Item {
 	i.Text = item.Text
 	i.Date = item.Date
 	i.Year = item.Year
+	i.Link = item.Link
+
 	return i
 }
 

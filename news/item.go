@@ -10,4 +10,5 @@ type Item struct {
 	Text  string
 	Date  string
 	Year  string
+	Link  string
 }

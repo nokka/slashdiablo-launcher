@@ -18,8 +18,29 @@ Item {
 
             Title {
                 id: title
-                text: model.title
+                textFormat: Text.RichText
+                text: (model.link != "" ? "<a style='color:#c7cbd1; text-decoration:none;' href='"+model.link+"'>"+model.title+"</a>" : model.title)
                 font.pixelSize: 16
+                rightPadding: 20
+
+                onLinkActivated: Qt.openUrlExternally(link)
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.NoButton // we don't want to eat clicks on the Text
+                    cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+                }
+
+                Image {
+                    visible: (model.link != "" ? true : false)
+                    id: linkoutIcon
+                    fillMode: Image.PreserveAspectFit
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    width: 16
+                    height: 16
+                    source: "assets/icons/linkout_light.png"
+                }
             }
 
             // Timestamp.
