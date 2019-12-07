@@ -68,7 +68,7 @@ func (s *service) Exec() error {
 	for _, g := range conf.Games {
 		for i := 0; i < g.Instances; i++ {
 			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
-			time.Sleep(1 * time.Second)
+			time.Sleep(1500 * time.Millisecond)
 
 			// The third argument is a channel, listened on by listenForGameStates().
 			pid, err := launch(g.Location, g.Flags, s.gameStates)
