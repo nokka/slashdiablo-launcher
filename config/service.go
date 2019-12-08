@@ -56,7 +56,10 @@ func (s *service) AddGame() {
 
 	// Generate an ID for the new game.
 	g.ID = uuid.New().String()
+
+	// Default values.
 	g.Instances = 1
+	g.Flags = []string{"-w", "-skiptobnet"}
 
 	s.gameModel.AddGame(g)
 }
