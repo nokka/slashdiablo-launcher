@@ -107,7 +107,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: settingsPopup.open()
+                    onClicked: settingsLoader.item.open()
                 }
             }
         }

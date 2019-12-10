@@ -40,10 +40,17 @@ Item {
         }
     }
 
-    // Settings popup.
-    SettingsPopup{
-        id: settingsPopup
+    Loader { 
+        id: settingsLoader
+        anchors.centerIn: root
+        width: 850
+        height: 500
     }
+    
+    // Settings popup.
+    /*SettingsPopup{
+        id: settingsPopup
+    }*/
 
     // This is a bit of a hack to get a popup to display right after
     // the parent loads, if we remove the timer we get an error saying
@@ -51,8 +58,12 @@ Item {
     Timer {
         interval: 0; running: true; repeat: false
         onTriggered: {
+            // TODO: Think about if this should be sync,
+            // to return an error and display that we couldn't talk to slash API.
+            settings.getAvailableMods()
+            settingsLoader.source = "SettingsPopup.qml"
             if(settings.games.rowCount() == 0) {
-                settingsPopup.open()
+                settingsLoader.item.open()
             }
         }
     }

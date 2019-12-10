@@ -1,9 +1,13 @@
 package config
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"sync"
 
 	"github.com/google/uuid"
+	"github.com/nokka/slashdiablo-launcher/clients/slashdiablo"
 	"github.com/nokka/slashdiablo-launcher/storage"
 )
 
@@ -26,12 +30,16 @@ type Service interface {
 
 	// UpdateGateway will update the gateway in the persistent store.
 	UpdateGateway(gateway string) error
+
+	// GetAvailableMods will fetch the game mode available to each D2 install.
+	GetAvailableMods() (*GameMods, error)
 }
 
 type service struct {
-	store     storage.Store
-	gameModel *GameModel
-	mutex     sync.Mutex
+	slashdiabloClient slashdiablo.Client
+	store             storage.Store
+	gameModel         *GameModel
+	mutex             sync.Mutex
 }
 
 // Read will read the configuration and return it.
@@ -73,6 +81,7 @@ type UpdateGameRequest struct {
 	OverrideBHCfg bool     `json:"override_bh_cfg"`
 	HD            bool     `json:"hd"`
 	Flags         []string `json:"flags"`
+	HDVersion     string   `json:"hd_version"`
 }
 
 // UpsertGame will upsert the game to the config.
@@ -83,6 +92,8 @@ func (s *service) UpsertGame(request UpdateGameRequest) error {
 	// Unlock when we're done.
 	defer s.mutex.Unlock()
 
+	fmt.Println("REQUEST -----")
+	fmt.Println(request)
 	// Updates game model with the new information.
 	var updatedIndex int
 	games := s.gameModel.Games()
@@ -95,6 +106,7 @@ func (s *service) UpsertGame(request UpdateGameRequest) error {
 			games[i].OverrideBHCfg = request.OverrideBHCfg
 			games[i].HD = request.HD
 			games[i].Flags = request.Flags
+			games[i].HDVersion = request.HDVersion
 		}
 	}
 
@@ -166,6 +178,7 @@ func (s *service) PersistGameModel() error {
 			OverrideBHCfg: games[i].OverrideBHCfg,
 			HD:            games[i].HD,
 			Flags:         games[i].Flags,
+			HDVersion:     games[i].HDVersion,
 		})
 	}
 
@@ -195,13 +208,35 @@ func (s *service) UpdateGateway(gateway string) error {
 	return nil
 }
 
+// GetAvailableMods will get available mods from the Slashdiablo API.
+func (s *service) GetAvailableMods() (*GameMods, error) {
+	contents, err := s.slashdiabloClient.GetAvailableMods()
+	if err != nil {
+		return nil, err
+	}
+
+	bytes, err := ioutil.ReadAll(contents)
+	if err != nil {
+		return nil, err
+	}
+
+	var gameMods GameMods
+	if err := json.Unmarshal(bytes, &gameMods); err != nil {
+		return nil, err
+	}
+
+	return &gameMods, nil
+}
+
 // NewService returns a service with all the dependencies.
 func NewService(
+	slashdiabloClient slashdiablo.Client,
 	store storage.Store,
 	gameModel *GameModel,
 ) Service {
 	return &service{
-		store:     store,
-		gameModel: gameModel,
+		slashdiabloClient: slashdiabloClient,
+		store:             store,
+		gameModel:         gameModel,
 	}
 }

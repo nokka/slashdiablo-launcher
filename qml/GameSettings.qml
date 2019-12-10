@@ -7,11 +7,14 @@ Item {
     property var game: {}
     property bool depApplied: false
     property bool depError: false
+    property int activeHDIndex: 0
 
     function setGame(current) {
         // Set current game instance to the view.
         this.game = current
 
+        console.log(JSON.stringify(current))
+        
         // Textfield needs to be set explicitly since it's read only.
         if(this.game.location != undefined) {
             d2pathInput.text = this.game.location
@@ -20,8 +23,9 @@ Item {
         // Update the switches initial state without triggering an animation.
         maphackSwitch.update()
         overrideMaphackCfgSwitch.update()
-        hdSwitch.update()
         updateToggleBoxes(current)
+        updateModVersions(current)
+
     }
 
     function updateToggleBoxes(current) {
@@ -34,6 +38,21 @@ Item {
             gfxFlag.active = false
             skipFlag.active = false
         }
+    }
+
+    // updateModVersions will set the correct index of the hd mod dropdown.
+    function updateModVersions(current) {
+        if(settings.availableHDMods.length > 0) {
+            for(var i = 0; i < settings.availableHDMods.length; i++) {
+                if(settings.availableHDMods[i] == current.hd_version) {
+                    this.activeHDIndex = i
+                    return
+                }
+            }
+        }
+
+        // Default to 0.
+        this.activeHDIndex = 0 
     }
 
     function makeFlagList() {
@@ -61,8 +80,9 @@ Item {
                 instances: (gameInstances.currentIndex+1),
                 maphack: maphackSwitch.checked,
                 override_bh_cfg: overrideMaphackCfgSwitch.checked,
-                hd: hdSwitch.checked,
-                flags: makeFlagList()
+                //hd: hdSwitch.checked,
+                flags: makeFlagList(),
+                hd_version: hdVersion.currentText
             }
             
             settings.upsertGame(JSON.stringify(body))
@@ -324,11 +344,16 @@ Item {
                     }
                     Column {
                         id: includeHD
-                        width: 60
-                        SSwitch{
-                            id: hdSwitch
-                            checked: ((game != undefined && game.hd != undefined) ? game.hd : false)
-                            onToggled: updateGameModel()
+                        width: 90
+
+                        Dropdown{
+                            id: hdVersion
+                            currentIndex: activeHDIndex
+                            model: settings.availableHDMods
+                            height: 30
+                            width: 90
+
+                            onActivated: updateGameModel()
                         }
                     }
                 }

@@ -13,6 +13,7 @@ const (
 	OverrideBHCfg
 	HD
 	Flags
+	HDVersion
 )
 
 // GameModel represents a Diablo game.
@@ -36,6 +37,7 @@ func (m *GameModel) init() {
 		OverrideBHCfg: core.NewQByteArray2("override_bh_config", -1),
 		HD:            core.NewQByteArray2("hd", -1),
 		Flags:         core.NewQByteArray2("flags", -1),
+		HDVersion:     core.NewQByteArray2("hd_version", -1),
 	})
 
 	m.ConnectData(m.data)
@@ -83,6 +85,8 @@ func (m *GameModel) data(index *core.QModelIndex, role int) *core.QVariant {
 		return core.NewQVariant1(item.HD)
 	case Flags:
 		return core.NewQVariant1(item.Flags)
+	case HDVersion:
+		return core.NewQVariant1(item.HDVersion)
 	default:
 		return core.NewQVariant()
 	}
@@ -99,7 +103,7 @@ func (m *GameModel) addGame(g *Game) {
 func (m *GameModel) updateGame(index int) {
 	var fIndex = m.Index(0, 0, core.NewQModelIndex())
 	var lIndex = m.Index(index, 0, core.NewQModelIndex())
-	m.DataChanged(fIndex, lIndex, []int{Location, Instances, Maphack, OverrideBHCfg, HD, Flags})
+	m.DataChanged(fIndex, lIndex, []int{Location, Instances, Maphack, OverrideBHCfg, HD, Flags, HDVersion})
 }
 
 func (m *GameModel) removeGame(index int) {

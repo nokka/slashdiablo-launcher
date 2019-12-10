@@ -17,7 +17,8 @@ Popup {
         "maphack": 264,
         "override_bh_cfg": 272,
         "hd": 288,
-        "flags": 320
+        "flags": 320,
+        "hd_version": 384
     }
 
     modal: true
@@ -27,7 +28,7 @@ Popup {
     margins: 0
     padding: 0
     
-    anchors.centerIn: root
+    //anchors.centerIn: root
     closePolicy: Popup.NoAutoClose
 
     Overlay.modal: Item {
@@ -102,7 +103,8 @@ Popup {
                                 "maphack": model.data(model.index(this.currentIndex, 0), gameRoles.maphack),
                                 "override_bh_cfg": model.data(model.index(this.currentIndex, 0), gameRoles.override_bh_cfg),
                                 "hd": model.data(model.index(this.currentIndex, 0), gameRoles.hd),
-                                "flags": model.data(model.index(this.currentIndex, 0), gameRoles.flags)
+                                "flags": model.data(model.index(this.currentIndex, 0), gameRoles.flags),
+                                "hd_version": model.data(model.index(this.currentIndex, 0), gameRoles.hd_version),
                             })
                         }
                     }
@@ -313,8 +315,7 @@ Popup {
                                     text: "After patching is done you're ready to play"
                                     anchors.verticalCenter: parent.verticalCenter
                                     color: "#a3a3a3"
-                                }
-                                
+                                } 
                             }
 
                             Separator{}
@@ -335,7 +336,6 @@ Popup {
                             }
                         }
                     }
-                
                 }
 
                  // Settings shown if there are games already setup    
@@ -430,4 +430,23 @@ Popup {
         interval: 5000; running: false; repeat: false
         onTriggered: errored = false
     }
+
+    // TODO: Move later.
+    /*Component.onCompleted: {
+        console.log("BEFORE LOAD")
+        settings.getAvailableMods()
+
+        var model = settings.games
+        console.log("SETTING GAME")
+        gameSettings.setGame({
+            "id": model.data(model.index(gamesList.currentIndex, 0), gameRoles.id),
+            "location": model.data(model.index(gamesList.currentIndex, 0), gameRoles.location),
+            "instances": model.data(model.index(gamesList.currentIndex, 0), gameRoles.instances),
+            "maphack": model.data(model.index(gamesList.currentIndex, 0), gameRoles.maphack),
+            "override_bh_cfg": model.data(model.index(gamesList.currentIndex, 0), gameRoles.override_bh_cfg),
+            "hd": model.data(model.index(gamesList.currentIndex, 0), gameRoles.hd),
+            "flags": model.data(model.index(gamesList.currentIndex, 0), gameRoles.flags),
+            "hd_version": model.data(model.index(gamesList.currentIndex, 0), gameRoles.hd_version),
+        })
+    }*/
 }

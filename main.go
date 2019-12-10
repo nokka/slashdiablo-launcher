@@ -95,7 +95,7 @@ func main() {
 	lc := ladderClient.NewClient()
 
 	// Setup services.
-	cs := config.NewService(store, gm)
+	cs := config.NewService(sc, store, gm)
 	d2s := d2.NewService(sc, cs, logger)
 	ls := ladder.NewService(lc, lm)
 	ns := news.NewService(sc, nm)
@@ -164,6 +164,7 @@ func populateGameModel(conf *storage.Config, gm *config.GameModel) {
 		g.OverrideBHCfg = game.OverrideBHCfg
 		g.HD = game.HD
 		g.Flags = game.Flags
+		g.HDVersion = game.HDVersion
 
 		gm.AddGame(g)
 	}

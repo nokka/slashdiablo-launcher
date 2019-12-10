@@ -15,4 +15,5 @@ type Game struct {
 	OverrideBHCfg bool     `json:"override_bh_cfg"`
 	HD            bool     `json:"hd"`
 	Flags         []string `json:"flags"`
+	HDVersion     string   `json:"hd_version"`
 }
