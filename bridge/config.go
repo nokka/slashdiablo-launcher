@@ -94,7 +94,7 @@ func (c *ConfigBridge) getAvailableMods() {
 	fmt.Println(mods)
 
 	// Default option for no mod at all.
-	allMods := []string{"None"}
+	allMods := []string{config.HDVersionNone}
 	c.SetAvailableHDMods(append(allMods, mods.HD...))
 	//}()
 }

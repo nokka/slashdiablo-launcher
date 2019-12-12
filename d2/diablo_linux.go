@@ -28,7 +28,7 @@ func applyDEP(path string) error {
 	return nil
 }
 
-func isHDInstalled(path string) (bool, error) {
+func isHDInstalled(path string, manifest *Manifest) (bool, error) {
 	return false, nil
 }
 

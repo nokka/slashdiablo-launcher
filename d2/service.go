@@ -2,6 +2,7 @@ package d2
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -40,6 +41,7 @@ type service struct {
 	configService     config.Service
 	logger            log.Logger
 	gameStates        chan execState
+	availableMods     *config.GameMods
 	runningGames      []game
 	mux               sync.Mutex
 }
@@ -84,6 +86,34 @@ func (s *service) Exec() error {
 	return nil
 }
 
+func (s *service) getAvailableMods() (*config.GameMods, error) {
+	// Return cached available mods.
+	if s.availableMods != nil {
+		return s.availableMods, nil
+	}
+
+	// No cached mods exist, fetch remote mods.
+	contents, err := s.slashdiabloClient.GetAvailableMods()
+	if err != nil {
+		return nil, err
+	}
+
+	bytes, err := ioutil.ReadAll(contents)
+	if err != nil {
+		return nil, err
+	}
+
+	var gameMods config.GameMods
+	if err := json.Unmarshal(bytes, &gameMods); err != nil {
+		return nil, err
+	}
+
+	// Set cache.
+	s.availableMods = &gameMods
+
+	return s.availableMods, nil
+}
+
 // ValidateGameVersions will check if the games are up to date.
 func (s *service) ValidateGameVersions() (bool, error) {
 	conf, err := s.configService.Read()
@@ -103,8 +133,7 @@ func (s *service) ValidateGameVersions() (bool, error) {
 		return false, err
 	}
 
-	// Get current HD patch and compare.
-	HDManifest, err := s.getManifest("hd/manifest.json")
+	mods, err := s.getAvailableMods()
 	if err != nil {
 		return false, err
 	}
@@ -166,27 +195,14 @@ func (s *service) ValidateGameVersions() (bool, error) {
 				}
 			}
 
-			// Check if the current game install is up to date with the HD patch.
-			missingHDFiles, _, err := s.getFilesToPatch(HDManifest.Files, game.Location, nil)
+			validHD, err := s.validateHDVersion(&game, mods.HD)
 			if err != nil {
 				return false, err
 			}
 
-			if game.HD {
-				// HD patch isn't up to date.
-				if len(missingHDFiles) > 0 {
-					return false, nil
-				}
-			} else {
-				installed, err := isHDInstalled(game.Location)
-				if err != nil {
-					return false, err
-				}
-
-				// HD wasn't supposed to be installed, but it is, we need to update.
-				if installed {
-					return false, nil
-				}
+			// HD version wasn't valid, we need to update.
+			if !validHD {
+				return false, nil
 			}
 		}
 	}
@@ -217,7 +233,6 @@ func (s *service) resetPatch(path string, files []PatchFile, filesToIgnore []str
 				}
 				// Unknown error.
 				return err
-
 			}
 
 			// Make sure we don't remove the ignored files.
@@ -243,6 +258,41 @@ func (s *service) resetPatch(path string, files []PatchFile, filesToIgnore []str
 	return nil
 }
 
+func (s *service) resetHDPatch(game storage.Game) error {
+	// TODO: Tidy up later and do once.
+	mods, err := s.getAvailableMods()
+	if err != nil {
+		return err
+	}
+
+	// Go over available HD mods and reset them if they are installed.
+	for _, m := range mods.HD {
+		// Correct version is installed, don't reset it.
+		if game.HDVersion == m {
+			continue
+		}
+
+		HDManifest, err := s.getManifest(fmt.Sprintf("hd_%s/manifest.json", m))
+		if err != nil {
+			return err
+		}
+
+		installed, err := isHDInstalled(game.Location, HDManifest)
+		if err != nil {
+			return err
+		}
+
+		if installed {
+			err := s.resetPatch(game.Location, HDManifest.Files, nil)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 // Patch will check for updates and if found, patch the game, both D2 and HD version.
 func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 	progress := make(chan float32)
@@ -261,12 +311,9 @@ func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			state <- PatchState{Error: err}
 			return
 		}
-		// Download HD manifest from patch repository, we'll use it multiple times.
-		hdManifest, err := s.getManifest("hd/manifest.json")
-		if err != nil {
-			state <- PatchState{Error: err}
-			return
-		}
+
+		// Map of HD manifests, so we don't have to download them twice.
+		var hdManifests = make(map[string]*Manifest, 0)
 
 		for _, game := range conf.Games {
 			// If the user has chosen to override the maphack config with their own,
@@ -296,22 +343,10 @@ func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 				}
 			}
 
-			// If HD is disabled, make sure no rogue files have managed to stay in the directory.
-			if !game.HD {
-				installed, err := isHDInstalled(game.Location)
-				if err != nil {
-					state <- PatchState{Error: err}
-					return
-				}
-
-				// If HD is installed, but was supposed to be disabled, reset the patch.
-				if installed {
-					err := s.resetPatch(game.Location, hdManifest.Files, nil)
-					if err != nil {
-						state <- PatchState{Error: err}
-						return
-					}
-				}
+			err := s.resetHDPatch(game)
+			if err != nil {
+				state <- PatchState{Error: err}
+				return
 			}
 
 			// The install has been reset, let's validate the 1.13c version and apply missing files.
@@ -334,16 +369,40 @@ func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 				}
 			}
 
-			if game.HD {
-				err = s.applyHDMod(game.Location, state, progress, hdManifest.Files)
+			if game.HDVersion != config.HDVersionNone {
+				hdm, ok := hdManifests[game.HDVersion]
+				if !ok {
+					hdManifest, err := s.getManifest(fmt.Sprintf("hd_%s/manifest.json", game.HDVersion))
+					if err != nil {
+						state <- PatchState{Error: err}
+						return
+					}
+
+					fmt.Println("DOWNLOADED MANIFEST, STORING IN MAP ON KEY", game.HDVersion)
+					hdManifests[game.HDVersion] = hdManifest
+					hdm = hdManifest
+
+					fmt.Println("DOWNLOADED MANIFEST")
+					fmt.Println(hdm)
+					fmt.Println("-------------")
+				}
+
+				// Just to be safe and avoid a panic.
+				if hdManifests[game.HDVersion] == nil {
+					state <- PatchState{Error: errors.New("missing hd manifest")}
+				}
+
+				fmt.Println("Applying hd mod for", game.HDVersion)
+				err = s.applyHDMod(game.Location, game.HDVersion, state, progress, hdm.Files)
 				if err != nil {
+					fmt.Println("APPLYING HD MOD ERROR", err)
 					state <- PatchState{Error: err}
 					return
 				}
 			}
 
 			// Finally set os specific configurations, such as compatibility mode.
-			err := configureForOS(game.Location)
+			err = configureForOS(game.Location)
 			if err != nil {
 				state <- PatchState{Error: err}
 				return
@@ -417,6 +476,56 @@ func (s *service) listenForGameStates() {
 	}
 }
 
+func (s *service) validateHDVersion(game *storage.Game, versions []string) (bool, error) {
+	for _, v := range versions {
+		manifest, err := s.getManifest(fmt.Sprintf("hd_%s/manifest.json", v))
+		if err != nil {
+			return false, err
+		}
+
+		fmt.Println("---------------")
+		fmt.Println("COMAPRING VERSIONS")
+		fmt.Println("GAME DESIRED STATE", game.HDVersion)
+		fmt.Println("HD VERSION COMPARING AGAINST", v)
+		fmt.Println("---------------")
+
+		// This particular HD version should be installed.
+		if game.HDVersion == v {
+			// Check if the current game install is up to date with the HD patch.
+			missingFiles, _, err := s.getFilesToPatch(manifest.Files, game.Location, nil)
+			if err != nil {
+				return false, err
+			}
+
+			// HD mod isn't up to date.
+			if len(missingFiles) > 0 {
+				fmt.Println("HD VERSION ISNT UP TO DATE", v)
+				fmt.Println("MISSING FILES")
+				fmt.Println(missingFiles)
+				return false, nil
+			}
+		} else {
+			fmt.Println("---------------")
+			fmt.Println("THIS VERSION WASNT SET LOCAL ON GAME", v)
+			fmt.Println("CHECKING IF IT IS INSTALLED ANYWAY, AS ROGUE INSTALL")
+
+			installed, err := isHDInstalled(game.Location, manifest)
+			if err != nil {
+				return false, err
+			}
+
+			fmt.Println("ROGUE WAS INSTALLED = ", v, installed)
+			fmt.Println("---------------")
+			// HD wasn't supposed to be installed, but it is, we need to update.
+			if installed {
+				return false, nil
+			}
+		}
+	}
+
+	return true, nil
+}
+
 func (s *service) apply113c(path string, state chan PatchState, progress chan float32) error {
 	state <- PatchState{Message: "Checking game version..."}
 
@@ -464,6 +573,10 @@ func (s *service) applySlashPatch(path string, state chan PatchState, progress c
 	}
 
 	if len(patchFiles) > 0 {
+		fmt.Println("---------------")
+		fmt.Println("SLASH PATCH WAS MISSING")
+		fmt.Println(patchFiles)
+		fmt.Println("---------------")
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to current Slashdiablo patch", path)}
 
 		if err = s.doPatch(patchFiles, patchLength, "current", path, progress); err != nil {
@@ -505,9 +618,10 @@ func (s *service) applyMaphack(path string, state chan PatchState, progress chan
 	return nil
 }
 
-func (s *service) applyHDMod(path string, state chan PatchState, progress chan float32, manifestFiles []PatchFile) error {
+func (s *service) applyHDMod(path string, version string, state chan PatchState, progress chan float32, manifestFiles []PatchFile) error {
+	fmt.Println("APPLYING HD MOD")
 	// Update UI.
-	state <- PatchState{Message: "Checking HD mod..."}
+	state <- PatchState{Message: "Applying HD mod..."}
 
 	// Figure out which files to patch.
 	patchFiles, patchLength, err := s.getFilesToPatch(manifestFiles, path, nil)
@@ -517,8 +631,12 @@ func (s *service) applyHDMod(path string, state chan PatchState, progress chan f
 
 	if len(patchFiles) > 0 {
 		// Update UI.
-		state <- PatchState{Message: fmt.Sprintf("Updating %s to latest HD mod version", path)}
-		if err = s.doPatch(patchFiles, patchLength, "hd", path, progress); err != nil {
+		state <- PatchState{Message: fmt.Sprintf("Updating %s to HD %s mod version", path, version)}
+
+		remoteDir := fmt.Sprintf("hd_%s", version)
+
+		fmt.Println("IN APPLY HD", remoteDir)
+		if err = s.doPatch(patchFiles, patchLength, remoteDir, path, progress); err != nil {
 			patchErr := err
 			// Make sure we clean up the failed patch.
 			if err := s.cleanUpFailedPatch(path); err != nil {

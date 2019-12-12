@@ -12,8 +12,6 @@ Item {
     function setGame(current) {
         // Set current game instance to the view.
         this.game = current
-
-        console.log(JSON.stringify(current))
         
         // Textfield needs to be set explicitly since it's read only.
         if(this.game.location != undefined) {
@@ -331,12 +329,12 @@ Item {
                     Column {
                         width: (settingsLayout.width - includeHD.width)
                         Title {
-                            text: "INCLUDE HD MOD"
+                            text: "HD MOD VERSION"
                             font.pixelSize: 13
                         }
 
                         SText {
-                            text: "HD mod will be installed automatically for this specific install."
+                            text: "Select if you want any HD mod installed"
                             font.pixelSize: 11
                             topPadding: 5
                             color: "#454545"

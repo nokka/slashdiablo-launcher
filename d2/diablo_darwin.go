@@ -33,21 +33,34 @@ func applyDEP(path string) error {
 	return nil
 }
 
-func isHDInstalled(path string) (bool, error) {
+func isHDInstalled(path string, manifest *Manifest) (bool, error) {
 	filePath := localizePath(fmt.Sprintf("%s/%s", path, "D2HD.dll"))
 
-	// Check if the file exists on disk.
-	_, err := os.Stat(filePath)
+	// Get the checksum from the file on disk.
+	hashed, err := hashCRC32(filePath, polynomial)
 	if err != nil {
-		// File didn't exist on disk, return false.
-		if os.IsNotExist(err) {
+		// The file doesn't exist on disk, so it's not installed.
+		if err == ErrCRCFileNotFound {
 			return false, nil
 		}
-		// Unknown error.
+
 		return false, err
 	}
 
-	return true, nil
+	var crc string
+	// File exists on disk, find the CRC.
+	for _, f := range manifest.Files {
+		if f.Name == "D2HD.dll" {
+			crc = f.CRC
+			break
+		}
+	}
+
+	if crc == hashed {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 func isMaphackInstalled(path string) (bool, error) {
