@@ -259,7 +259,6 @@ func (s *service) resetPatch(path string, files []PatchFile, filesToIgnore []str
 }
 
 func (s *service) resetHDPatch(game storage.Game) error {
-	// TODO: Tidy up later and do once.
 	mods, err := s.getAvailableMods()
 	if err != nil {
 		return err
