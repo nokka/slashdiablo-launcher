@@ -266,7 +266,7 @@ func (s *service) resetHDPatch(game storage.Game) error {
 
 	// Go over available HD mods and reset them if they are installed.
 	for _, m := range mods.HD {
-		// Correct version is installed, don't reset it.
+		// Desired version, don't reset it.
 		if game.HDVersion == m {
 			continue
 		}
