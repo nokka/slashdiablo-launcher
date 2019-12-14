@@ -2,7 +2,6 @@ package bridge
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/nokka/slashdiablo-launcher/config"
 	"github.com/nokka/slashdiablo-launcher/log"
@@ -30,7 +29,7 @@ type ConfigBridge struct {
 	_ func(body string) bool `slot:"upsertGame"`
 	_ func(id string)        `slot:"deleteGame"`
 	_ func() bool            `slot:"persistGameModel"`
-	_ func()                 `slot:"getAvailableMods"`
+	_ func() bool            `slot:"getAvailableMods"`
 }
 
 // Connect will connect the QML signals to functions in Go.
@@ -82,21 +81,17 @@ func (c *ConfigBridge) persistGameModel() bool {
 }
 
 // persistGameModel will persist the current game model to the config.
-func (c *ConfigBridge) getAvailableMods() {
-	// Do the work on another thread not to lock the GUI.
-	//go func() {
+func (c *ConfigBridge) getAvailableMods() bool {
 	mods, err := c.config.GetAvailableMods()
 	if err != nil {
 		c.logger.Error(err)
+		return false
 	}
-
-	fmt.Println("AVAILABLE MODS IN BRIDGE")
-	fmt.Println(mods)
 
 	// Default option for no mod at all.
 	allMods := []string{config.HDVersionNone}
 	c.SetAvailableHDMods(append(allMods, mods.HD...))
-	//}()
+	return true
 }
 
 // NewConfig returns a new config bridge with all dependencies set up.

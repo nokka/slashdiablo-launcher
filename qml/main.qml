@@ -10,6 +10,8 @@ Item {
     FontLoader { id: beaufort; source: "assets/fonts/Beaufort-Regular.ttf" }
     FontLoader { id: beaufortbold; source: "assets/fonts/Beaufort-Bold.ttf" }
 
+    property bool prerequisitesLoaded: false
+
     // Background image.
     Rectangle {
         id: background
@@ -36,7 +38,6 @@ Item {
         Loader {
             id: contentLoader
             anchors.fill: parent
-            source: "LauncherView.qml"
         }
     }
 
@@ -45,6 +46,29 @@ Item {
         anchors.centerIn: root
         width: 850
         height: 500
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: "black"
+        visible: !prerequisitesLoaded
+
+        Item {
+            anchors.centerIn: parent
+
+            // Loading circle.			
+            CircularProgress {
+                anchors.horizontalCenter: parent.horizontalCenter
+                size: 30
+                visible: true
+            }
+
+            Title {
+                text: "TALKING TO SLASH API"
+            }
+        }
+        
+        
     }
     
     // Settings popup.
@@ -56,15 +80,28 @@ Item {
     // the parent loads, if we remove the timer we get an error saying
     // there's no parent to create the popup from.
     Timer {
-        interval: 0; running: true; repeat: false
+        interval: 2000; running: true; repeat: false
         onTriggered: {
             // TODO: Think about if this should be sync,
             // to return an error and display that we couldn't talk to slash API.
-            settings.getAvailableMods()
-            settingsLoader.source = "SettingsPopup.qml"
-            if(settings.games.rowCount() == 0) {
-                settingsLoader.item.open()
-            }
+            var success = settings.getAvailableMods()
+
+            if(success) {
+                // Allow content to load since all prerequisites are loaded.
+                settingsLoader.source = "SettingsPopup.qml"
+               
+                // Allow content to load since all prerequisites are loaded.
+                contentLoader.source = "LauncherView.qml"
+                
+                if(settings.games.rowCount() == 0) {
+                    settingsLoader.item.open()
+                }
+
+                // Tell the UI we're done with prerequisites.
+                prerequisitesLoaded = true
+            } else {
+                // TODO: Show error button
+            }  
         }
     }
 }
