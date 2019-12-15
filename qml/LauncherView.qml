@@ -9,7 +9,7 @@ Item {
         width: 210.6
         height: 240.3
         anchors.top: parent.top
-        anchors.topMargin: 25
+        anchors.topMargin: 26
         anchors.horizontalCenter: parent.horizontalCenter
         Image { source: "assets/logo-bg.png"; anchors.fill: parent; fillMode: Image.PreserveAspectFit; opacity: 1.0 }
     }
@@ -20,7 +20,7 @@ Item {
         height: 63.9
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: 114
+        anchors.topMargin: 116
         Image { source: "assets/logo-text.png"; anchors.fill: parent; fillMode: Image.PreserveAspectFit; opacity: 1.0 }
     }
 
