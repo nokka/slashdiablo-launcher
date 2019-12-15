@@ -28,7 +28,7 @@ Popup {
     margins: 0
     padding: 0
     
-    //anchors.centerIn: root
+    anchors.centerIn: root
     closePolicy: Popup.NoAutoClose
 
     Overlay.modal: Item {
@@ -96,16 +96,7 @@ Popup {
 
                     onCurrentItemChanged: {   
                         if(gamesList.count > 0) {
-                            gameSettings.setGame({
-                                "id": model.data(model.index(this.currentIndex, 0), gameRoles.id),
-                                "location": model.data(model.index(this.currentIndex, 0), gameRoles.location),
-                                "instances": model.data(model.index(this.currentIndex, 0), gameRoles.instances),
-                                "maphack": model.data(model.index(this.currentIndex, 0), gameRoles.maphack),
-                                "override_bh_cfg": model.data(model.index(this.currentIndex, 0), gameRoles.override_bh_cfg),
-                                "hd": model.data(model.index(this.currentIndex, 0), gameRoles.hd),
-                                "flags": model.data(model.index(this.currentIndex, 0), gameRoles.flags),
-                                "hd_version": model.data(model.index(this.currentIndex, 0), gameRoles.hd_version),
-                            })
+                            updateGame()
                         }
                     }
                 }
@@ -425,19 +416,8 @@ Popup {
         return true
     }
 
-    Timer {
-        id: errorTimer
-        interval: 5000; running: false; repeat: false
-        onTriggered: errored = false
-    }
-
-    // TODO: Move later.
-    /*Component.onCompleted: {
-        console.log("BEFORE LOAD")
-        settings.getAvailableMods()
-
+    function updateGame() {
         var model = settings.games
-        console.log("SETTING GAME")
         gameSettings.setGame({
             "id": model.data(model.index(gamesList.currentIndex, 0), gameRoles.id),
             "location": model.data(model.index(gamesList.currentIndex, 0), gameRoles.location),
@@ -448,5 +428,15 @@ Popup {
             "flags": model.data(model.index(gamesList.currentIndex, 0), gameRoles.flags),
             "hd_version": model.data(model.index(gamesList.currentIndex, 0), gameRoles.hd_version),
         })
-    }*/
+    }
+
+    Timer {
+        id: errorTimer
+        interval: 5000; running: false; repeat: false
+        onTriggered: errored = false
+    }
+
+    onAboutToShow: {
+        updateGame()
+    }
 }

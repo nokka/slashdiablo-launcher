@@ -10,8 +10,6 @@ Item {
     FontLoader { id: beaufort; source: "assets/fonts/Beaufort-Regular.ttf" }
     FontLoader { id: beaufortbold; source: "assets/fonts/Beaufort-Bold.ttf" }
 
-    property bool prerequisitesLoaded: false
-
     // Background image.
     Rectangle {
         id: background
@@ -38,6 +36,7 @@ Item {
         Loader {
             id: contentLoader
             anchors.fill: parent
+            source: "LauncherView.qml"
         }
     }
 
@@ -49,42 +48,95 @@ Item {
     }
 
     Rectangle {
+        id: prereqsBox
         anchors.fill: parent
         color: "black"
-        visible: !prerequisitesLoaded
 
         Item {
+            width: 400
+            height: 400
             anchors.centerIn: parent
 
-            // Loading circle.			
-            CircularProgress {
-                anchors.horizontalCenter: parent.horizontalCenter
-                size: 30
-                visible: true
-            }
+            Column {
+                width: parent.width
 
-            Title {
-                text: "TALKING TO SLASH API"
+                Item {
+                    width: parent.width
+                    height: 240
+                    
+                    Item {
+                        width: 210.6
+                        height: 240.3
+                        anchors.top: parent.top
+                        anchors.topMargin: 20
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Image { source: "assets/logo-bg.png"; anchors.fill: parent; fillMode: Image.PreserveAspectFit; opacity: 1.0 }
+                    }
+
+                    Item {
+                        width: 216
+                        height: 63.9
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        anchors.topMargin: 109
+                        Image { source: "assets/logo-text.png"; anchors.fill: parent; fillMode: Image.PreserveAspectFit; opacity: 1.0 }
+                    }
+                }
+
+                Item { 
+                    width: parent.width
+                    height: 60
+
+                    Title {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.bottom: parent.bottom
+                        text: "PREPARING LAUNCHER..."
+                    }
+                 }
+
+                Item {
+                    width: parent.width
+                    height: 60
+
+                    CircularProgress {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        size: 30
+                        visible: true
+                    }
+                }
             }
         }
-        
-        
+
+        OpacityAnimator {
+            target: prereqsBox;
+            from: 1;
+            to: 0;
+            duration: 500
+            running: settings.prerequisitesLoaded
+        }
     }
     
     // Settings popup.
-    /*SettingsPopup{
+    SettingsPopup{
         id: settingsPopup
-    }*/
+    }
 
     // This is a bit of a hack to get a popup to display right after
     // the parent loads, if we remove the timer we get an error saying
     // there's no parent to create the popup from.
     Timer {
-        interval: 2000; running: true; repeat: false
+        interval: 0; running: true; repeat: false
         onTriggered: {
+            // Load all prerequisite data async.
+            settings.getPrerequisites()
+
+            if(settings.games.rowCount() == 0) {
+                settingsLoader.item.open()
+            }
             // TODO: Think about if this should be sync,
             // to return an error and display that we couldn't talk to slash API.
-            var success = settings.getAvailableMods()
+            /*var success = settings.getAvailableMods()
 
             if(success) {
                 // Allow content to load since all prerequisites are loaded.
@@ -101,7 +153,7 @@ Item {
                 prerequisitesLoaded = true
             } else {
                 // TODO: Show error button
-            }  
+            }*/
         }
     }
 }

@@ -47,7 +47,7 @@ Item {
 
             // HD circle.
             Rectangle { 
-                visible: model.hd
+                visible: model.hd_version != "none"
                 color: "#009fb8"
                 width: 25
                 height: 25
