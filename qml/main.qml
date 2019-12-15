@@ -47,75 +47,8 @@ Item {
         height: 500
     }
 
-    Rectangle {
-        id: prereqsBox
-        anchors.fill: parent
-        color: "black"
-
-        Item {
-            width: 400
-            height: 400
-            anchors.centerIn: parent
-
-            Column {
-                width: parent.width
-
-                Item {
-                    width: parent.width
-                    height: 240
-                    
-                    Item {
-                        width: 210.6
-                        height: 240.3
-                        anchors.top: parent.top
-                        anchors.topMargin: 20
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        Image { source: "assets/logo-bg.png"; anchors.fill: parent; fillMode: Image.PreserveAspectFit; opacity: 1.0 }
-                    }
-
-                    Item {
-                        width: 216
-                        height: 63.9
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: parent.top
-                        anchors.topMargin: 109
-                        Image { source: "assets/logo-text.png"; anchors.fill: parent; fillMode: Image.PreserveAspectFit; opacity: 1.0 }
-                    }
-                }
-
-                Item { 
-                    width: parent.width
-                    height: 60
-
-                    Title {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.bottom: parent.bottom
-                        text: "PREPARING LAUNCHER..."
-                    }
-                 }
-
-                Item {
-                    width: parent.width
-                    height: 60
-
-                    CircularProgress {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        size: 30
-                        visible: true
-                    }
-                }
-            }
-        }
-
-        OpacityAnimator {
-            target: prereqsBox;
-            from: 1;
-            to: 0;
-            duration: 500
-            running: settings.prerequisitesLoaded
-        }
-    }
+    // Loading screen that shows up to load prerequisites.
+    LoadingScreen{}
     
     // Settings popup.
     SettingsPopup{
@@ -134,26 +67,6 @@ Item {
             if(settings.games.rowCount() == 0) {
                 settingsLoader.item.open()
             }
-            // TODO: Think about if this should be sync,
-            // to return an error and display that we couldn't talk to slash API.
-            /*var success = settings.getAvailableMods()
-
-            if(success) {
-                // Allow content to load since all prerequisites are loaded.
-                settingsLoader.source = "SettingsPopup.qml"
-               
-                // Allow content to load since all prerequisites are loaded.
-                contentLoader.source = "LauncherView.qml"
-                
-                if(settings.games.rowCount() == 0) {
-                    settingsLoader.item.open()
-                }
-
-                // Tell the UI we're done with prerequisites.
-                prerequisitesLoaded = true
-            } else {
-                // TODO: Show error button
-            }*/
         }
     }
 }

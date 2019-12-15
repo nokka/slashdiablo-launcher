@@ -2,8 +2,6 @@ package bridge
 
 import (
 	"encoding/json"
-	"fmt"
-	"time"
 
 	"github.com/nokka/slashdiablo-launcher/config"
 	"github.com/nokka/slashdiablo-launcher/log"
@@ -26,6 +24,7 @@ type ConfigBridge struct {
 	_ []string `property:"availableHDMods"`
 	_ []string `property:"availableMaphackMods"`
 	_ bool     `property:"prerequisitesLoaded"`
+	_ bool     `property:"prerequisitesError"`
 
 	// Slots.
 	_ func()                 `slot:"addGame"`
@@ -88,19 +87,20 @@ func (c *ConfigBridge) getPrerequisites() {
 	go func() {
 		// Tell the UI that we're fetching prerequisites.
 		c.SetPrerequisitesLoaded(false)
+		c.SetPrerequisitesError(false)
 
 		mods, err := c.config.GetAvailableMods()
 		if err != nil {
+			c.SetPrerequisitesError(true)
 			c.logger.Error(err)
+			return
 		}
 
 		// Default option for no mod at all.
 		allMods := []string{config.HDVersionNone}
 		c.SetAvailableHDMods(append(allMods, mods.HD...))
 
-		time.Sleep(2 * time.Second)
 		c.SetPrerequisitesLoaded(true)
-		fmt.Println("PREREQS LOADED")
 	}()
 }
 
@@ -117,6 +117,7 @@ func NewConfig(cs config.Service, gm *config.GameModel, logger log.Logger) *Conf
 
 	// Set initial state.
 	b.SetPrerequisitesLoaded(false)
+	b.SetPrerequisitesError(false)
 
 	return b
 }

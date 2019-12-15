@@ -3,14 +3,13 @@ import QtQuick 2.12
 Item {
     id: launchView
     width: parent.width; height: parent.height
-    anchors.leftMargin: 20
     
     Item {
         id: logobg
         width: 210.6
         height: 240.3
         anchors.top: parent.top
-        anchors.topMargin: 20
+        anchors.topMargin: 25
         anchors.horizontalCenter: parent.horizontalCenter
         Image { source: "assets/logo-bg.png"; anchors.fill: parent; fillMode: Image.PreserveAspectFit; opacity: 1.0 }
     }
@@ -21,7 +20,7 @@ Item {
         height: 63.9
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: 109
+        anchors.topMargin: 114
         Image { source: "assets/logo-text.png"; anchors.fill: parent; fillMode: Image.PreserveAspectFit; opacity: 1.0 }
     }
 

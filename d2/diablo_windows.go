@@ -175,7 +175,7 @@ func applyDEP(path string) error {
 
 	// Wait to make sure the bat file has time to finish the previous action
 	// before sending the next input.
-	time.Sleep(1 * time.Second)
+	time.Sleep(1500 * time.Millisecond)
 
 	// Write any key to the cmd to exit.
 	_, err = io.WriteString(stdin, "a")
