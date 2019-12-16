@@ -65,7 +65,7 @@ Item {
             settings.getPrerequisites()
 
             if(settings.games.rowCount() == 0) {
-                settingsLoader.item.open()
+                settingsPopup.open()
             }
         }
     }
