@@ -245,7 +245,7 @@ Item {
                         }
 
                         SText {
-                            text: "Number of this specific install that will launch when playing the game."
+                            text: "Number of this specific install that will launch when playing the game"
                             font.pixelSize: 11
                             topPadding: 5
                             color: "#454545"
@@ -280,12 +280,12 @@ Item {
                     Column {
                         width: (settingsLayout.width - includeMaphack.width)
                         Title {
-                            text: "INCLUDE MAPHACK"
+                            text: "MAPHACK VERSION"
                             font.pixelSize: 13
                         }
 
                         SText {
-                            text: "Maphack will be downloaded automatically for this specific install."
+                            text: "Select if you want any maphack installed"
                             font.pixelSize: 11
                             topPadding: 5
                             color: "#454545"
@@ -368,7 +368,7 @@ Item {
                         }
 
                         SText {
-                            text: "If you want to provide your own custom BH.cfg."
+                            text: "Select if you want to provide your own custom BH.cfg"
                             font.pixelSize: 11
                             topPadding: 5
                             color: "#454545"
@@ -404,7 +404,7 @@ Item {
                         }
 
                         SText {
-                            text: "Run if this install has troubles with crashing - requires reboot after."
+                            text: "Run if this install has troubles with crashing - requires reboot after"
                             font.pixelSize: 11
                             topPadding: 5
                             color: "#454545"
