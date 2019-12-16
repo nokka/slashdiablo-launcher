@@ -41,15 +41,11 @@ Item {
     // updateModVersions will set the correct index of the hd mod dropdown.
     function updateModVersions(current) {
         if(settings.availableHDMods.length > 0) {
-            if(current.hd_version == "") {
-                activeHDIndex = 0
-                return
-            }
-
             // Find the correct index.
-            for(var i = 0; i < settings.availableHDMods.length; i++) {
+            for(var i = 0; i < 3; i++) {
                 if(settings.availableHDMods[i] == current.hd_version) {
                     activeHDIndex = i
+                    hdVersion.currentIndex = i
                     return
                 }
             }

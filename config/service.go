@@ -68,6 +68,7 @@ func (s *service) AddGame() {
 	// Default values.
 	g.Instances = 1
 	g.Flags = []string{"-w", "-skiptobnet"}
+	g.HDVersion = HDVersionNone
 
 	s.gameModel.AddGame(g)
 }
