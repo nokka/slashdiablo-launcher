@@ -78,7 +78,6 @@ Item {
                 instances: (gameInstances.currentIndex+1),
                 maphack: maphackSwitch.checked,
                 override_bh_cfg: overrideMaphackCfgSwitch.checked,
-                //hd: hdSwitch.checked,
                 flags: makeFlagList(),
                 hd_version: hdVersion.currentText
             }
@@ -351,7 +350,10 @@ Item {
                             height: 30
                             width: 90
 
-                            onActivated: updateGameModel()
+                            onActivated: {
+                                activeHDIndex = hdVersion.currentIndex
+                                updateGameModel()
+                            }
                         }
                     }
                 }
