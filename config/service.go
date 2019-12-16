@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"sync"
 
@@ -93,8 +92,6 @@ func (s *service) UpsertGame(request UpdateGameRequest) error {
 	// Unlock when we're done.
 	defer s.mutex.Unlock()
 
-	fmt.Println("REQUEST -----")
-	fmt.Println(request)
 	// Updates game model with the new information.
 	var updatedIndex int
 	games := s.gameModel.Games()

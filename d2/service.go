@@ -261,8 +261,6 @@ func (s *service) resetPatch(path string, files []PatchFile, filesToIgnore []str
 }
 
 func (s *service) resetHDPatch(game storage.Game) error {
-	fmt.Println("------------------")
-	fmt.Println("RESETING HD PATCHES")
 	mods, err := s.getAvailableMods()
 	if err != nil {
 		return err
@@ -280,15 +278,12 @@ func (s *service) resetHDPatch(game storage.Game) error {
 			return err
 		}
 
-		fmt.Println("CHECK IF HD VERSION WAS INSTALLED", m)
 		installed, err := isHDInstalled(game.Location, HDManifest)
 		if err != nil {
 			return err
 		}
-		fmt.Println("WAS INSTALLED = ", installed)
 
 		if installed {
-			fmt.Println("REMOVING HD VERSION ", m)
 			err := s.resetPatch(game.Location, HDManifest.Files, nil)
 			if err != nil {
 				return err
@@ -301,8 +296,6 @@ func (s *service) resetHDPatch(game storage.Game) error {
 
 // Patch will check for updates and if found, patch the game, both D2 and HD version.
 func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
-	fmt.Println("------------------")
-	fmt.Println("PATCHING STARTED")
 	progress := make(chan float32)
 	state := make(chan PatchState)
 
@@ -386,7 +379,6 @@ func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 						return
 					}
 
-					fmt.Println("DOWNLOADED HD MANIFEST, STORING IN MAP ON KEY", game.HDVersion)
 					hdManifests[game.HDVersion] = hdManifest
 					hdm = hdManifest
 				}
@@ -398,7 +390,6 @@ func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 
 				err = s.applyHDMod(game.Location, game.HDVersion, state, progress, hdm.Files)
 				if err != nil {
-					fmt.Println("APPLYING HD MOD ERROR", err)
 					state <- PatchState{Error: err}
 					return
 				}
@@ -486,12 +477,6 @@ func (s *service) validateHDVersion(game *storage.Game, versions []string) (bool
 			return false, err
 		}
 
-		fmt.Println("---------------")
-		fmt.Println("COMAPRING VERSIONS")
-		fmt.Println("GAME DESIRED STATE", game.HDVersion)
-		fmt.Println("HD VERSION COMPARING AGAINST", v)
-		fmt.Println("---------------")
-
 		// This particular HD version should be installed.
 		if game.HDVersion == v {
 			// Check if the current game install is up to date with the HD patch.
@@ -502,23 +487,14 @@ func (s *service) validateHDVersion(game *storage.Game, versions []string) (bool
 
 			// HD mod isn't up to date.
 			if len(missingFiles) > 0 {
-				fmt.Println("HD VERSION ISNT UP TO DATE", v)
-				fmt.Println("MISSING FILES")
-				fmt.Println(missingFiles)
 				return false, nil
 			}
 		} else {
-			fmt.Println("---------------")
-			fmt.Println("THIS VERSION WASNT SET LOCAL ON GAME", v)
-			fmt.Println("CHECKING IF IT IS INSTALLED ANYWAY, AS ROGUE INSTALL")
-
 			installed, err := isHDInstalled(game.Location, manifest)
 			if err != nil {
 				return false, err
 			}
 
-			fmt.Println("ROGUE WAS INSTALLED = ", v, installed)
-			fmt.Println("---------------")
 			// HD wasn't supposed to be installed, but it is, we need to update.
 			if installed {
 				return false, nil
@@ -530,8 +506,6 @@ func (s *service) validateHDVersion(game *storage.Game, versions []string) (bool
 }
 
 func (s *service) apply113c(path string, state chan PatchState, progress chan float32) error {
-	fmt.Println("------------------")
-	fmt.Println("APPLYING 1.13C PATCH")
 	state <- PatchState{Message: "Checking game version..."}
 
 	// Download manifest from patch repository.
@@ -547,10 +521,6 @@ func (s *service) apply113c(path string, state chan PatchState, progress chan fl
 	}
 
 	if len(patchFiles) > 0 {
-		fmt.Println("---------------")
-		fmt.Println("1.13C FILES WERE MISSING, PATCHING")
-		fmt.Println(patchFiles)
-		fmt.Println("---------------")
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to 1.13c", path)}
 		if err := s.doPatch(patchFiles, patchLength, "1.13c", path, progress); err != nil {
 			patchErr := err
@@ -567,8 +537,6 @@ func (s *service) apply113c(path string, state chan PatchState, progress chan fl
 }
 
 func (s *service) applySlashPatch(path string, state chan PatchState, progress chan float32) error {
-	fmt.Println("------------------")
-	fmt.Println("APPLYING SLASH CURRENT PATCH")
 	state <- PatchState{Message: "Checking Slashdiablo patch..."}
 
 	// Download manifest from patch repository.
@@ -584,10 +552,6 @@ func (s *service) applySlashPatch(path string, state chan PatchState, progress c
 	}
 
 	if len(patchFiles) > 0 {
-		fmt.Println("---------------")
-		fmt.Println("SLASH PATCH WAS MISSING, PATCHING")
-		fmt.Println(patchFiles)
-		fmt.Println("---------------")
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to current Slashdiablo patch", path)}
 
 		if err = s.doPatch(patchFiles, patchLength, "current", path, progress); err != nil {
@@ -630,8 +594,6 @@ func (s *service) applyMaphack(path string, state chan PatchState, progress chan
 }
 
 func (s *service) applyHDMod(path string, version string, state chan PatchState, progress chan float32, manifestFiles []PatchFile) error {
-	fmt.Println("---------------")
-	fmt.Println("APPLYING HD MOD", version)
 	// Update UI.
 	state <- PatchState{Message: "Applying HD mod..."}
 
@@ -642,20 +604,15 @@ func (s *service) applyHDMod(path string, version string, state chan PatchState,
 	}
 
 	if len(patchFiles) > 0 {
-		fmt.Println("HD FILES WERE MISSING, PATCHING")
-		fmt.Println(patchFiles)
 		// Update UI.
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to HD %s mod version", path, version)}
 
 		remoteDir := fmt.Sprintf("hd_%s", version)
 
-		fmt.Println("HD WAS NOT UP TO DATE, PATCHING", remoteDir)
 		if err = s.doPatch(patchFiles, patchLength, remoteDir, path, progress); err != nil {
 			patchErr := err
-			fmt.Println("DO PATCH ERROR", err)
 			// Make sure we clean up the failed patch.
 			if err := s.cleanUpFailedPatch(path); err != nil {
-				fmt.Println("CLEANING UP FAILED PATCH")
 				return fmt.Errorf("Clean up error: %s : %s", patchErr, err)
 			}
 
@@ -686,10 +643,8 @@ func (s *service) doPatch(patchFiles []string, patchLength int64, remoteDir stri
 		// file until it's downloaded, but we'll remove the tmp extension once downloaded.
 		tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, fileName))
 
-		fmt.Println("DOWNLOADING PATCH FILE FROM REMOTE", remoteDir, fileName)
 		err := s.downloadFile(fileName, remoteDir, tmpPath, counter)
 		if err != nil {
-			fmt.Println("DOWNLOAD ERROR", err)
 			return err
 		}
 
@@ -699,10 +654,8 @@ func (s *service) doPatch(patchFiles []string, patchLength int64, remoteDir stri
 	// All the files were successfully downloaded, remove the .tmp suffix
 	// to complete the patch entirely.
 	for _, tmpFile := range tmpFiles {
-		fmt.Println("RENAMING TMP FILE TO PROPER NAME TO FINALIZE", tmpFile)
 		err := os.Rename(tmpFile, tmpFile[:len(tmpFile)-4])
 		if err != nil {
-			fmt.Println("OS RENAME ERROR", tmpFile, err)
 			return err
 		}
 	}
@@ -741,7 +694,6 @@ func (s *service) cleanUpFailedPatch(dir string) error {
 	for _, f := range files {
 		fileName := f.Name()
 		if strings.Contains(fileName, ".tmp") {
-			fmt.Println("REMOVING TMP FILE WHILE CLEANING UP PATCH", fileName)
 			err := os.Remove(localizePath(fmt.Sprintf("%s/%s", dir, fileName)))
 			if err != nil {
 				return err
