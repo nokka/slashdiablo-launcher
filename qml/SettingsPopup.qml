@@ -418,16 +418,19 @@ Popup {
 
     function updateGame() {
         var model = settings.games
-        gameSettings.setGame({
-            "id": model.data(model.index(gamesList.currentIndex, 0), gameRoles.id),
-            "location": model.data(model.index(gamesList.currentIndex, 0), gameRoles.location),
-            "instances": model.data(model.index(gamesList.currentIndex, 0), gameRoles.instances),
-            "maphack": model.data(model.index(gamesList.currentIndex, 0), gameRoles.maphack),
-            "override_bh_cfg": model.data(model.index(gamesList.currentIndex, 0), gameRoles.override_bh_cfg),
-            "hd": model.data(model.index(gamesList.currentIndex, 0), gameRoles.hd),
-            "flags": model.data(model.index(gamesList.currentIndex, 0), gameRoles.flags),
-            "hd_version": model.data(model.index(gamesList.currentIndex, 0), gameRoles.hd_version),
-        })
+
+        if(gamesList.currentIndex != -1) {
+            gameSettings.setGame({
+                "id": model.data(model.index(gamesList.currentIndex, 0), gameRoles.id),
+                "location": model.data(model.index(gamesList.currentIndex, 0), gameRoles.location),
+                "instances": model.data(model.index(gamesList.currentIndex, 0), gameRoles.instances),
+                "maphack": model.data(model.index(gamesList.currentIndex, 0), gameRoles.maphack),
+                "override_bh_cfg": model.data(model.index(gamesList.currentIndex, 0), gameRoles.override_bh_cfg),
+                "hd": model.data(model.index(gamesList.currentIndex, 0), gameRoles.hd),
+                "flags": model.data(model.index(gamesList.currentIndex, 0), gameRoles.flags),
+                "hd_version": model.data(model.index(gamesList.currentIndex, 0), gameRoles.hd_version),
+            })
+        }
     }
 
     Timer {
