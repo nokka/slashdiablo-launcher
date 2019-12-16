@@ -419,6 +419,7 @@ Popup {
     function updateGame() {
         var model = settings.games
 
+        // Only update if any games exist.
         if(gamesList.currentIndex != -1) {
             gameSettings.setGame({
                 "id": model.data(model.index(gamesList.currentIndex, 0), gameRoles.id),

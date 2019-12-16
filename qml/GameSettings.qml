@@ -11,11 +11,11 @@ Item {
 
     function setGame(current) {
         // Set current game instance to the view.
-        this.game = current
+        game = current
         
         // Textfield needs to be set explicitly since it's read only.
-        if(this.game.location != undefined) {
-            d2pathInput.text = this.game.location
+        if(game.location != undefined) {
+            d2pathInput.text = game.location
         }
 
         // Update the switches initial state without triggering an animation.
@@ -41,16 +41,22 @@ Item {
     // updateModVersions will set the correct index of the hd mod dropdown.
     function updateModVersions(current) {
         if(settings.availableHDMods.length > 0) {
+            if(current.hd_version == "") {
+                activeHDIndex = 0
+                return
+            }
+
+            // Find the correct index.
             for(var i = 0; i < settings.availableHDMods.length; i++) {
                 if(settings.availableHDMods[i] == current.hd_version) {
-                    this.activeHDIndex = i
+                    activeHDIndex = i
                     return
                 }
             }
         }
 
         // Default to 0.
-        this.activeHDIndex = 0 
+        activeHDIndex = 0 
     }
 
     function makeFlagList() {
@@ -351,7 +357,6 @@ Item {
                             width: 90
 
                             onActivated: {
-                                activeHDIndex = hdVersion.currentIndex
                                 updateGameModel()
                             }
                         }
