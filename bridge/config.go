@@ -97,8 +97,9 @@ func (c *ConfigBridge) getPrerequisites() {
 		}
 
 		// Default option for no mod at all.
-		allMods := []string{config.HDVersionNone}
-		c.SetAvailableHDMods(append(allMods, mods.HD...))
+		defaultMods := []string{config.ModVersionNone}
+		c.SetAvailableHDMods(append(defaultMods, mods.HD...))
+		c.SetAvailableMaphackMods(append(defaultMods, mods.Maphack...))
 
 		c.SetPrerequisitesLoaded(true)
 	}()

@@ -47,7 +47,7 @@ Item {
 
             // HD circle.
             Rectangle { 
-                visible: model.hd_version != "none"
+                visible: (model.hd_version != "none")
                 color: "#009fb8"
                 width: 25
                 height: 25
@@ -62,7 +62,7 @@ Item {
 
             // Maphack circle.
             Rectangle {
-                visible: model.maphack
+                visible: (model.maphack_version != "none")
                 color: "#038a66"
                 width: 25
                 height: 25

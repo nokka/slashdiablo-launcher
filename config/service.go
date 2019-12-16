@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"sync"
 
@@ -67,25 +68,28 @@ func (s *service) AddGame() {
 	// Default values.
 	g.Instances = 1
 	g.Flags = []string{"-w", "-skiptobnet"}
-	g.HDVersion = HDVersionNone
+	g.HDVersion = ModVersionNone
+	g.MaphackVersion = ModVersionNone
 
 	s.gameModel.AddGame(g)
 }
 
 // UpdateGameRequest is the data used to update a game in the game model.
 type UpdateGameRequest struct {
-	ID            string   `json:"id"`
-	Location      string   `json:"location"`
-	Instances     int      `json:"instances"`
-	Maphack       bool     `json:"maphack"`
-	OverrideBHCfg bool     `json:"override_bh_cfg"`
-	HD            bool     `json:"hd"`
-	Flags         []string `json:"flags"`
-	HDVersion     string   `json:"hd_version"`
+	ID             string   `json:"id"`
+	Location       string   `json:"location"`
+	Instances      int      `json:"instances"`
+	Maphack        bool     `json:"maphack"`
+	OverrideBHCfg  bool     `json:"override_bh_cfg"`
+	Flags          []string `json:"flags"`
+	HDVersion      string   `json:"hd_version"`
+	MaphackVersion string   `json:"maphack_version"`
 }
 
 // UpsertGame will upsert the game to the config.
 func (s *service) UpsertGame(request UpdateGameRequest) error {
+	fmt.Println("REQUEST")
+	fmt.Println(request)
 	// Lock before we update the model preventing race conditions.
 	s.mutex.Lock()
 
@@ -102,9 +106,9 @@ func (s *service) UpsertGame(request UpdateGameRequest) error {
 			games[i].Instances = request.Instances
 			games[i].Maphack = request.Maphack
 			games[i].OverrideBHCfg = request.OverrideBHCfg
-			games[i].HD = request.HD
 			games[i].Flags = request.Flags
 			games[i].HDVersion = request.HDVersion
+			games[i].MaphackVersion = request.MaphackVersion
 		}
 	}
 
@@ -169,14 +173,14 @@ func (s *service) PersistGameModel() error {
 	// Go through all games and populate a config slice.
 	for i := 0; i < len(games); i++ {
 		conf.Games = append(conf.Games, storage.Game{
-			ID:            games[i].ID,
-			Location:      games[i].Location,
-			Instances:     games[i].Instances,
-			Maphack:       games[i].Maphack,
-			OverrideBHCfg: games[i].OverrideBHCfg,
-			HD:            games[i].HD,
-			Flags:         games[i].Flags,
-			HDVersion:     games[i].HDVersion,
+			ID:             games[i].ID,
+			Location:       games[i].Location,
+			Instances:      games[i].Instances,
+			Maphack:        games[i].Maphack,
+			OverrideBHCfg:  games[i].OverrideBHCfg,
+			Flags:          games[i].Flags,
+			HDVersion:      games[i].HDVersion,
+			MaphackVersion: games[i].MaphackVersion,
 		})
 	}
 

@@ -162,9 +162,9 @@ func populateGameModel(conf *storage.Config, gm *config.GameModel) {
 		g.Instances = game.Instances
 		g.Maphack = game.Maphack
 		g.OverrideBHCfg = game.OverrideBHCfg
-		g.HD = game.HD
 		g.Flags = game.Flags
 		g.HDVersion = game.HDVersion
+		g.MaphackVersion = game.MaphackVersion
 
 		gm.AddGame(g)
 	}

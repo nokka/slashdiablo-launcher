@@ -8,21 +8,24 @@ Item {
     property bool depApplied: false
     property bool depError: false
     property int activeHDIndex: 0
+    property int activeMaphackIndex: 0
 
     function setGame(current) {
         // Set current game instance to the view.
         game = current
+
+        console.log(JSON.stringify(current))
         
         // Textfield needs to be set explicitly since it's read only.
         if(game.location != undefined) {
             d2pathInput.text = game.location
         }
 
-        // Update the switches initial state without triggering an animation.
-        maphackSwitch.update()
+        // Update initial states without triggering an animation.
         overrideMaphackCfgSwitch.update()
         updateToggleBoxes(current)
-        updateModVersions(current)
+        updateHDVersions(current)
+        updateMaphackVersions(current)
 
     }
 
@@ -38,11 +41,11 @@ Item {
         }
     }
 
-    // updateModVersions will set the correct index of the hd mod dropdown.
-    function updateModVersions(current) {
+    // updateHDVersions will set the correct index of the hd mod dropdown.
+    function updateHDVersions(current) {
         if(settings.availableHDMods.length > 0) {
             // Find the correct index.
-            for(var i = 0; i < 3; i++) {
+            for(var i = 0; i < settings.availableHDMods.length; i++) {
                 if(settings.availableHDMods[i] == current.hd_version) {
                     activeHDIndex = i
                     hdVersion.currentIndex = i
@@ -51,8 +54,27 @@ Item {
             }
         }
 
-        // Default to 0.
-        activeHDIndex = 0 
+        // Default to first index in list.
+        activeHDIndex = 0
+        hdVersion.currentIndex = 0
+    }
+
+    // updateMaphackVersions will set the correct index of the maphack mod dropdown.
+    function updateMaphackVersions(current) {
+        if(settings.availableMaphackMods.length > 0) {
+            // Find the correct index.
+            for(var i = 0; i < settings.availableMaphackMods.length; i++) {
+                if(settings.availableMaphackMods[i] == current.maphack_version) {
+                    activeMaphackIndex = i
+                    maphackVersion.currentIndex = i
+                    return
+                }
+            }
+        }
+
+        // Default to first index in list.
+        activeMaphackIndex = 0
+        maphackVersion.currentIndex = 0
     }
 
     function makeFlagList() {
@@ -78,10 +100,10 @@ Item {
                 id: game.id,
                 location: d2pathInput.text,
                 instances: (gameInstances.currentIndex+1),
-                maphack: maphackSwitch.checked,
                 override_bh_cfg: overrideMaphackCfgSwitch.checked,
                 flags: makeFlagList(),
-                hd_version: hdVersion.currentText
+                hd_version: hdVersion.currentText,
+                maphack_version: maphackVersion.currentText
             }
             
             settings.upsertGame(JSON.stringify(body))
@@ -271,47 +293,16 @@ Item {
                     }
                     Column {
                         id: includeMaphack
-                        width: 60
-                        SSwitch{
-                            id: maphackSwitch
-                            checked: ((game != undefined && game.maphack != undefined) ? game.maphack : false)
-                            onToggled: updateGameModel()
-                        }
-                    } 
-                }
-                
-                Separator{}
-            }
+                        width: 90
 
-            // Use default maphack config.
-            Item {
-                Layout.preferredWidth: settingsLayout.width
-                Layout.preferredHeight: 60
+                        Dropdown{
+                            id: maphackVersion
+                            currentIndex: activeMaphackIndex
+                            model: settings.availableMaphackMods
+                            height: 30
+                            width: 90
 
-                Row {
-                    topPadding: 10
-
-                    Column {
-                        width: (settingsLayout.width - overrideMaphackCfg.width)
-                        Title {
-                            text: "OVERRIDE MAPHACK CONFIG"
-                            font.pixelSize: 13
-                        }
-
-                        SText {
-                            text: "If you want to provide your own custom BH.cfg."
-                            font.pixelSize: 11
-                            topPadding: 5
-                            color: "#454545"
-                        }
-                    }
-                    Column {
-                        id: overrideMaphackCfg
-                        width: 60
-                        SSwitch{
-                            id: overrideMaphackCfgSwitch
-                            checked: ((game != undefined && game.override_bh_cfg != undefined) ? game.override_bh_cfg : false)
-                            onToggled: updateGameModel()
+                            onActivated: updateGameModel()
                         }
                     } 
                 }
@@ -352,11 +343,46 @@ Item {
                             height: 30
                             width: 90
 
-                            onActivated: {
-                                updateGameModel()
-                            }
+                            onActivated: updateGameModel()
+                            
                         }
                     }
+                }
+                
+                Separator{}
+            }
+
+            // Use default maphack config.
+            Item {
+                Layout.preferredWidth: settingsLayout.width
+                Layout.preferredHeight: 60
+
+                Row {
+                    topPadding: 10
+
+                    Column {
+                        width: (settingsLayout.width - overrideMaphackCfg.width)
+                        Title {
+                            text: "OVERRIDE MAPHACK CONFIG"
+                            font.pixelSize: 13
+                        }
+
+                        SText {
+                            text: "If you want to provide your own custom BH.cfg."
+                            font.pixelSize: 11
+                            topPadding: 5
+                            color: "#454545"
+                        }
+                    }
+                    Column {
+                        id: overrideMaphackCfg
+                        width: 60
+                        SSwitch{
+                            id: overrideMaphackCfgSwitch
+                            checked: ((game != undefined && game.override_bh_cfg != undefined) ? game.override_bh_cfg : false)
+                            onToggled: updateGameModel()
+                        }
+                    } 
                 }
                 
                 Separator{}

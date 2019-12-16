@@ -16,9 +16,9 @@ Popup {
         "instances": 260,
         "maphack": 264,
         "override_bh_cfg": 272,
-        "hd": 288,
-        "flags": 320,
-        "hd_version": 384
+        "flags": 288,
+        "hd_version": 320,
+        "maphack_version": 384
     }
 
     modal: true
@@ -430,6 +430,7 @@ Popup {
                 "hd": model.data(model.index(gamesList.currentIndex, 0), gameRoles.hd),
                 "flags": model.data(model.index(gamesList.currentIndex, 0), gameRoles.flags),
                 "hd_version": model.data(model.index(gamesList.currentIndex, 0), gameRoles.hd_version),
+                "maphack_version": model.data(model.index(gamesList.currentIndex, 0), gameRoles.maphack_version),
             })
         }
     }

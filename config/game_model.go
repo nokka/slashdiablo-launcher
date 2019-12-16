@@ -11,9 +11,9 @@ const (
 	Instances
 	Maphack
 	OverrideBHCfg
-	HD
 	Flags
 	HDVersion
+	MaphackVersion
 )
 
 // GameModel represents a Diablo game.
@@ -30,14 +30,14 @@ type GameModel struct {
 
 func (m *GameModel) init() {
 	m.SetRoles(map[int]*core.QByteArray{
-		ID:            core.NewQByteArray2("id", -1),
-		Location:      core.NewQByteArray2("location", -1),
-		Instances:     core.NewQByteArray2("instances", -1),
-		Maphack:       core.NewQByteArray2("maphack", -1),
-		OverrideBHCfg: core.NewQByteArray2("override_bh_config", -1),
-		HD:            core.NewQByteArray2("hd", -1),
-		Flags:         core.NewQByteArray2("flags", -1),
-		HDVersion:     core.NewQByteArray2("hd_version", -1),
+		ID:             core.NewQByteArray2("id", -1),
+		Location:       core.NewQByteArray2("location", -1),
+		Instances:      core.NewQByteArray2("instances", -1),
+		Maphack:        core.NewQByteArray2("maphack", -1),
+		OverrideBHCfg:  core.NewQByteArray2("override_bh_config", -1),
+		Flags:          core.NewQByteArray2("flags", -1),
+		HDVersion:      core.NewQByteArray2("hd_version", -1),
+		MaphackVersion: core.NewQByteArray2("maphack_version", -1),
 	})
 
 	m.ConnectData(m.data)
@@ -81,12 +81,12 @@ func (m *GameModel) data(index *core.QModelIndex, role int) *core.QVariant {
 		return core.NewQVariant1(item.Maphack)
 	case OverrideBHCfg:
 		return core.NewQVariant1(item.OverrideBHCfg)
-	case HD:
-		return core.NewQVariant1(item.HD)
 	case Flags:
 		return core.NewQVariant1(item.Flags)
 	case HDVersion:
 		return core.NewQVariant1(item.HDVersion)
+	case MaphackVersion:
+		return core.NewQVariant1(item.MaphackVersion)
 	default:
 		return core.NewQVariant()
 	}
@@ -103,7 +103,7 @@ func (m *GameModel) addGame(g *Game) {
 func (m *GameModel) updateGame(index int) {
 	var fIndex = m.Index(0, 0, core.NewQModelIndex())
 	var lIndex = m.Index(index, 0, core.NewQModelIndex())
-	m.DataChanged(fIndex, lIndex, []int{Location, Instances, Maphack, OverrideBHCfg, HD, Flags, HDVersion})
+	m.DataChanged(fIndex, lIndex, []int{Location, Instances, Maphack, OverrideBHCfg, Flags, HDVersion, MaphackVersion})
 }
 
 func (m *GameModel) removeGame(index int) {

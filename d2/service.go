@@ -130,10 +130,10 @@ func (s *service) ValidateGameVersions() (bool, error) {
 	}
 
 	// Get current maphack patch and compare.
-	maphackManifest, err := s.getManifest("maphack/manifest.json")
+	/*maphackManifest, err := s.getManifest("maphack/manifest.json")
 	if err != nil {
 		return false, err
-	}
+	}*/
 
 	mods, err := s.getAvailableMods()
 	if err != nil {
@@ -167,7 +167,7 @@ func (s *service) ValidateGameVersions() (bool, error) {
 
 			// If the user has chosen to override the maphack config with their own,
 			// we need to make sure the config is being ignored from the patch.
-			var ignoredMaphackFiles []string
+			/*var ignoredMaphackFiles []string
 
 			if game.OverrideBHCfg {
 				ignoredMaphackFiles = append(ignoredMaphackFiles, "BH.cfg")
@@ -195,7 +195,14 @@ func (s *service) ValidateGameVersions() (bool, error) {
 				if installed {
 					return false, nil
 				}
+			}*/
+
+			validMaphack, err := s.validateMaphackVersion(&game, mods.Maphack)
+			if err != nil {
+				return false, err
 			}
+
+			fmt.Println("VALID MAPHACK", validMaphack)
 
 			validHD, err := s.validateHDVersion(&game, mods.HD)
 			if err != nil {
@@ -370,7 +377,7 @@ func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 				}
 			}
 
-			if game.HDVersion != config.HDVersionNone {
+			if game.HDVersion != config.ModVersionNone {
 				hdm, ok := hdManifests[game.HDVersion]
 				if !ok {
 					hdManifest, err := s.getManifest(fmt.Sprintf("hd_%s/manifest.json", game.HDVersion))
@@ -468,6 +475,18 @@ func (s *service) listenForGameStates() {
 			s.mux.Unlock()
 		}
 	}
+}
+
+func (s *service) validateMaphackVersion(game *storage.Game, versions []string) (bool, error) {
+	fmt.Println("VERSIONS", versions)
+	/*for _, v := range versions {
+		manifest, err := s.getManifest(fmt.Sprintf("maphack_%s/manifest.json", v))
+		if err != nil {
+			return false, err
+		}
+	}*/
+
+	return true, nil
 }
 
 func (s *service) validateHDVersion(game *storage.Game, versions []string) (bool, error) {
