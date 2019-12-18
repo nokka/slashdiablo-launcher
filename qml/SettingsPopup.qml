@@ -14,11 +14,10 @@ Popup {
         "id": 257,
         "location": 258,
         "instances": 260,
-        "maphack": 264,
-        "override_bh_cfg": 272,
-        "flags": 288,
-        "hd_version": 320,
-        "maphack_version": 384
+        "override_bh_cfg": 264,
+        "flags": 272,
+        "hd_version": 288,
+        "maphack_version": 320
     }
 
     modal: true

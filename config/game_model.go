@@ -9,7 +9,6 @@ const (
 	ID = int(core.Qt__UserRole) + 1<<iota
 	Location
 	Instances
-	Maphack
 	OverrideBHCfg
 	Flags
 	HDVersion
@@ -33,7 +32,6 @@ func (m *GameModel) init() {
 		ID:             core.NewQByteArray2("id", -1),
 		Location:       core.NewQByteArray2("location", -1),
 		Instances:      core.NewQByteArray2("instances", -1),
-		Maphack:        core.NewQByteArray2("maphack", -1),
 		OverrideBHCfg:  core.NewQByteArray2("override_bh_config", -1),
 		Flags:          core.NewQByteArray2("flags", -1),
 		HDVersion:      core.NewQByteArray2("hd_version", -1),
@@ -77,8 +75,6 @@ func (m *GameModel) data(index *core.QModelIndex, role int) *core.QVariant {
 		return core.NewQVariant1(item.Location)
 	case Instances:
 		return core.NewQVariant1(item.Instances)
-	case Maphack:
-		return core.NewQVariant1(item.Maphack)
 	case OverrideBHCfg:
 		return core.NewQVariant1(item.OverrideBHCfg)
 	case Flags:
@@ -103,7 +99,7 @@ func (m *GameModel) addGame(g *Game) {
 func (m *GameModel) updateGame(index int) {
 	var fIndex = m.Index(0, 0, core.NewQModelIndex())
 	var lIndex = m.Index(index, 0, core.NewQModelIndex())
-	m.DataChanged(fIndex, lIndex, []int{Location, Instances, Maphack, OverrideBHCfg, Flags, HDVersion, MaphackVersion})
+	m.DataChanged(fIndex, lIndex, []int{Location, Instances, OverrideBHCfg, Flags, HDVersion, MaphackVersion})
 }
 
 func (m *GameModel) removeGame(index int) {

@@ -2,6 +2,14 @@
 
 package d2
 
+const (
+	// ModMaphackIdentifier is the identifier we use to look for installs of maphack.
+	ModMaphackIdentifier = "BH.dll"
+
+	// ModHDIdentifier is the identifier we use to look for installs of hd mod.
+	ModHDIdentifier = "D2HD.dll"
+)
+
 // validate113cVersion will check the given installations Diablo II version.
 func validate113cVersion(dir string) (bool, error) {
 	return false, nil
@@ -28,11 +36,7 @@ func applyDEP(path string) error {
 	return nil
 }
 
-func isHDInstalled(path string, manifest *Manifest) (bool, error) {
-	return false, nil
-}
-
-func isMaphackInstalled(path string) (bool, error) {
+func isModInstalled(path string, identifier string, manifest *Manifest) (bool, error) {
 	return false, nil
 }
 

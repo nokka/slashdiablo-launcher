@@ -14,8 +14,6 @@ Item {
         // Set current game instance to the view.
         game = current
 
-        console.log(JSON.stringify(current))
-        
         // Textfield needs to be set explicitly since it's read only.
         if(game.location != undefined) {
             d2pathInput.text = game.location

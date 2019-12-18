@@ -160,7 +160,6 @@ func populateGameModel(conf *storage.Config, gm *config.GameModel) {
 		g.ID = game.ID
 		g.Location = game.Location
 		g.Instances = game.Instances
-		g.Maphack = game.Maphack
 		g.OverrideBHCfg = game.OverrideBHCfg
 		g.Flags = game.Flags
 		g.HDVersion = game.HDVersion

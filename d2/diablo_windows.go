@@ -31,6 +31,14 @@ var hashList = map[string]string{
 	"af0ea93d2a652ceb11ac01ee2e4ae1ef613444c2": "1.14d",
 }
 
+const (
+	// ModMaphackIdentifier is the identifier we use to look for installs of maphack.
+	ModMaphackIdentifier = "BH.dll"
+
+	// ModHDIdentifier is the identifier we use to look for installs of hd mod.
+	ModHDIdentifier = "D2HD.dll"
+)
+
 // validate113cVersion will check the given installations Diablo II version.
 func validate113cVersion(path string) (bool, error) {
 	// Open local Game.exe.
@@ -240,8 +248,8 @@ func setGateway(gateway string) error {
 	return nil
 }
 
-func isHDInstalled(path string, manifest *Manifest) (bool, error) {
-	filePath := localizePath(fmt.Sprintf("%s/%s", path, "D2HD.dll"))
+func isModInstalled(path string, identifier string, manifest *Manifest) (bool, error) {
+	filePath := localizePath(fmt.Sprintf("%s/%s", path, identifier))
 
 	// Get the checksum from the file on disk.
 	hashed, err := hashCRC32(filePath, polynomial)
@@ -257,7 +265,7 @@ func isHDInstalled(path string, manifest *Manifest) (bool, error) {
 	var crc string
 	// File exists on disk, find the CRC.
 	for _, f := range manifest.Files {
-		if f.Name == "D2HD.dll" {
+		if f.Name == identifier {
 			crc = f.CRC
 			break
 		}
@@ -268,23 +276,6 @@ func isHDInstalled(path string, manifest *Manifest) (bool, error) {
 	}
 
 	return false, nil
-}
-
-func isMaphackInstalled(path string) (bool, error) {
-	filePath := localizePath(fmt.Sprintf("%s/%s", path, "BH.dll"))
-
-	// Check if the file exists on disk.
-	_, err := os.Stat(filePath)
-	if err != nil {
-		// File didn't exist on disk, return false.
-		if os.IsNotExist(err) {
-			return false, nil
-		}
-		// Unknown error.
-		return false, err
-	}
-
-	return true, nil
 }
 
 // localizePath will localize the path for the OS.

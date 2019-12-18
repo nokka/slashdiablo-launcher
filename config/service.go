@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"sync"
 
@@ -79,7 +78,6 @@ type UpdateGameRequest struct {
 	ID             string   `json:"id"`
 	Location       string   `json:"location"`
 	Instances      int      `json:"instances"`
-	Maphack        bool     `json:"maphack"`
 	OverrideBHCfg  bool     `json:"override_bh_cfg"`
 	Flags          []string `json:"flags"`
 	HDVersion      string   `json:"hd_version"`
@@ -88,8 +86,6 @@ type UpdateGameRequest struct {
 
 // UpsertGame will upsert the game to the config.
 func (s *service) UpsertGame(request UpdateGameRequest) error {
-	fmt.Println("REQUEST")
-	fmt.Println(request)
 	// Lock before we update the model preventing race conditions.
 	s.mutex.Lock()
 
@@ -104,7 +100,6 @@ func (s *service) UpsertGame(request UpdateGameRequest) error {
 			updatedIndex = i
 			games[i].Location = request.Location
 			games[i].Instances = request.Instances
-			games[i].Maphack = request.Maphack
 			games[i].OverrideBHCfg = request.OverrideBHCfg
 			games[i].Flags = request.Flags
 			games[i].HDVersion = request.HDVersion
@@ -176,7 +171,6 @@ func (s *service) PersistGameModel() error {
 			ID:             games[i].ID,
 			Location:       games[i].Location,
 			Instances:      games[i].Instances,
-			Maphack:        games[i].Maphack,
 			OverrideBHCfg:  games[i].OverrideBHCfg,
 			Flags:          games[i].Flags,
 			HDVersion:      games[i].HDVersion,
