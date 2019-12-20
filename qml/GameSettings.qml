@@ -97,7 +97,7 @@ Item {
             var body = {
                 id: game.id,
                 location: d2pathInput.text,
-                instances: (gameInstances.currentIndex+1),
+                instances: gameInstances.currentIndex,
                 override_bh_cfg: overrideMaphackCfgSwitch.checked,
                 flags: makeFlagList(),
                 hd_version: hdVersion.currentText,
@@ -254,8 +254,8 @@ Item {
                         width: 60
                         Dropdown{
                             id: gameInstances
-                            currentIndex: (game != undefined ? (game.instances-1) : 0)
-                            model: [ 1, 2, 3, 4 ]
+                            currentIndex: (game != undefined ? (game.instances) : 0)
+                            model: [ 0, 1, 2, 3, 4 ]
                             height: 30
                             width: 60
 

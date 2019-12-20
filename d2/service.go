@@ -68,18 +68,20 @@ func (s *service) Exec() error {
 	s.mutateInstancesToLaunch(conf.Games)
 
 	for _, g := range conf.Games {
-		for i := 0; i < g.Instances; i++ {
-			// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
-			time.Sleep(1500 * time.Millisecond)
+		if g.Instances > 0 {
+			for i := 0; i < g.Instances; i++ {
+				// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
+				time.Sleep(1500 * time.Millisecond)
 
-			// The third argument is a channel, listened on by listenForGameStates().
-			pid, err := launch(g.Location, g.Flags, s.gameStates)
-			if err != nil {
-				return err
+				// The third argument is a channel, listened on by listenForGameStates().
+				pid, err := launch(g.Location, g.Flags, s.gameStates)
+				if err != nil {
+					return err
+				}
+
+				// Add the started game to our slice of games.
+				s.runningGames = append(s.runningGames, game{PID: *pid, GameID: g.ID})
 			}
-
-			// Add the started game to our slice of games.
-			s.runningGames = append(s.runningGames, game{PID: *pid, GameID: g.ID})
 		}
 	}
 
