@@ -12,7 +12,7 @@ Button {
     property int radius: 0
     property bool active: false
     property bool activatable: false
-    property bool clickable: false
+    property bool clickable: true
     
     Text {
         text: label
