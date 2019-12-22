@@ -144,8 +144,9 @@ Item {
             // Launch button.
             PlainButton {
                 id: playButton
-                label: "PLAY"
+                label: (diablo.launching ? "LAUNCHING..." : "PLAY")
                 fontSize: 15
+                clickable: (!diablo.launching)
                 width: 275; height: 50
                 backgroundColor: "#5c0202"
                 colorHovered: "#3b0000"

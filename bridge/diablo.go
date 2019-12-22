@@ -20,6 +20,7 @@ type DiabloBridge struct {
 	_ bool    `property:"errored"`
 	_ bool    `property:"validVersion"`
 	_ bool    `property:"validatingVersion"`
+	_ bool    `property:"launching"`
 	_ float32 `property:"patchProgress"`
 	_ string  `property:"status"`
 	_ string  `property:"gateway"`
@@ -42,12 +43,18 @@ func (b *DiabloBridge) Connect() {
 }
 
 func (b *DiabloBridge) launchGame() {
+	// Tell the GUI that we're launching games.
+	b.SetLaunching(true)
+
 	// Do the work on another thread not to lock the GUI.
 	go func() {
 		err := b.d2service.Exec()
 		if err != nil {
 			b.logger.Error(err)
 		}
+
+		// Done launching.
+		b.SetLaunching(false)
 	}()
 
 }
@@ -139,6 +146,7 @@ func NewDiablo(d2s d2.Service, gateway string, logger log.Logger) *DiabloBridge 
 
 	// Set initial state.
 	b.SetPatching(false)
+	b.SetLaunching(false)
 	b.SetErrored(false)
 	b.SetValidVersion(false)
 	b.SetValidatingVersion(false)
