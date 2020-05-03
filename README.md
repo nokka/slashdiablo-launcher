@@ -1,4 +1,3 @@
-
 # Slashdiablo launcher
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/nokka/slashdiablo-launcher)](https://goreportcard.com/report/github.com/nokka/slashdiablo-launcher)
@@ -9,7 +8,7 @@
 ## About the project
 
 Slashdiablo launcher is a cross platform game launcher for Diablo II and specifically the [Slashdiablo](https://old.reddit.com/r/slashdiablo/) community. It was built to help new players install patches, updating gateways and help with other technical issues to lower the barrier of entry into the Slashdiablo community, while also assisting more experienced players with more advanced settings such as HD mods and launching multiple boxes.
-  
+
 ## Features
 
 - [x] Patching Diablo II up to 1.13c from previous game versions
@@ -21,30 +20,34 @@ Slashdiablo launcher is a cross platform game launcher for Diablo II and specifi
 - [x] View ingame top ladder
 - [ ] Patch Diablo II from 1.14+ down to 1.13c
 
-
 ### Full OS support
+
 - [x] Windows
 - [ ] OSX (missing some D2 specific features)
 - [ ] Linux (missing some D2 specific features)
 
-
 ## Development
 
 ### Go
-Install Go 1.12 or higher by following  [install instructions](http://golang.org/doc/install.html) for your OS.
+
+Install Go 1.12 or higher by following [install instructions](http://golang.org/doc/install.html) for your OS.
 
 ### Qt bindings for Go
+
 Before you can build you need to install the [Go/Qt bindings](https://github.com/therecipe/qt/wiki/Installation#regular-installation).
 
-###  Install Qt5
+### Install Qt5
 
 #### OSX
+
 On OSX using brew is by far the most simple way of installing Qt5.
+
 ```bash
 $ brew install qt
 ```
 
 #### Windows
+
 Use the [installer](https://download.qt.io/official_releases/qt/5.13/5.13.0/qt-opensource-windows-x86-5.13.0.exe) provided by Qt (Make sure you install the MinGW build of Qt).
 
 #### Building Slashdiablo launcher
@@ -75,6 +78,19 @@ otherwise the target OS and the host must be the same.
 $ docker pull therecipe/qt:windows_64_static
 $ qtdeploy -docker build windows_64_static
 
+```
+
+#### Updating application binary version and manifest data
+
+```bash
+# Download goversioninfo tool
+$ go get github.com/josephspurrier/goversioninfo/cmd/goversioninfo
+
+# Make your changes to the manifest file.
+$ vim versioninfo.json
+
+# Generate a new resource.syso including manifest.
+$  go generate
 ```
 
 ### MacOS (from MacOS only)

@@ -1,3 +1,5 @@
+//go:generate goversioninfo -icon=icon.ico -manifest=slashdiablo-launcher.exe.manifest -64
+
 package main
 
 import (
@@ -26,14 +28,14 @@ func main() {
 	var (
 		debugMode    = envBool("DEBUG_MODE", false)
 		environment  = envString("ENVIRONMENT", "development")
-		buildVersion = envString("BUILD_VERSION", "v1.0.0")
+		buildVersion = envString("BUILD_VERSION", "v1.1.0")
 	)
 
 	// Set app context.
 	core.QCoreApplication_SetApplicationName("Slashdiablo launcher")
 	core.QCoreApplication_SetOrganizationName("slashdiablo.net")
 	core.QCoreApplication_SetOrganizationDomain("slashdiablo.net")
-	core.QCoreApplication_SetApplicationVersion("1.0.0")
+	core.QCoreApplication_SetApplicationVersion("1.1.0")
 
 	// Enable high dpi scaling, useful for devices with high pixel density displays.
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
