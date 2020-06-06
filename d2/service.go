@@ -33,6 +33,9 @@ type Service interface {
 
 	// SetGateway is responsible for setting Battle.net gateway.
 	SetGateway(gateway string) error
+
+	// SetLaunchDelay is responsible for setting the delay between each game launch.
+	SetLaunchDelay(delay int) error
 }
 
 // Service is responsible for all things related to Diablo II.
@@ -56,6 +59,9 @@ type execState struct {
 	err error
 }
 
+// defaultLaunchDelay is used if a launch delay hasn't been set by a user.
+const defaultLaunchDelay = 1000
+
 // Exec will exec Diablo 2 installs.
 func (s *service) Exec() error {
 	conf, err := s.configService.Read()
@@ -67,11 +73,22 @@ func (s *service) Exec() error {
 	// account the number of games already running.
 	s.mutateInstancesToLaunch(conf.Games)
 
-	for _, g := range conf.Games {
+	var delayMS int
+	if conf.LaunchDelay == 0 {
+		delayMS = defaultLaunchDelay
+	} else {
+		delayMS = conf.LaunchDelay
+	}
+
+	for k, g := range conf.Games {
 		if g.Instances > 0 {
 			for i := 0; i < g.Instances; i++ {
-				// Stall between each exec, otherwise Diablo won't start properly in multiple instances.
-				time.Sleep(1500 * time.Millisecond)
+				// Check if it's the first run, if so don't delay the launch.
+				firstRun := (k == 0 && i == 0)
+
+				if !firstRun {
+					time.Sleep(time.Duration(delayMS) * time.Millisecond)
+				}
 
 				// The third argument is a channel, listened on by listenForGameStates().
 				pid, err := launch(g.Location, g.Flags, s.gameStates)
@@ -326,6 +343,7 @@ func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 
 			if game.OverrideBHCfg {
 				ignoredMaphackFiles = append(ignoredMaphackFiles, "BH.cfg")
+				ignoredMaphackFiles = append(ignoredMaphackFiles, "BH_settings.cfg")
 			}
 
 			// Reset the maphack versions, to avoid rogue files and duplicates.
@@ -439,6 +457,17 @@ func (s *service) SetGateway(gateway string) error {
 
 	// Set gateway in the config.
 	err = s.configService.UpdateGateway(gateway)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SetLaunchDelay will set the given delay in milliseconds between each Diablo II launch.
+func (s *service) SetLaunchDelay(delay int) error {
+	// Set launch delay in the config.
+	err := s.configService.UpdateLaunchDelay(delay)
 	if err != nil {
 		return err
 	}
@@ -804,6 +833,13 @@ func (s *service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnor
 			return nil, 0, err
 		}
 
+		// If the file is set to ignore the CRC, this means we don't want
+		// to patch it, even if the content has been changed, as long as it
+		// exists on disk we're good.
+		if f.IgnoreCRC {
+			continue
+		}
+
 		// File checksum differs from local copy, we need to get a new one.
 		if hashed != f.CRC {
 			shouldPatch = append(shouldPatch, f.Name)
@@ -850,6 +886,7 @@ type PatchFile struct {
 	CRC           string    `json:"crc"`
 	LastModified  time.Time `json:"last_modified"`
 	ContentLength int64     `json:"content_length"`
+	IgnoreCRC     bool      `json:"ignore_crc"`
 }
 
 // NewService returns a service with all the dependencies.

@@ -1,9 +1,13 @@
 package storage
 
+// DefaultLaunchDelay is used if a launch delay hasn't been set by a user.
+const DefaultLaunchDelay = 1000
+
 // Config is the configuration required to run the app.
 type Config struct {
-	Games   []Game `json:"games"`
-	Gateway string `json:"gateway"`
+	Games       []Game `json:"games"`
+	Gateway     string `json:"gateway"`
+	LaunchDelay int    `json:"launch_delay"`
 }
 
 // Game represents a game setup by the user.

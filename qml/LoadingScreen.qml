@@ -51,7 +51,7 @@ Rectangle {
                         anchors.bottom: parent.bottom
                         font.pixelSize: 16
                         color: "#736c6a"
-                        text: "PREPARING LAUNCHER..."
+                        text: "CONNECTING TO SLASHDIABLO API..."
                     }
                 }
 

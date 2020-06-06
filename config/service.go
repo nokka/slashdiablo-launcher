@@ -30,6 +30,9 @@ type Service interface {
 	// UpdateGateway will update the gateway in the persistent store.
 	UpdateGateway(gateway string) error
 
+	// UpdateLaunchDelay will update the launch delay for  games in the persistent store.
+	UpdateLaunchDelay(delay int) error
+
 	// GetAvailableMods will fetch the game mode available to each D2 install.
 	GetAvailableMods() (*GameMods, error)
 }
@@ -195,6 +198,24 @@ func (s *service) UpdateGateway(gateway string) error {
 
 	// Update gateway.
 	conf.Gateway = gateway
+
+	err = s.store.Write(conf)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UpdateLaunchDelay will update the Diablo launch delay in the store.
+func (s *service) UpdateLaunchDelay(delay int) error {
+	conf, err := s.store.Read()
+	if err != nil {
+		return err
+	}
+
+	// Update launch delay.
+	conf.LaunchDelay = delay
 
 	err = s.store.Write(conf)
 	if err != nil {

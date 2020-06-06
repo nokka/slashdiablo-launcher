@@ -128,16 +128,60 @@ Item {
 
             Dropdown{
                 id: gameInstances
-                anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: playButton.top
                 anchors.bottomMargin: 5
+                anchors.leftMargin: 12
+                anchors.left: parent.left
                 currentIndex: (diablo.gateway == "Slashdiablo" ? 0 : 1)
                 model: ["Slashdiablo", "Battle.net"]
                 height: 30
-                width: 275
+                width: 200
 
                 onActivated: {
                     diablo.updateGateway(this.currentText)
+                }
+            }
+
+            Dropdown{
+                id: launchDelay
+                anchors.bottom: playButton.top
+                anchors.bottomMargin: 5
+                anchors.rightMargin: 13
+                anchors.right: parent.right
+                currentIndex: 0
+                model: ["1 sec", "2 sec", "3 sec", "4 sec", "5 sec"]
+                height: 30
+                width: 70
+
+                // Sets the correct index when the component has loaded.
+                Component.onCompleted: this.currentIndex = (diablo.launchDelay / 1000)-1
+
+                onActivated: {
+                    var delay = 1000
+                    switch(this.currentText) {
+                        case "1 sec":
+                            delay = 1000
+                            console.log("first running")
+                            break;
+                        case "2 sec":
+                            delay = 2000
+                            console.log("second running")
+                            break;
+                        case "3 sec":
+                            delay = 3000
+                            console.log("third running")
+                            break;
+                        case "4 sec":
+                            delay = 4000
+                            console.log("fourth running")
+                            break;
+                        case "5 sec":
+                            delay = 5000
+                            console.log("fifth running")
+                            break;
+
+                    }
+                    diablo.updateLaunchDelay(delay)
                 }
             }
 

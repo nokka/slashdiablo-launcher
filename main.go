@@ -107,7 +107,7 @@ func main() {
 	populateGameModel(conf, gm)
 
 	// Setup QML bridges with all dependencies.
-	diabloBridge := bridge.NewDiablo(d2s, conf.Gateway, logger)
+	diabloBridge := bridge.NewDiablo(d2s, conf.Gateway, conf.LaunchDelay, logger)
 	configBridge := bridge.NewConfig(cs, gm, logger)
 	ladderBridge := bridge.NewLadder(ls, lm, logger)
 	newsBridge := bridge.NewNews(ns, nm, logger)

@@ -33,7 +33,7 @@ func (c *Client) GetNews() (io.ReadCloser, error) {
 
 // GetAvailableMods will fetch the remote available mods source.
 func (c *Client) GetAvailableMods() (io.ReadCloser, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/available_mods.json", c.address))
+	resp, err := http.Get(fmt.Sprintf("%s/available_mods_v2.json", c.address))
 	if err != nil {
 		return nil, err
 	}

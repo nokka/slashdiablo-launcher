@@ -38,5 +38,32 @@ ComboBox {
         }
     }
 
+    indicator: Canvas {
+        id: canvas
+        x: dropdown.width - width - dropdown.rightPadding
+        y: dropdown.topPadding + (dropdown.availableHeight - height) / 2
+        width: 7
+        height: 4
+        contextType: "2d"
+
+        Connections {
+            target: dropdown
+            onPressedChanged: canvas.requestPaint()
+        }
+
+        onPaint: {
+            var ctx = canvas.getContext('2d');
+
+            ctx.reset();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(width, 0);
+            ctx.lineTo(width / 2, height);
+            ctx.closePath();
+            ctx.fillStyle = dropdown.pressed ? "#57555e" : "#969696";
+            ctx.fill();
+        }
+    }
+
+
     delegate: DropdownDelegate{}
 }

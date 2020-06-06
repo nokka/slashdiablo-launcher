@@ -397,7 +397,7 @@ Item {
                     Column {
                         width: (settingsLayout.width - depFixButton.width)
                         Title {
-                            text: "DISABLE DEP (REQUIRES ADMIN)"
+                            text: "DISABLE DEP"
                             font.pixelSize: 13
                         }
 
