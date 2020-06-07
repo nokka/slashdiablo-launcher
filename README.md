@@ -74,10 +74,15 @@ otherwise the target OS and the host must be the same.
 
 ### Windows
 
+#### Build in docker
 ```bash
 $ docker pull therecipe/qt:windows_64_static
 $ qtdeploy -docker build windows_64_static
+```
 
+#### Build on local machine
+```bash
+$ qtdeploy build desktop
 ```
 
 #### Updating application binary version and manifest data

@@ -37,6 +37,8 @@ const (
 
 	// ModHDIdentifier is the identifier we use to look for installs of hd mod.
 	ModHDIdentifier = "D2HD.dll"
+
+	errRegistryKeyNotFound = "The system cannot find the file specified."
 )
 
 // validate113cVersion will check the given installations Diablo II version.
@@ -68,6 +70,9 @@ func validate113cVersion(path string) (bool, error) {
 func launch(path string, flags []string, done chan execState) (*int, error) {
 	// Localize the path.
 	localized := localizePath(path)
+
+	// Make sure Windows registry keys are correctly setup before launch.
+	setDiabloRegistryKeys()
 
 	// Exec the Diablo II.exe with the given command line args.
 	cmd := exec.Command(localized+"\\Diablo II.exe", flags...)
@@ -194,17 +199,49 @@ func applyDEP(path string) error {
 	return nil
 }
 
+// setDiabloRegistryKeys will remove the registry for BNETIP and set CmdLine options.
+func setDiabloRegistryKeys() error {
+	// Open the Battle net configuration directory.
+	confKey, err := registry.OpenKey(registry.CURRENT_USER, `Software\Blizzard Entertainment\Diablo II`, registry.QUERY_VALUE|registry.SET_VALUE)
+	if err != nil {
+		return err
+	}
+
+	bnetIP, _, err := confKey.GetStringValue("BNETIP")
+	// If getting the string value errors and the error is something other than not found, return err.
+	if err != nil && err.Error() != errRegistryKeyNotFound {
+		return err
+	}
+
+	// If the user has the BNETIP set, let's remove it, not to mess other installs.
+	if bnetIP != "" {
+		err = confKey.DeleteValue("BNETIP")
+		if err != nil {
+			return err
+		}
+	}
+
+	// Set the Command line args when starting.
+	if err := confKey.SetStringValue("CmdLine", "-skiptobnet"); err != nil {
+		return err
+	}
+
+	// Close the registry when we're done.
+	if err := confKey.Close(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // setGateway will set the gateway for Diablo II.
 func setGateway(gateway string) error {
 	var gatewayHex []byte
-	var bnetIP string
 
 	switch gateway {
 	case GatewaySlashdiablo:
-		bnetIP = SlashDiabloIP
 		gatewayHex = getSlashGateway()
 	case GatewayBattleNet:
-		bnetIP = BattleNetIP
 		gatewayHex = getBattleNetGateway()
 	}
 
@@ -221,27 +258,6 @@ func setGateway(gateway string) error {
 
 	// Close the registry when we're done.
 	if err := gatewayKey.Close(); err != nil {
-		return err
-	}
-
-	// Open the Battle net configuration directory.
-	confKey, err := registry.OpenKey(registry.CURRENT_USER, `Software\Blizzard Entertainment\Diablo II`, registry.QUERY_VALUE|registry.SET_VALUE)
-	if err != nil {
-		return err
-	}
-
-	// Set Battle.net IP.
-	if err := confKey.SetStringValue("BNETIP", bnetIP); err != nil {
-		return err
-	}
-
-	// Set the Command line args when starting.
-	if err := confKey.SetStringValue("CmdLine", "-skiptobnet"); err != nil {
-		return err
-	}
-
-	// Close the registry when we're done.
-	if err := confKey.Close(); err != nil {
 		return err
 	}
 

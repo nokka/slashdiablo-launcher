@@ -154,30 +154,33 @@ Item {
                 width: 70
 
                 // Sets the correct index when the component has loaded.
-                Component.onCompleted: this.currentIndex = (diablo.launchDelay / 1000)-1
+                Component.onCompleted: {
+                    // If launch delay hasn't been set, set index 0.
+                    if(diablo.launchDelay == 0) {
+                        this.currentIndex = 0
+                        return
+                    }
+
+                    this.currentIndex = (diablo.launchDelay / 1000)-1
+                }
 
                 onActivated: {
                     var delay = 1000
                     switch(this.currentText) {
                         case "1 sec":
                             delay = 1000
-                            console.log("first running")
                             break;
                         case "2 sec":
                             delay = 2000
-                            console.log("second running")
                             break;
                         case "3 sec":
                             delay = 3000
-                            console.log("third running")
                             break;
                         case "4 sec":
                             delay = 4000
-                            console.log("fourth running")
                             break;
                         case "5 sec":
                             delay = 5000
-                            console.log("fifth running")
                             break;
 
                     }
