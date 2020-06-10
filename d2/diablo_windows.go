@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/sha1"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -140,8 +141,11 @@ func applyDEP(path string) error {
 	// Localize the path.
 	localized := localizePath(path)
 
+	// Channel to send that we're done on.
+	done := make(chan bool, 1)
+
 	// Use cmd.exe to call the bat file.
-	cmd := exec.Command("cmd.exe", "/C", "call", "DEP_fix.bat")
+	cmd := exec.Command("cmd.exe", "/C", "call", "DEP_fix_v2.bat")
 	cmd.Dir = localized
 
 	// Capture stdin for the command, so we can send data on it.
@@ -167,7 +171,16 @@ func applyDEP(path string) error {
 			linesWritten++
 
 			// Kill the go routine when all the output has been captured.
-			if linesWritten == 6 {
+			if linesWritten >= 5 {
+				// Write any key to the cmd to exit.
+				_, err = io.WriteString(stdin, "a")
+				if err != nil {
+					done <- false
+					return
+				}
+
+				// Notify main thread that the DEP change has been applied successfully.
+				done <- true
 				return
 			}
 		}
@@ -180,23 +193,18 @@ func applyDEP(path string) error {
 		return err
 	}
 
-	// Write 'Yes' to the cmd to allow overwriting the Diablo.II.exe.
-	_, err = io.WriteString(stdin, "Yes")
-	if err != nil {
-		return err
+	// Wait for output on the done channel or simply timeout the action after 5 sec.
+	for {
+		select {
+		case result := <-done:
+			if !result {
+				return errors.New("error while applying DEP change")
+			}
+			return nil
+		case <-time.After(time.Second * 5):
+			return errors.New("timeout while applying DEP change")
+		}
 	}
-
-	// Wait to make sure the bat file has time to finish the previous action
-	// before sending the next input.
-	time.Sleep(1500 * time.Millisecond)
-
-	// Write any key to the cmd to exit.
-	_, err = io.WriteString(stdin, "a")
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // setDiabloRegistryKeys will remove the registry for BNETIP and set CmdLine options.
