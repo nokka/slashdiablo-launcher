@@ -21,7 +21,7 @@
     "StringFileInfo": {
         "Comments": "Slashdiablo launcher",
         "CompanyName": "Slashdiablo",
-        "FileDescription": "Diablo II game launcher for Slashdiablo",
+        "FileDescription": "Slashdiablo Launcher",
         "FileVersion": "v1.1.0.0",
         "InternalName": "slashdiablo-launcher.exe",
         "LegalCopyright": "Copyright (c) 2020 Slashdiablo",
