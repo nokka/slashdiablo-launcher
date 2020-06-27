@@ -73,7 +73,10 @@ func launch(path string, flags []string, done chan execState) (*int, error) {
 	localized := localizePath(path)
 
 	// Make sure Windows registry keys are correctly setup before launch.
-	setDiabloRegistryKeys()
+	err := setDiabloRegistryKeys()
+	if err != nil {
+		return nil, err
+	}
 
 	// Exec the Diablo II.exe with the given command line args.
 	cmd := exec.Command(localized+"\\Diablo II.exe", flags...)
@@ -209,8 +212,8 @@ func applyDEP(path string) error {
 
 // setDiabloRegistryKeys will remove the registry for BNETIP and set CmdLine options.
 func setDiabloRegistryKeys() error {
-	// Open the Battle net configuration directory.
-	confKey, err := registry.OpenKey(registry.CURRENT_USER, `Software\Blizzard Entertainment\Diablo II`, registry.QUERY_VALUE|registry.SET_VALUE)
+	// Open the Diablo II key.
+	d2Key, err := registry.OpenKey(registry.CURRENT_USER, `Software\Blizzard Entertainment\Diablo II`, registry.QUERY_VALUE|registry.SET_VALUE)
 	if err != nil {
 		return err
 	}
@@ -230,12 +233,33 @@ func setDiabloRegistryKeys() error {
 	}
 
 	// Set the Command line args when starting.
-	if err := confKey.SetStringValue("CmdLine", "-skiptobnet"); err != nil {
+	if err := d2Key.SetStringValue("CmdLine", "-skiptobnet"); err != nil {
+		return err
+	}
+
+	// TODO: Might crash if it doesn't exist.
+
+	// Close the registry when we're done.
+	if err := d2Key.Close(); err != nil {
+		return err
+	}
+
+	// Open the Battle.net configuration registry directory to set gateway.
+	gatewayKey, err := registry.OpenKey(registry.CURRENT_USER, `Software\Battle.net\Configuration`, registry.QUERY_VALUE|registry.SET_VALUE)
+	if err != nil {
+		return err
+	}
+
+	// Hex representation of the Slashdiablo registry entry.
+	gatewayHex := getSlashGateway()
+
+	// Set the gateway hex.
+	if err := gatewayKey.SetBinaryValue("Diablo II Battle.net Gateways", gatewayHex); err != nil {
 		return err
 	}
 
 	// Close the registry when we're done.
-	if err := confKey.Close(); err != nil {
+	if err := gatewayKey.Close(); err != nil {
 		return err
 	}
 
@@ -243,6 +267,7 @@ func setDiabloRegistryKeys() error {
 }
 
 // setGateway will set the gateway for Diablo II.
+// TODO: Deprecate.
 func setGateway(gateway string) error {
 	var gatewayHex []byte
 
