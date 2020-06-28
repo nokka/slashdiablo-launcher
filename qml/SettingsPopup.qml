@@ -40,20 +40,10 @@ Popup {
 
     Rectangle {
         color: "#0f0f0f"
-        border.color: "#1e1b26"
+        border.color: "#000000"
         border.width: 1
         anchors.fill: parent
 
-        // Bottom background.
-        Image {
-            width: 848
-            source: "assets/stone_bg.png";
-            fillMode: Image.Stretch;
-            anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottomMargin: 1
-            opacity: 1.0
-        }
 
         RowLayout {
             id: settingsLayout

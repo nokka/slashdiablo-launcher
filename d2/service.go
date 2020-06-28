@@ -73,6 +73,12 @@ func (s *service) Exec() error {
 	// account the number of games already running.
 	s.mutateInstancesToLaunch(conf.Games)
 
+	// Make sure Windows registry keys are correctly setup before launch.
+	err = setDiabloRegistryKeys()
+	if err != nil {
+		return err
+	}
+
 	var delayMS int
 	if conf.LaunchDelay == 0 {
 		delayMS = defaultLaunchDelay

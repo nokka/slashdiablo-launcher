@@ -78,8 +78,8 @@ Item {
             fillMode: Image.PreserveAspectFit
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            width: 25
-            height: 25
+            width: 14
+            height: 14
             source: "assets/svg/error.svg"
         }
 
@@ -126,7 +126,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right;
 
-            Dropdown{
+           Dropdown{
                 id: gameInstances
                 anchors.bottom: playButton.top
                 anchors.bottomMargin: 5
@@ -218,16 +218,16 @@ Item {
             fillMode: Image.PreserveAspectFit
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            width: 20
-            height: 20
-            source: "assets/svg/error.svg"
+            width: 32
+            height: 32
+            source: "assets/icons/patch.png"
         }
 
         Title {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: 30
-            text: "Games need to be updated"
+            anchors.leftMargin: 45
+            text: "Games need to be patched"
             font.pixelSize: 15
         }
 

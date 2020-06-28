@@ -3,18 +3,14 @@
 package d2
 
 import (
-	"bufio"
 	"bytes"
 	"crypto/sha1"
-	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
 	"syscall"
-	"time"
 	"unicode/utf8"
 
 	"golang.org/x/sys/windows/registry"
@@ -71,12 +67,6 @@ func validate113cVersion(path string) (bool, error) {
 func launch(path string, flags []string, done chan execState) (*int, error) {
 	// Localize the path.
 	localized := localizePath(path)
-
-	// Make sure Windows registry keys are correctly setup before launch.
-	err := setDiabloRegistryKeys()
-	if err != nil {
-		return nil, err
-	}
 
 	// Exec the Diablo II.exe with the given command line args.
 	cmd := exec.Command(localized+"\\Diablo II.exe", flags...)
@@ -141,73 +131,29 @@ func configureForOS(path string) error {
 
 // applyDEP will run a fix to disable DEP.
 func applyDEP(path string) error {
-	// Localize the path.
-	localized := localizePath(path)
+	// The key name is the localized path for the Diablo II directory.
+	keyName := fmt.Sprintf("%s\\%s", localizePath(path), "Diablo II.exe")
 
-	// Channel to send that we're done on.
-	done := make(chan bool, 1)
-
-	// Use cmd.exe to call the bat file.
-	cmd := exec.Command("cmd.exe", "/C", "call", "DEP_fix_v2.bat")
-	cmd.Dir = localized
-
-	// Capture stdin for the command, so we can send data on it.
-	stdin, err := cmd.StdinPipe()
+	// Open the dep key directory.
+	depKey, err := registry.OpenKey(registry.CURRENT_USER,
+		`Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers`,
+		registry.QUERY_VALUE|registry.SET_VALUE,
+	)
 	if err != nil {
 		return err
 	}
 
-	r, w, err := os.Pipe()
-	if err != nil {
+	// Set the value to disable DEP.
+	if err := depKey.SetStringValue(keyName, "DisableNXShowUI"); err != nil {
 		return err
 	}
 
-	cmd.Stdout = w
-	cmd.Stderr = w
-
-	// Log output of the bat file.
-	go func() {
-		scanner := bufio.NewScanner(r)
-		var linesWritten int
-
-		for scanner.Scan() {
-			linesWritten++
-
-			// Kill the go routine when all the output has been captured.
-			if linesWritten >= 5 {
-				// Write any key to the cmd to exit.
-				_, err = io.WriteString(stdin, "a")
-				if err != nil {
-					done <- false
-					return
-				}
-
-				// Notify main thread that the DEP change has been applied successfully.
-				done <- true
-				return
-			}
-		}
-	}()
-
-	// Start won't wait for the program to finish,
-	// this is because we need to send input to the program.
-	err = cmd.Start()
-	if err != nil {
+	// Close the registry when we're done.
+	if err := depKey.Close(); err != nil {
 		return err
 	}
 
-	// Wait for output on the done channel or simply timeout the action after 5 sec.
-	for {
-		select {
-		case result := <-done:
-			if !result {
-				return errors.New("error while applying DEP change")
-			}
-			return nil
-		case <-time.After(time.Second * 5):
-			return errors.New("timeout while applying DEP change")
-		}
-	}
+	return nil
 }
 
 // setDiabloRegistryKeys will remove the registry for BNETIP and set CmdLine options.
@@ -218,15 +164,16 @@ func setDiabloRegistryKeys() error {
 		return err
 	}
 
-	bnetIP, _, err := confKey.GetStringValue("BNETIP")
+	bnetIP, _, err := d2Key.GetStringValue("BNETIP")
 	// If getting the string value errors and the error is something other than not found, return err.
 	if err != nil && err.Error() != errRegistryKeyNotFound {
+		fmt.Println("bnet IP error", err.Error())
 		return err
 	}
 
 	// If the user has the BNETIP set, let's remove it, not to mess other installs.
 	if bnetIP != "" {
-		err = confKey.DeleteValue("BNETIP")
+		err = d2Key.DeleteValue("BNETIP")
 		if err != nil {
 			return err
 		}
@@ -236,8 +183,6 @@ func setDiabloRegistryKeys() error {
 	if err := d2Key.SetStringValue("CmdLine", "-skiptobnet"); err != nil {
 		return err
 	}
-
-	// TODO: Might crash if it doesn't exist.
 
 	// Close the registry when we're done.
 	if err := d2Key.Close(); err != nil {
