@@ -23,7 +23,6 @@ type DiabloBridge struct {
 	_ bool    `property:"launching"`
 	_ float32 `property:"patchProgress"`
 	_ string  `property:"status"`
-	_ string  `property:"gateway"`
 	_ int     `property:"launchDelay"`
 
 	// Slots.
@@ -31,7 +30,6 @@ type DiabloBridge struct {
 	_ func()                 `slot:"validateVersion"`
 	_ func()                 `slot:"applyPatches"`
 	_ func(path string) bool `slot:"applyDEP"`
-	_ func(gateway string)   `slot:"updateGateway"`
 	_ func(delay int)        `slot:"updateLaunchDelay"`
 }
 
@@ -41,7 +39,6 @@ func (b *DiabloBridge) Connect() {
 	b.ConnectApplyPatches(b.applyPatches)
 	b.ConnectValidateVersion(b.validateVersion)
 	b.ConnectApplyDEP(b.applyDEP)
-	b.ConnectUpdateGateway(b.updateGateway)
 	b.ConnectUpdateLaunchDelay(b.updateLaunchDelay)
 }
 
@@ -129,16 +126,6 @@ func (b *DiabloBridge) applyDEP(path string) bool {
 	return true
 }
 
-func (b *DiabloBridge) updateGateway(gateway string) {
-	err := b.d2service.SetGateway(gateway)
-	if err != nil {
-		b.logger.Error(err)
-	}
-
-	// Gateway was successfully saved, set gateway on the bridge.
-	b.SetGateway(gateway)
-}
-
 func (b *DiabloBridge) updateLaunchDelay(delay int) {
 	err := b.d2service.SetLaunchDelay(delay)
 	if err != nil {
@@ -163,7 +150,6 @@ func NewDiablo(d2s d2.Service, gateway string, launchDelay int, logger log.Logge
 	b.SetErrored(false)
 	b.SetValidVersion(false)
 	b.SetValidatingVersion(false)
-	b.SetGateway(gateway)
 	b.SetLaunchDelay(launchDelay)
 
 	return b

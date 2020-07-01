@@ -27,7 +27,7 @@ func main() {
 	// Environment variables set when building.
 	var (
 		debugMode    = envBool("DEBUG_MODE", true)
-		environment  = envString("ENVIRONMENT", "development")
+		environment  = envString("ENVIRONMENT", "production")
 		buildVersion = envString("BUILD_VERSION", "v1.1.0")
 	)
 

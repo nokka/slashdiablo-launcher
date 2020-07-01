@@ -42,11 +42,21 @@ func newCharacter(char ladderClient.Character) *Character {
 	c := NewCharacter(nil)
 	c.Rank = char.Rank
 	c.Name = char.Name
-	c.Class = char.Class
+	c.Class = getShortClassName(char.Class)
 	c.Level = char.Level
 	c.Title = char.Title
 	c.Status = char.Status
 	return c
+}
+
+func getShortClassName(name string) string {
+	switch name {
+	case "Assassin":
+		// Assassin gets shortened to "Ass", we don't want that.
+		return "Asn"
+	default:
+		return name[:3]
+	}
 }
 
 // NewService returns a service with all the dependencies.

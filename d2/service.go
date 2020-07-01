@@ -31,9 +31,6 @@ type Service interface {
 	// ApplyDEP will apply Windows specific fix for DEP.
 	ApplyDEP(path string) error
 
-	// SetGateway is responsible for setting Battle.net gateway.
-	SetGateway(gateway string) error
-
 	// SetLaunchDelay is responsible for setting the delay between each game launch.
 	SetLaunchDelay(delay int) error
 }
@@ -451,23 +448,6 @@ func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 func (s *service) ApplyDEP(path string) error {
 	// Run OS specific fix.
 	return applyDEP(path)
-}
-
-// SetGateway will set the given gateway for the user.
-func (s *service) SetGateway(gateway string) error {
-	// Set gateway in the OS specific way.
-	err := setGateway(gateway)
-	if err != nil {
-		return err
-	}
-
-	// Set gateway in the config.
-	err = s.configService.UpdateGateway(gateway)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // SetLaunchDelay will set the given delay in milliseconds between each Diablo II launch.

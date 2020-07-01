@@ -36,6 +36,18 @@ const (
 	ModHDIdentifier = "D2HD.dll"
 
 	errRegistryKeyNotFound = "The system cannot find the file specified."
+
+	// RegistryConfiguration is the configuration key for Diablo II.
+	RegistryConfiguration = `Software\Battle.net\Configuration`
+
+	// RegistryDiablo is where all Diablo II specific values are.
+	RegistryDiablo = `Software\Blizzard Entertainment\Diablo II`
+
+	// RegistryLayers is where all data about execution resides, like DEP.
+	RegistryLayers = `Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers`
+
+	// RegistryPermissions is the required permissions needed for operations on our keys.
+	RegistryPermissions = registry.QUERY_VALUE | registry.SET_VALUE
 )
 
 // validate113cVersion will check the given installations Diablo II version.
@@ -109,8 +121,8 @@ func configureForOS(path string) error {
 
 	// Open the compatibility key directory.
 	compatibilityKey, err := registry.OpenKey(registry.CURRENT_USER,
-		`Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers`,
-		registry.QUERY_VALUE|registry.SET_VALUE,
+		RegistryLayers,
+		RegistryPermissions,
 	)
 	if err != nil {
 		return err
@@ -136,8 +148,8 @@ func applyDEP(path string) error {
 
 	// Open the dep key directory.
 	depKey, err := registry.OpenKey(registry.CURRENT_USER,
-		`Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers`,
-		registry.QUERY_VALUE|registry.SET_VALUE,
+		RegistryLayers,
+		RegistryPermissions,
 	)
 	if err != nil {
 		return err
@@ -158,30 +170,50 @@ func applyDEP(path string) error {
 
 // setDiabloRegistryKeys will remove the registry for BNETIP and set CmdLine options.
 func setDiabloRegistryKeys() error {
-	// Open the Diablo II key.
-	d2Key, err := registry.OpenKey(registry.CURRENT_USER, `Software\Blizzard Entertainment\Diablo II`, registry.QUERY_VALUE|registry.SET_VALUE)
+	err := setGenericRegistry()
 	if err != nil {
 		return err
 	}
 
-	bnetIP, _, err := d2Key.GetStringValue("BNETIP")
-	// If getting the string value errors and the error is something other than not found, return err.
-	if err != nil && err.Error() != errRegistryKeyNotFound {
-		fmt.Println("bnet IP error", err.Error())
+	err = setGatewayRegistry()
+	if err != nil {
 		return err
 	}
 
-	// If the user has the BNETIP set, let's remove it, not to mess other installs.
+	return nil
+}
+
+func setGenericRegistry() error {
+	var (
+		d2Key registry.Key
+		err   error
+	)
+
+	// Open the generic Diablo II key.
+	d2Key, err = registry.OpenKey(registry.CURRENT_USER, RegistryDiablo, RegistryPermissions)
+	if err != nil && err.Error() == errRegistryKeyNotFound {
+		// The key doesn't exist, we have to create it.
+		d2Key, _, err = registry.CreateKey(registry.CURRENT_USER, RegistryDiablo, RegistryPermissions)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+
+	bnetIP, _, err := d2Key.GetStringValue("BNETIP")
+
+	// If getting the string value errors and the error is something other than not found, return err.
+	if err != nil && err.Error() != errRegistryKeyNotFound {
+		return err
+	}
+
 	if bnetIP != "" {
+		// The user has the BNETIP set, let's remove it, not to mess with other installs.
 		err = d2Key.DeleteValue("BNETIP")
 		if err != nil {
 			return err
 		}
-	}
-
-	// Set the Command line args when starting.
-	if err := d2Key.SetStringValue("CmdLine", "-skiptobnet"); err != nil {
-		return err
 	}
 
 	// Close the registry when we're done.
@@ -189,45 +221,29 @@ func setDiabloRegistryKeys() error {
 		return err
 	}
 
+	return nil
+}
+
+func setGatewayRegistry() error {
+	var (
+		gatewayKey registry.Key
+		err        error
+	)
+
 	// Open the Battle.net configuration registry directory to set gateway.
-	gatewayKey, err := registry.OpenKey(registry.CURRENT_USER, `Software\Battle.net\Configuration`, registry.QUERY_VALUE|registry.SET_VALUE)
-	if err != nil {
+	gatewayKey, err = registry.OpenKey(registry.CURRENT_USER, RegistryConfiguration, RegistryPermissions)
+	if err != nil && err.Error() == errRegistryKeyNotFound {
+		// The key doesn't exist, we have to create it.
+		gatewayKey, _, err = registry.CreateKey(registry.CURRENT_USER, RegistryConfiguration, RegistryPermissions)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
 		return err
 	}
 
 	// Hex representation of the Slashdiablo registry entry.
-	gatewayHex := getSlashGateway()
-
-	// Set the gateway hex.
-	if err := gatewayKey.SetBinaryValue("Diablo II Battle.net Gateways", gatewayHex); err != nil {
-		return err
-	}
-
-	// Close the registry when we're done.
-	if err := gatewayKey.Close(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// setGateway will set the gateway for Diablo II.
-// TODO: Deprecate.
-func setGateway(gateway string) error {
-	var gatewayHex []byte
-
-	switch gateway {
-	case GatewaySlashdiablo:
-		gatewayHex = getSlashGateway()
-	case GatewayBattleNet:
-		gatewayHex = getBattleNetGateway()
-	}
-
-	// Open the Battle.net configuration registry directory.
-	gatewayKey, err := registry.OpenKey(registry.CURRENT_USER, `Software\Battle.net\Configuration`, registry.QUERY_VALUE|registry.SET_VALUE)
-	if err != nil {
-		return err
-	}
+	gatewayHex := getSlashGatewayHex()
 
 	// Set the gateway hex.
 	if err := gatewayKey.SetBinaryValue("Diablo II Battle.net Gateways", gatewayHex); err != nil {
@@ -283,7 +299,7 @@ func localizePath(path string) string {
 	return reversed[i:]
 }
 
-func getSlashGateway() []byte {
+func getSlashGatewayHex() []byte {
 	return []byte{
 		0x31, 0x30, 0x30, 0x32,
 		0x00, 0x30, 0x31, 0x00,
@@ -293,50 +309,9 @@ func getSlashGateway() []byte {
 		0x61, 0x62, 0x6c, 0x6f,
 		0x2e, 0x6e, 0x65, 0x74,
 		0x00, 0x2d, 0x36, 0x00,
-		0x73, 0x6c, 0x61, 0x73,
-		0x68, 0x00, 0x65, 0x76,
-		0x6e, 0x74, 0x2e, 0x73,
-		0x6c, 0x61, 0x73, 0x68,
-		0x64, 0x69, 0x61, 0x62,
-		0x6c, 0x6f, 0x2e, 0x6e,
-		0x65, 0x74, 0x00, 0x38,
-		0x00, 0x45, 0x76, 0x65,
-		0x6e, 0x74, 0x00, 0x00,
-	}
-}
-
-func getBattleNetGateway() []byte {
-	return []byte{
-		0x31, 0x30, 0x30, 0x32,
-		0x00, 0x30, 0x31, 0x00,
-		0x75, 0x73, 0x77, 0x65,
-		0x73, 0x74, 0x2e, 0x62,
-		0x61, 0x74, 0x74, 0x6c,
-		0x65, 0x2e, 0x6e, 0x65,
-		0x74, 0x00, 0x38, 0x00,
-		0x55, 0x2e, 0x53, 0x2e,
-		0x20, 0x57, 0x65, 0x73,
-		0x74, 0x00, 0x75, 0x73,
-		0x65, 0x61, 0x73, 0x74,
-		0x2e, 0x62, 0x61, 0x74,
-		0x74, 0x6c, 0x65, 0x2e,
-		0x6e, 0x65, 0x74, 0x00,
-		0x36, 0x00, 0x55, 0x2e,
-		0x53, 0x2e, 0x20, 0x45,
-		0x61, 0x73, 0x74, 0x00,
-		0x61, 0x73, 0x69, 0x61,
-		0x2e, 0x62, 0x61, 0x74,
-		0x74, 0x6c, 0x65, 0x2e,
-		0x6e, 0x65, 0x74, 0x00,
-		0x2d, 0x39, 0x00, 0x41,
-		0x73, 0x69, 0x61, 0x00,
-		0x65, 0x75, 0x72, 0x6f,
-		0x70, 0x65, 0x2e, 0x62,
-		0x61, 0x74, 0x74, 0x6c,
-		0x65, 0x2e, 0x6e, 0x65,
-		0x74, 0x00, 0x2d, 0x31,
-		0x00, 0x45, 0x75, 0x72,
-		0x6f, 0x70, 0x65, 0x00,
-		0x00,
+		0x53, 0x6c, 0x61, 0x73,
+		0x68, 0x20, 0x44, 0x69,
+		0x61, 0x62, 0x6c, 0x6f,
+		0x00, 0x00,
 	}
 }

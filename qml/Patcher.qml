@@ -126,22 +126,6 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right;
 
-           Dropdown{
-                id: gameInstances
-                anchors.bottom: playButton.top
-                anchors.bottomMargin: 5
-                anchors.leftMargin: 12
-                anchors.left: parent.left
-                currentIndex: (diablo.gateway == "Slashdiablo" ? 0 : 1)
-                model: ["Slashdiablo", "Battle.net"]
-                height: 30
-                width: 200
-
-                onActivated: {
-                    diablo.updateGateway(this.currentText)
-                }
-            }
-
             Dropdown{
                 id: launchDelay
                 anchors.bottom: playButton.top
@@ -244,11 +228,6 @@ Item {
     }
 
     Component.onCompleted: {
-        // Set default gateway if it hasn't been set.
-        if(diablo.gateway === "") {
-            diablo.updateGateway("Slashdiablo")
-        }
-
         // If any games have been set, check their versions.
         if(settings.games.rowCount() > 0) {
             diablo.validateVersion()

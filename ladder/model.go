@@ -74,7 +74,7 @@ func (m *TopLadderModel) data(index *core.QModelIndex, role int) *core.QVariant 
 	case Name:
 		return core.NewQVariant1(item.Name)
 	case Class:
-		return core.NewQVariant1(item.Class[:3])
+		return core.NewQVariant1(item.Class)
 	case Level:
 		return core.NewQVariant1(item.Level)
 	case Title:

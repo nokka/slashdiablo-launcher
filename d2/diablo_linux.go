@@ -39,8 +39,3 @@ func applyDEP(path string) error {
 func isModInstalled(path string, identifier string, manifest *Manifest) (bool, error) {
 	return false, nil
 }
-
-// setGateway will set the gateway for Diablo II.
-func setGateway(gateway string) error {
-	return nil
-}
