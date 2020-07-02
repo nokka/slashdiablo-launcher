@@ -4,7 +4,7 @@ import QtQuick.Controls.Styles 1.4
 
 Item {
     id: patcher
-    height: 80
+    height: 120
     anchors.left: parent.left
     anchors.leftMargin: 20
     anchors.verticalCenter: parent.verticalCenter
@@ -61,7 +61,7 @@ Item {
 
         SText {
             anchors.bottom: parent.bottom;
-            anchors.bottomMargin: 10
+            anchors.bottomMargin: 40
             font.family: beaufortbold.name
             text: diablo.status
             font.pixelSize: 12
@@ -72,32 +72,22 @@ Item {
     Item {
         anchors.fill:parent 
         visible: diablo.errored && !diablo.validatingVersion
-        
-        Image {
-            id: patcherError
-            fillMode: Image.PreserveAspectFit
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            width: 14
-            height: 14
-            source: "assets/svg/error.svg"
-        }
 
-        SText {
+        Title {
             id: patchError
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            text: "Couldn't patch game files"
+            anchors.leftMargin: 20
+            text: "Unable to patch game files"
             font.pixelSize: 15
-            anchors.leftMargin: 30
-            topPadding: 5
+            color: "#8f3131"
         }
 
         PlainButton {
             width: 120
             height: 40
             label: "TRY AGAIN"
-            fontSize: 10
+            fontSize: 12
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: patchError.right
             anchors.leftMargin: 20
@@ -125,6 +115,15 @@ Item {
             width: 300; height: parent.height
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right;
+
+            Title {
+                anchors.right: launchDelay.left
+                anchors.top: parent.top
+                anchors.topMargin: 6
+                anchors.rightMargin: 5
+                text: "Launch delay"
+                font.pixelSize: 12
+             }
 
             Dropdown{
                 id: launchDelay
@@ -179,12 +178,20 @@ Item {
                 fontSize: 15
                 clickable: (!diablo.launching)
                 width: 275; height: 50
-                backgroundColor: "#5c0202"
-                colorHovered: "#3b0000"
+                backgroundColor: "#3b0000"
+                colorHovered: "#5c0202"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                onClicked: diablo.launchGame()
+                /*SoundEffect {
+                    id: playSound
+                    source: "assets/sound/select.wav"
+                }*/
+
+                onClicked: {
+                    //playSound.play()
+                    diablo.launchGame()
+                }
             }
         }
     }
@@ -197,20 +204,10 @@ Item {
         height: 40
         visible: (!diablo.validVersion && !diablo.patching && !diablo.errored && !diablo.validatingVersion)
 
-        Image {
-            id: versionError
-            fillMode: Image.PreserveAspectFit
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            width: 32
-            height: 32
-            source: "assets/icons/patch.png"
-        }
-
         Title {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: 45
+            anchors.leftMargin: 20
             text: "Games need to be patched"
             font.pixelSize: 15
         }
@@ -219,7 +216,7 @@ Item {
             width: 120
             height: 40
             label: "UPDATE NOW"
-            fontSize: 10
+            fontSize: 12
             anchors.top: parent.top
             anchors.right: parent.right
 

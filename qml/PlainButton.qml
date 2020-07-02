@@ -6,8 +6,8 @@ Button {
 
     property int fontSize: 15
     property string label: ""
-    property string backgroundColor: "#1e1b26"
-    property string colorHovered: "#ab4432"
+    property string backgroundColor: "#0C0C0C"
+    property string colorHovered: "#111314"
     property string borderColor: "#000000"
     property int radius: 0
     property bool active: false

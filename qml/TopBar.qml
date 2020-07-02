@@ -97,12 +97,12 @@ Item {
 
             Image {
                 id: optionsIcon
-                fillMode: Image.PreserveAspectFit
+                fillMode: Image.Pad
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 width: 16
                 height: 16
-                source: "assets/icons/cog.png"
+                source: "assets/icons/settings.png"
 
                 MouseArea {
                     anchors.fill: parent
@@ -113,5 +113,7 @@ Item {
         }
     }
 
-    Separator{}
+    Separator{
+        color: "#161616"
+    }
 }

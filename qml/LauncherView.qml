@@ -30,13 +30,7 @@ Item {
         width: 350
         height: parent.height
         anchors.right: parent.right
-
-        Separator{
-            width: 1
-            anchors.right: undefined
-            anchors.top: parent.top
-        }
-
+        
         NewsTable{}
 
         Item {

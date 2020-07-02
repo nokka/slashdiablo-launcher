@@ -46,32 +46,30 @@ Item {
             width: parent.width
 
             // HD circle.
-            Rectangle { 
+            Item { 
                 visible: (model.hd_version != "none")
-                color: "#009fb8"
                 width: 25
                 height: 25
-                radius: (width * 0.5)
                 
                 SText {
                     anchors.centerIn: parent
                     text: "HD"
                     font.pixelSize: 10
+                    font.bold: true
                 }
             }
 
             // Maphack circle.
-            Rectangle {
+            Item {
                 visible: (model.maphack_version != "none")
-                color: "#038a66"
                 width: 25
                 height: 25
-                radius: (width * 0.5)
                 
                 SText {
                     anchors.centerIn: parent
                     text: "MH"
                     font.pixelSize: 10
+                    font.bold: true
                 }
             }
         }

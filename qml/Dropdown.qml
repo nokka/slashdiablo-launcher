@@ -12,9 +12,8 @@ ComboBox {
     }
 
     background: Rectangle {
-        color: "#1e1b26"
+        color: "#0C0C0C"
         border.color: "#000000"
-        opacity: 0.6
     }
 
     popup: Popup {

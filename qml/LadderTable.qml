@@ -191,6 +191,7 @@ Item {
 			CircularProgress {
 				anchors.centerIn: parent
 				visible: ladder.loading
+				showBackground: false
     		}
 
 			// Error item.

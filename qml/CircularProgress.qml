@@ -14,8 +14,8 @@ Item {
     property bool isPie: false          // paint a pie instead of an arc
     property bool showBackground: true  // a full circle as a background of the arc
     property real lineWidth: 5          // width of the line
-    property string colorCircle: "#c9b085"
-    property string colorBackground: "#402d22"
+    property string colorCircle: "#ffffff"
+    property string colorBackground: "#736c6a"
     property int animationDuration: 800
 
      NumberAnimation on rotation {

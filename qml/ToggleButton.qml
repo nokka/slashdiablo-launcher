@@ -19,7 +19,7 @@ Button {
     }
 
     background: Rectangle {
-        color: "#1e1b26"
+        color: "#0C0C0C"
         border.color: "#000000"
         radius: 0
         border.width: 1

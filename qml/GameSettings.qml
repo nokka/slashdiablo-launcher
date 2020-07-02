@@ -158,7 +158,7 @@ Item {
                         text: (game != undefined ? game.location : "")
 
                         background: Rectangle {
-                            color: "#1a1a17"
+                            color: "#131313"
                         }
                     }
 
