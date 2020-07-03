@@ -34,12 +34,13 @@ Item {
                 Image {
                     visible: (model.link != "" ? true : false)
                     id: linkoutIcon
-                    fillMode: Image.PreserveAspectFit
+                    fillMode: Image.Pad
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.right: parent.right
                     width: 16
                     height: 16
-                    source: "assets/icons/linkout_light.png"
+                    source: "assets/icons/out.png"
+                    opacity: 0.5
                 }
             }
 

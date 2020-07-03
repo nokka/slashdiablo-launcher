@@ -200,22 +200,11 @@ Item {
 				visible: ladder.error
 				height: 100
 
-				Image {
-					id: ladderError
-					fillMode: Image.PreserveAspectFit
-					anchors.horizontalCenter: parent.horizontalCenter
-					anchors.top: parent.top
-					width: 20
-					height: 20
-					source: "assets/svg/error.svg"
-				}
-
-				Text {
+				Title {
 					color: "#ffffff"
 					topPadding: 30
-					text: "Couldn't get ladder characters"
-					font.family: roboto.name
-					font.pixelSize: 11
+					text: "Unable to get ladder characters"
+					font.pixelSize: 13
 					anchors.horizontalCenter: parent.horizontalCenter
 				}
 			}

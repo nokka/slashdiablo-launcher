@@ -72,12 +72,13 @@ Item {
 
                     Image {
                         id: linkoutIcon
-                        fillMode: Image.PreserveAspectFit
-                        anchors.verticalCenter: parent.verticalCenter
+                        fillMode: Image.Pad
+                        anchors.top: parent.top
                         anchors.right: parent.right
                         width: 16
                         height: 16
-                        source: "assets/icons/linkout.png"
+                        source: "assets/icons/out.png"
+                        opacity: 0.2
                     }
                 }
             }
@@ -104,7 +105,7 @@ Item {
                 width: 16
                 height: 16
                 source: "assets/icons/settings.png"
-                opacity: settingsHovered ? 0.5 : 1.0
+                opacity: settingsHovered ? 1.0 : 0.5
 
                 MouseArea {
                     anchors.fill: parent

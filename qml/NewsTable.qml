@@ -50,22 +50,11 @@ Item {
 				visible: news.error
 				height: 100
 
-				Image {
-					id: newsError
-					fillMode: Image.PreserveAspectFit
-					anchors.horizontalCenter: parent.horizontalCenter
-					anchors.top: parent.top
-					width: 20
-					height: 20
-					source: "assets/svg/error.svg"
-				}
-
-				Text {
+				Title {
 					color: "#ffffff"
 					topPadding: 30
-					text: "Couldn't get news items"
-					font.family: roboto.name
-					font.pixelSize: 11
+					text: "Unable to get news"
+					font.pixelSize: 13
 					anchors.horizontalCenter: parent.horizontalCenter
 				}
 			}

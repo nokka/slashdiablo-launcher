@@ -2,6 +2,8 @@ import QtQuick 2.12
 
 Item {
     id: settingsDelegate
+    property bool deleteHovered: false
+
     width: parent.width
     height: 50
 
@@ -78,18 +80,27 @@ Item {
     // Delete button.
     Image {
         id: deleteIcon
-        height: 18
+        height: 16
+        width: 16
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         anchors.rightMargin: 5
-        fillMode: Image.PreserveAspectFit
-        source: "assets/svg/delete.svg"
+        fillMode: Image.Pad
+        source: "assets/icons/bin.png"
+        opacity: deleteHovered ? 1.0 : 0.5
 
         MouseArea {
             anchors.fill: parent
+            hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             onClicked: {
                 settings.deleteGame(model.id)
+            }
+            onEntered: {
+                deleteHovered = true
+            }
+            onExited: {
+                deleteHovered = false
             }
         }
     }
