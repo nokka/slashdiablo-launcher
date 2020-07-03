@@ -183,15 +183,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                /*SoundEffect {
-                    id: playSound
-                    source: "assets/sound/select.wav"
-                }*/
-
-                onClicked: {
-                    //playSound.play()
-                    diablo.launchGame()
-                }
+                onClicked: diablo.launchGame()
             }
         }
     }

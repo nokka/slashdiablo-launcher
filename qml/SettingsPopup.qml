@@ -179,7 +179,7 @@ Popup {
                                 spacing: 10
 
                                 Rectangle {
-                                    color: "#ab4432"
+                                    color: "#3b0000"
                                     width: 24
                                     height: 24
                                     radius: 12
@@ -212,7 +212,7 @@ Popup {
                                 spacing: 10
 
                                 Rectangle {
-                                    color: "#ab4432"
+                                    color: "#3b0000"
                                     width: 24
                                     height: 24
                                     radius: 12
@@ -245,7 +245,7 @@ Popup {
                                 spacing: 10
 
                                 Rectangle {
-                                    color: "#ab4432"
+                                    color: "#3b0000"
                                     width: 24
                                     height: 24
                                     radius: 12
@@ -278,7 +278,7 @@ Popup {
                                 spacing: 10
 
                                 Rectangle {
-                                    color: "#ab4432"
+                                    color: "#3b0000"
                                     width: 24
                                     height: 24
                                     radius: 12

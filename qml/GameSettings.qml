@@ -254,7 +254,7 @@ Item {
                         width: 60
                         Dropdown{
                             id: gameInstances
-                            currentIndex: (game != undefined ? (game.instances) : 0)
+                            currentIndex: ((game != undefined && game.instances != undefined) ? (game.instances) : 0)
                             model: [ 0, 1, 2, 3, 4 ]
                             height: 30
                             width: 60

@@ -40,6 +40,10 @@ func applyDEP(path string) error {
 	return nil
 }
 
+func setDiabloRegistryKeys() error {
+	return nil
+}
+
 func isModInstalled(path string, identifier string, manifest *Manifest) (bool, error) {
 	filePath := localizePath(fmt.Sprintf("%s/%s", path, identifier))
 
