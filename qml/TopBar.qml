@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.3
 Item {
     id: topbar
     property string activeMenuItem: "launch"
+    property bool settingsHovered: false
     property var menuSources: { 
         "launch": "LauncherView.qml",
         "ladder": "LadderView.qml",
@@ -103,11 +104,19 @@ Item {
                 width: 16
                 height: 16
                 source: "assets/icons/settings.png"
+                opacity: settingsHovered ? 0.5 : 1.0
 
                 MouseArea {
                     anchors.fill: parent
+                    hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: settingsPopup.open()
+                    onEntered: {
+                        settingsHovered = true
+                    }
+                    onExited: {
+                        settingsHovered = false
+                    }
                 }
             }
         }
