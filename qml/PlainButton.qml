@@ -30,12 +30,29 @@ Button {
 
         // Inner fill.
         Rectangle {
+            id: inner
             radius: radius
             width: (parent.width-2)
             height: (parent.height-2)
             anchors.centerIn: parent
-            color: (hovered ? colorHovered : backgroundColor)
+            color: backgroundColor
         }
+    }
+
+     PropertyAnimation {
+        id: animateIn
+        target: inner
+        properties: "color";
+        to: colorHovered;
+        duration: 100
+    }
+
+    PropertyAnimation {
+        id: animateOut
+        target: inner
+        properties: "color";
+        to: backgroundColor;
+        duration: 200
     }
 
     MouseArea {
@@ -56,4 +73,6 @@ Button {
             mouse.accepted = false
         }
     }
+
+    onHoveredChanged: hovered ? animateIn.start() : animateOut.start();
 }
