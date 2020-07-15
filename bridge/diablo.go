@@ -63,6 +63,7 @@ func (b *DiabloBridge) applyPatches() {
 	// Tell the GUI we've started patching.
 	b.SetPatching(true)
 	b.SetValidVersion(false)
+	b.SetErrored(false)
 
 	// Run this on a separate thread so we don't block the UI.
 	go func() {

@@ -82,7 +82,7 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                         font.pixelSize: 14
                         color: "#736c6a"
-                        text: "Failed to communicate with the Slashdiablo API"
+                        text: "Something went wrong when connecting to the Slashdiablo API"
                     }
                 }
 

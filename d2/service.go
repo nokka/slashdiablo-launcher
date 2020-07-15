@@ -365,6 +365,7 @@ func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 
 			// The install has been reset, let's validate the 1.13c version and apply missing files.
 			if err := s.apply113c(game.Location, state, progress); err != nil {
+				fmt.Println("ERROR ON APPLY 1.13c", err)
 				state <- PatchState{Error: err}
 				return
 			}
@@ -372,6 +373,7 @@ func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			// Apply the Slashdiablo specific patch.
 			err = s.applySlashPatch(game.Location, state, progress)
 			if err != nil {
+				fmt.Println("ERROR ON APPLY SLASH", err)
 				state <- PatchState{Error: err}
 				return
 			}
@@ -592,6 +594,8 @@ func (s *service) apply113c(path string, state chan PatchState, progress chan fl
 	}
 
 	if len(patchFiles) > 0 {
+		fmt.Println("FILES TO PATCH IN 1.13c")
+		fmt.Println(patchFiles)
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to 1.13c", path)}
 		if err := s.doPatch(patchFiles, patchLength, "1.13c", path, progress); err != nil {
 			patchErr := err
@@ -623,6 +627,8 @@ func (s *service) applySlashPatch(path string, state chan PatchState, progress c
 	}
 
 	if len(patchFiles) > 0 {
+		fmt.Println("APPLY SLASH PATCH")
+		fmt.Println(patchFiles)
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to current Slashdiablo patch", path)}
 
 		if err = s.doPatch(patchFiles, patchLength, "current", path, progress); err != nil {
@@ -697,7 +703,7 @@ func (s *service) applyHDMod(path string, version string, state chan PatchState,
 	return nil
 }
 
-func (s *service) doPatch(patchFiles []string, patchLength int64, remoteDir string, path string, progress chan float32) error {
+func (s *service) doPatch(patchFiles []PatchAction, patchLength int64, remoteDir string, path string, progress chan float32) error {
 	// Reset progress.
 	progress <- 0.00
 
@@ -712,17 +718,24 @@ func (s *service) doPatch(patchFiles []string, patchLength int64, remoteDir stri
 	var tmpFiles []string
 
 	// Patch the files.
-	for _, fileName := range patchFiles {
+	for _, action := range patchFiles {
 		// Create the file, but give it a tmp file extension, this means we won't overwrite a
 		// file until it's downloaded, but we'll remove the tmp extension once downloaded.
-		tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, fileName))
+		tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, action.File))
 
-		err := s.downloadFile(fileName, remoteDir, tmpPath, counter)
-		if err != nil {
-			return err
+		switch action.Action {
+		case ActionDownload:
+			err := s.downloadFile(action.File, remoteDir, tmpPath, counter)
+			if err != nil {
+				return err
+			}
+			tmpFiles = append(tmpFiles, tmpPath)
+		case ActionDelete:
+			err := s.deleteFile(action.File, path)
+			if err != nil {
+				return err
+			}
 		}
-
-		tmpFiles = append(tmpFiles, tmpPath)
 	}
 
 	// All the files were successfully downloaded, remove the .tmp suffix
@@ -759,6 +772,52 @@ func (s *service) downloadFile(fileName string, remoteDir string, path string, c
 	return nil
 }
 
+func fileExistsOnDisk(fileName string, path string) (bool, error) {
+	filePath := localizePath(fmt.Sprintf("%s/%s", path, fileName))
+	fmt.Println("CHECKING IF EXISTS", filePath)
+	f, err := os.Stat(filePath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			fmt.Println("FILE DID NOT EXIST")
+			return false, nil
+		}
+
+		// Any other error, return it.
+		return false, err
+	}
+
+	fmt.Println("FILE EXISTS ON DISK")
+	fmt.Println(f)
+
+	return true, nil
+}
+
+func (s *service) deleteFile(fileName string, path string) error {
+	filePath := localizePath(fmt.Sprintf("%s/%s", path, fileName))
+
+	fmt.Println("DELETE FILE", filePath)
+	// Check that the file exists.
+	_, err := os.Stat(filePath)
+	fmt.Println("STAT EROR", err)
+	if err != nil {
+		// File didn't exist on disk, just return nil.
+		if os.IsNotExist(err) {
+			return nil
+		}
+		// Any other error, return it.
+		return err
+	}
+
+	// File exists on disk, so let's remove it.
+	err = os.Remove(filePath)
+	fmt.Println("REMOVE ERROR", err)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *service) cleanUpFailedPatch(dir string) error {
 	files, err := ioutil.ReadDir(localizePath(dir))
 	if err != nil {
@@ -778,8 +837,8 @@ func (s *service) cleanUpFailedPatch(dir string) error {
 	return nil
 }
 
-func (s *service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnore []string) ([]string, int64, error) {
-	shouldPatch := make([]string, 0)
+func (s *service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnore []string) ([]PatchAction, int64, error) {
+	shouldPatch := make([]PatchAction, 0)
 	var totalContentLength int64
 
 	for _, file := range files {
@@ -801,21 +860,43 @@ func (s *service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnor
 				continue
 			}
 		}
+		// Check if file has been deprecated.
+		if f.Deprecated {
+			exists, err := fileExistsOnDisk(f.Name, d2path)
+			if err != nil {
+				return nil, 0, err
+			}
+
+			// If it still exists locally, queue it to be removed.
+			if exists {
+				fmt.Println("FILE IS DEPRECATED BUT STILL EXISTS")
+				fmt.Println(f.Name)
+				shouldPatch = append(shouldPatch, PatchAction{
+					File:   f.Name,
+					Action: ActionDelete,
+				})
+			}
+
+			continue
+		}
 
 		// Full path on disk to the patch file.
 		path := localizePath(fmt.Sprintf("%s/%s", d2path, f.Name))
 
 		// Get the checksum from the patch file on disk.
 		hashed, err := hashCRC32(path, polynomial)
-
 		if err != nil {
 			// If the file doesn't exist on disk, we need to patch it.
 			if err == ErrCRCFileNotFound {
-				shouldPatch = append(shouldPatch, f.Name)
+				shouldPatch = append(shouldPatch, PatchAction{
+					File:   f.Name,
+					Action: ActionDownload,
+				})
 				totalContentLength += f.ContentLength
 				continue
 			}
 
+			// Any other error, just return it.
 			return nil, 0, err
 		}
 
@@ -828,7 +909,10 @@ func (s *service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnor
 
 		// File checksum differs from local copy, we need to get a new one.
 		if hashed != f.CRC {
-			shouldPatch = append(shouldPatch, f.Name)
+			shouldPatch = append(shouldPatch, PatchAction{
+				File:   f.Name,
+				Action: ActionDownload,
+			})
 			totalContentLength += f.ContentLength
 		}
 	}
@@ -873,6 +957,22 @@ type PatchFile struct {
 	LastModified  time.Time `json:"last_modified"`
 	ContentLength int64     `json:"content_length"`
 	IgnoreCRC     bool      `json:"ignore_crc"`
+	Deprecated    bool      `json:"deprecated"`
+}
+
+// Action is an action performed while patching.
+type Action string
+
+// Allowed actions.
+const (
+	ActionDownload Action = "download"
+	ActionDelete   Action = "delete"
+)
+
+// PatchAction is performed while patching.
+type PatchAction struct {
+	File   string `json:"file"`
+	Action Action
 }
 
 // NewService returns a service with all the dependencies.

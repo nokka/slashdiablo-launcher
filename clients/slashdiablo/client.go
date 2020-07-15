@@ -13,7 +13,8 @@ type Client struct {
 
 // GetFile will the file by the given path in the repository set on the service.
 func (c *Client) GetFile(filePath string) (io.ReadCloser, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/slashdiablo-patches/%s", c.address, filePath))
+	// TODO: Fix back to slashdiablo-patches.
+	resp, err := http.Get(fmt.Sprintf("%s/debug/%s", c.address, filePath))
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +34,7 @@ func (c *Client) GetNews() (io.ReadCloser, error) {
 
 // GetAvailableMods will fetch the remote available mods source.
 func (c *Client) GetAvailableMods() (io.ReadCloser, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/available_mods_v2.json", c.address))
+	resp, err := http.Get(fmt.Sprintf("%s/available_mods_1.1.0.json", c.address))
 	if err != nil {
 		return nil, err
 	}
