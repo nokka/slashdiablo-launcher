@@ -44,6 +44,15 @@ Popup {
         border.width: 1
         anchors.fill: parent
 
+        // Bottom background.
+        Image {
+            width: 848
+            source: "assets/stone_bg.png";
+            fillMode: Image.PreserveAspectFit;
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottomMargin: 1
+        }
 
         RowLayout {
             id: settingsLayout

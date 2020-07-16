@@ -141,7 +141,7 @@ Item {
                     SText {
                         text: "Specify your Diablo II game directory in order for the launcher to use it."
                         font.pixelSize: 11
-                        color: "#454545"
+                        color: "#676767"
                     }
                 }
 
@@ -153,7 +153,7 @@ Item {
                         id: d2pathInput
                         width: fileDialogBox.width * 0.55; height: 35
                         font.pixelSize: 11
-                        color: "#454545"
+                        color: "#676767"
                         readOnly: true
                         text: (game != undefined ? game.location : "")
 
@@ -246,7 +246,7 @@ Item {
                             text: "Number of this specific install that will launch when playing the game"
                             font.pixelSize: 11
                             topPadding: 5
-                            color: "#454545"
+                            color: "#676767"
                         }
                     }
                     Column {
@@ -286,7 +286,7 @@ Item {
                             text: "Select if you want any maphack installed"
                             font.pixelSize: 11
                             topPadding: 5
-                            color: "#454545"
+                            color: "#676767"
                         }
                     }
                     Column {
@@ -327,7 +327,7 @@ Item {
                             text: "Select if you want any HD mod installed"
                             font.pixelSize: 11
                             topPadding: 5
-                            color: "#454545"
+                            color: "#676767"
                         }
                     }
                     Column {
@@ -369,7 +369,7 @@ Item {
                             text: "Select if you want to provide your own custom BH.cfg"
                             font.pixelSize: 11
                             topPadding: 5
-                            color: "#454545"
+                            color: "#676767"
                         }
                     }
                     Column {
@@ -405,7 +405,7 @@ Item {
                             text: "Run if this install has troubles with crashing - requires reboot after"
                             font.pixelSize: 11
                             topPadding: 5
-                            color: "#454545"
+                            color: "#676767"
                         }
                     }
                     Column {
