@@ -365,7 +365,6 @@ func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 
 			// The install has been reset, let's validate the 1.13c version and apply missing files.
 			if err := s.apply113c(game.Location, state, progress); err != nil {
-				fmt.Println("ERROR ON APPLY 1.13c", err)
 				state <- PatchState{Error: err}
 				return
 			}
@@ -373,7 +372,6 @@ func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 			// Apply the Slashdiablo specific patch.
 			err = s.applySlashPatch(game.Location, state, progress)
 			if err != nil {
-				fmt.Println("ERROR ON APPLY SLASH", err)
 				state <- PatchState{Error: err}
 				return
 			}
@@ -594,8 +592,6 @@ func (s *service) apply113c(path string, state chan PatchState, progress chan fl
 	}
 
 	if len(patchFiles) > 0 {
-		fmt.Println("FILES TO PATCH IN 1.13c")
-		fmt.Println(patchFiles)
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to 1.13c", path)}
 		if err := s.doPatch(patchFiles, patchLength, "1.13c", path, progress); err != nil {
 			patchErr := err
@@ -627,8 +623,6 @@ func (s *service) applySlashPatch(path string, state chan PatchState, progress c
 	}
 
 	if len(patchFiles) > 0 {
-		fmt.Println("APPLY SLASH PATCH")
-		fmt.Println(patchFiles)
 		state <- PatchState{Message: fmt.Sprintf("Updating %s to current Slashdiablo patch", path)}
 
 		if err = s.doPatch(patchFiles, patchLength, "current", path, progress); err != nil {
@@ -774,11 +768,10 @@ func (s *service) downloadFile(fileName string, remoteDir string, path string, c
 
 func fileExistsOnDisk(fileName string, path string) (bool, error) {
 	filePath := localizePath(fmt.Sprintf("%s/%s", path, fileName))
-	fmt.Println("CHECKING IF EXISTS", filePath)
-	f, err := os.Stat(filePath)
+
+	_, err := os.Stat(filePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			fmt.Println("FILE DID NOT EXIST")
 			return false, nil
 		}
 
@@ -786,19 +779,14 @@ func fileExistsOnDisk(fileName string, path string) (bool, error) {
 		return false, err
 	}
 
-	fmt.Println("FILE EXISTS ON DISK")
-	fmt.Println(f)
-
 	return true, nil
 }
 
 func (s *service) deleteFile(fileName string, path string) error {
 	filePath := localizePath(fmt.Sprintf("%s/%s", path, fileName))
 
-	fmt.Println("DELETE FILE", filePath)
 	// Check that the file exists.
 	_, err := os.Stat(filePath)
-	fmt.Println("STAT EROR", err)
 	if err != nil {
 		// File didn't exist on disk, just return nil.
 		if os.IsNotExist(err) {
@@ -810,7 +798,6 @@ func (s *service) deleteFile(fileName string, path string) error {
 
 	// File exists on disk, so let's remove it.
 	err = os.Remove(filePath)
-	fmt.Println("REMOVE ERROR", err)
 	if err != nil {
 		return err
 	}
@@ -869,8 +856,6 @@ func (s *service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnor
 
 			// If it still exists locally, queue it to be removed.
 			if exists {
-				fmt.Println("FILE IS DEPRECATED BUT STILL EXISTS")
-				fmt.Println(f.Name)
 				shouldPatch = append(shouldPatch, PatchAction{
 					File:   f.Name,
 					Action: ActionDelete,
