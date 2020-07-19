@@ -6,7 +6,6 @@ const DefaultLaunchDelay = 1000
 // Config is the configuration required to run the app.
 type Config struct {
 	Games       []Game `json:"games"`
-	Gateway     string `json:"gateway"`
 	LaunchDelay int    `json:"launch_delay"`
 }
 

@@ -170,20 +170,6 @@ func applyDEP(path string) error {
 
 // setDiabloRegistryKeys will remove the registry for BNETIP and set CmdLine options.
 func setDiabloRegistryKeys() error {
-	err := setGenericRegistry()
-	if err != nil {
-		return err
-	}
-
-	err = setGatewayRegistry()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func setGenericRegistry() error {
 	var (
 		d2Key registry.Key
 		err   error
@@ -218,40 +204,6 @@ func setGenericRegistry() error {
 
 	// Close the registry when we're done.
 	if err := d2Key.Close(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func setGatewayRegistry() error {
-	var (
-		gatewayKey registry.Key
-		err        error
-	)
-
-	// Open the Battle.net configuration registry directory to set gateway.
-	gatewayKey, err = registry.OpenKey(registry.CURRENT_USER, RegistryConfiguration, RegistryPermissions)
-	if err != nil && err.Error() == errRegistryKeyNotFound {
-		// The key doesn't exist, we have to create it.
-		gatewayKey, _, err = registry.CreateKey(registry.CURRENT_USER, RegistryConfiguration, RegistryPermissions)
-		if err != nil {
-			return err
-		}
-	} else if err != nil {
-		return err
-	}
-
-	// Hex representation of the Slashdiablo registry entry.
-	gatewayHex := getSlashGatewayHex()
-
-	// Set the gateway hex.
-	if err := gatewayKey.SetBinaryValue("Diablo II Battle.net Gateways", gatewayHex); err != nil {
-		return err
-	}
-
-	// Close the registry when we're done.
-	if err := gatewayKey.Close(); err != nil {
 		return err
 	}
 
@@ -297,21 +249,4 @@ func localizePath(path string) string {
 	_, i := utf8.DecodeRuneInString(reversed)
 
 	return reversed[i:]
-}
-
-func getSlashGatewayHex() []byte {
-	return []byte{
-		0x31, 0x30, 0x30, 0x32,
-		0x00, 0x30, 0x31, 0x00,
-		0x70, 0x6c, 0x61, 0x79,
-		0x2e, 0x73, 0x6c, 0x61,
-		0x73, 0x68, 0x64, 0x69,
-		0x61, 0x62, 0x6c, 0x6f,
-		0x2e, 0x6e, 0x65, 0x74,
-		0x00, 0x2d, 0x36, 0x00,
-		0x53, 0x6c, 0x61, 0x73,
-		0x68, 0x20, 0x44, 0x69,
-		0x61, 0x62, 0x6c, 0x6f,
-		0x00, 0x00,
-	}
 }

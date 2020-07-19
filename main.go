@@ -27,7 +27,7 @@ func main() {
 	// Environment variables set when building.
 	var (
 		debugMode    = envBool("DEBUG_MODE", false)
-		environment  = envString("ENVIRONMENT", "production")
+		environment  = envString("ENVIRONMENT", "development")
 		buildVersion = envString("BUILD_VERSION", "v1.1.0")
 	)
 
@@ -107,7 +107,7 @@ func main() {
 	populateGameModel(conf, gm)
 
 	// Setup QML bridges with all dependencies.
-	diabloBridge := bridge.NewDiablo(d2s, conf.Gateway, conf.LaunchDelay, logger)
+	diabloBridge := bridge.NewDiablo(d2s, conf.LaunchDelay, logger)
 	configBridge := bridge.NewConfig(cs, gm, logger)
 	ladderBridge := bridge.NewLadder(ls, lm, logger)
 	newsBridge := bridge.NewNews(ns, nm, logger)

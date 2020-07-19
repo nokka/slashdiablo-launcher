@@ -27,9 +27,6 @@ type Service interface {
 	// PersistGameModel will persist the current game model to the persistent store.
 	PersistGameModel() error
 
-	// UpdateGateway will update the gateway in the persistent store.
-	UpdateGateway(gateway string) error
-
 	// UpdateLaunchDelay will update the launch delay for  games in the persistent store.
 	UpdateLaunchDelay(delay int) error
 
@@ -180,24 +177,6 @@ func (s *service) PersistGameModel() error {
 			MaphackVersion: games[i].MaphackVersion,
 		})
 	}
-
-	err = s.store.Write(conf)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// UpdateGateway will update the Diablo gateway in the store.
-func (s *service) UpdateGateway(gateway string) error {
-	conf, err := s.store.Read()
-	if err != nil {
-		return err
-	}
-
-	// Update gateway.
-	conf.Gateway = gateway
 
 	err = s.store.Write(conf)
 	if err != nil {

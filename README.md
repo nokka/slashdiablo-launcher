@@ -7,7 +7,7 @@
 
 ## About the project
 
-Slashdiablo launcher is a cross platform game launcher for Diablo II and specifically the [Slashdiablo](https://old.reddit.com/r/slashdiablo/) community. It was built to help new players install patches, updating gateways and help with other technical issues to lower the barrier of entry into the Slashdiablo community, while also assisting more experienced players with more advanced settings such as HD mods and launching multiple boxes.
+Slashdiablo launcher is a cross platform game launcher for Diablo II and specifically the [Slashdiablo](https://old.reddit.com/r/slashdiablo/) community. It was built to help new players install patches, updating registries and help with other technical issues to lower the barrier of entry into the Slashdiablo community, while also assisting more experienced players with more advanced settings such as HD mods and launching multiple boxes.
 
 ## Features
 
@@ -75,12 +75,14 @@ otherwise the target OS and the host must be the same.
 ### Windows
 
 #### Build in docker
+
 ```bash
 $ docker pull therecipe/qt:windows_64_static
 $ qtdeploy -docker build windows_64_static
 ```
 
 #### Build on local machine
+
 ```bash
 $ qtdeploy build desktop
 ```
