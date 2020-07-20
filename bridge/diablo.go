@@ -138,7 +138,7 @@ func (b *DiabloBridge) updateLaunchDelay(delay int) {
 }
 
 // NewDiablo returns a new Diablo bridge with all dependencies set up.
-func NewDiablo(d2s d2.Service, gateway string, launchDelay int, logger log.Logger) *DiabloBridge {
+func NewDiablo(d2s d2.Service, launchDelay int, logger log.Logger) *DiabloBridge {
 	b := NewDiabloBridge(nil)
 
 	// Set dependencies.
