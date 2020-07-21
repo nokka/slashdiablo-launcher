@@ -25,6 +25,9 @@ type DiabloBridge struct {
 	_ string  `property:"status"`
 	_ int     `property:"launchDelay"`
 
+	// Models.
+	FileModel *core.QAbstractListModel `property:"patchFiles"`
+
 	// Slots.
 	_ func()                 `slot:"launchGame"`
 	_ func()                 `slot:"validateVersion"`
@@ -138,12 +141,15 @@ func (b *DiabloBridge) updateLaunchDelay(delay int) {
 }
 
 // NewDiablo returns a new Diablo bridge with all dependencies set up.
-func NewDiablo(d2s d2.Service, launchDelay int, logger log.Logger) *DiabloBridge {
+func NewDiablo(d2s d2.Service, fm *d2.FileModel, launchDelay int, logger log.Logger) *DiabloBridge {
 	b := NewDiabloBridge(nil)
 
 	// Set dependencies.
 	b.d2service = d2s
 	b.logger = logger
+
+	// Setup model.
+	b.SetPatchFiles(fm)
 
 	// Set initial state.
 	b.SetPatching(false)

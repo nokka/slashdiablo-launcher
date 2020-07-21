@@ -27,7 +27,7 @@ func main() {
 	// Environment variables set when building.
 	var (
 		debugMode    = envBool("DEBUG_MODE", false)
-		environment  = envString("ENVIRONMENT", "production")
+		environment  = envString("ENVIRONMENT", "development")
 		buildVersion = envString("BUILD_VERSION", "v1.1.0")
 	)
 
@@ -91,6 +91,7 @@ func main() {
 	lm := ladder.NewTopLadderModel(nil)
 	gm := config.NewGameModel(nil)
 	nm := news.NewModel(nil)
+	fm := d2.NewFileModel(nil)
 
 	// Setup clients.
 	sc := slashdiablo.NewClient()
@@ -98,7 +99,7 @@ func main() {
 
 	// Setup services.
 	cs := config.NewService(sc, store, gm)
-	d2s := d2.NewService(sc, cs, logger)
+	d2s := d2.NewService(sc, cs, logger, fm)
 	ls := ladder.NewService(lc, lm)
 	ns := news.NewService(sc, nm)
 
@@ -107,7 +108,7 @@ func main() {
 	populateGameModel(conf, gm)
 
 	// Setup QML bridges with all dependencies.
-	diabloBridge := bridge.NewDiablo(d2s, conf.LaunchDelay, logger)
+	diabloBridge := bridge.NewDiablo(d2s, fm, conf.LaunchDelay, logger)
 	configBridge := bridge.NewConfig(cs, gm, logger)
 	ladderBridge := bridge.NewLadder(ls, lm, logger)
 	newsBridge := bridge.NewNews(ns, nm, logger)

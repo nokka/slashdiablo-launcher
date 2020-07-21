@@ -116,31 +116,31 @@ Item {
 				height: 40
 				Layout.alignment: Qt.AlignBottom
 
-				LadderCell {
+				TableCell {
 					width: ladderList.width * 0.10
 					height: parent.height
 					content: "Rank"
 				}
 
-				LadderCell {
+				TableCell {
 					width: ladderList.width * 0.10
 					height: parent.height
 					content: "Level"
 				}
 
-				LadderCell {
+				TableCell {
 					width: ladderList.width * 0.10
 					height: parent.height
 					content: "Class"
 				}
 
-				LadderCell {
+				TableCell {
 					width: ladderList.width * 0.40
 					height: parent.height
 					content: "Level"
 				}
 
-				LadderCell {
+				TableCell {
 					width: ladderList.width * 0.10
 					height: parent.height
 					content: "Title"

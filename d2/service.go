@@ -44,6 +44,7 @@ type service struct {
 	availableMods     *config.GameMods
 	runningGames      []game
 	mux               sync.Mutex
+	patchFileModel    *FileModel
 }
 
 type game struct {
@@ -176,7 +177,8 @@ func (s *service) ValidateGameVersions() (bool, error) {
 
 			// Slash patch isn't up to date.
 			if len(slashFiles) > 0 {
-				return false, nil
+				s.addFilesToModel(slashFiles)
+				upToDate = false
 			}
 
 			validMaphack, err := s.validateMaphackVersion(&game, mods.Maphack)
@@ -186,7 +188,7 @@ func (s *service) ValidateGameVersions() (bool, error) {
 
 			// Maphack version wasn't valid, we need to update.
 			if !validMaphack {
-				return false, nil
+				upToDate = false
 			}
 
 			validHD, err := s.validateHDVersion(&game, mods.HD)
@@ -196,7 +198,7 @@ func (s *service) ValidateGameVersions() (bool, error) {
 
 			// HD version wasn't valid, we need to update.
 			if !validHD {
-				return false, nil
+				upToDate = false
 			}
 		}
 	}
@@ -523,6 +525,7 @@ func (s *service) validateMaphackVersion(game *storage.Game, versions []string) 
 
 			// Maphack patch isn't up to date.
 			if len(missingMaphackFiles) > 0 {
+				s.addFilesToModel(missingMaphackFiles)
 				return false, nil
 			}
 		} else {
@@ -533,6 +536,12 @@ func (s *service) validateMaphackVersion(game *storage.Game, versions []string) 
 
 			// Maphack wasn't supposed to be installed, but it is, we need to update.
 			if installed {
+				// Before we return, we need to add these to the patch actions, since they will be removed.
+				err := s.addPatchFilesToBeDeleted(game.Location, manifest.Files)
+				if err != nil {
+					return false, err
+				}
+
 				return false, nil
 			}
 		}
@@ -558,6 +567,7 @@ func (s *service) validateHDVersion(game *storage.Game, versions []string) (bool
 
 			// HD mod isn't up to date.
 			if len(missingFiles) > 0 {
+				s.addFilesToModel(missingFiles)
 				return false, nil
 			}
 		} else {
@@ -568,6 +578,11 @@ func (s *service) validateHDVersion(game *storage.Game, versions []string) (bool
 
 			// HD wasn't supposed to be installed, but it is, we need to update.
 			if installed {
+				// Before we return, we need to add these to the patch actions, since they will be removed.
+				err := s.addPatchFilesToBeDeleted(game.Location, manifest.Files)
+				if err != nil {
+					return false, err
+				}
 				return false, nil
 			}
 		}
@@ -715,17 +730,17 @@ func (s *service) doPatch(patchFiles []PatchAction, patchLength int64, remoteDir
 	for _, action := range patchFiles {
 		// Create the file, but give it a tmp file extension, this means we won't overwrite a
 		// file until it's downloaded, but we'll remove the tmp extension once downloaded.
-		tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, action.File))
+		tmpPath := localizePath(fmt.Sprintf("%s/%s.tmp", path, action.File.Name))
 
 		switch action.Action {
 		case ActionDownload:
-			err := s.downloadFile(action.File, remoteDir, tmpPath, counter)
+			err := s.downloadFile(action.File.Name, remoteDir, tmpPath, counter)
 			if err != nil {
 				return err
 			}
 			tmpFiles = append(tmpFiles, tmpPath)
 		case ActionDelete:
-			err := s.deleteFile(action.File, path)
+			err := s.deleteFile(action.File.Name, path)
 			if err != nil {
 				return err
 			}
@@ -831,6 +846,9 @@ func (s *service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnor
 	for _, file := range files {
 		f := file
 
+		// Full path on disk to the patch file.
+		localPath := localizePath(fmt.Sprintf("%s/%s", d2path, f.Name))
+
 		// Check if the file should be ignored or not.
 		if filesToIgnore != nil && len(filesToIgnore) > 0 {
 			var ignore bool
@@ -856,26 +874,31 @@ func (s *service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnor
 
 			// If it still exists locally, queue it to be removed.
 			if exists {
+				// Get the checksum from the patch file on disk.
+				hashed, err := hashCRC32(localPath, polynomial)
+				if err != nil {
+					return nil, 0, err
+				}
 				shouldPatch = append(shouldPatch, PatchAction{
-					File:   f.Name,
-					Action: ActionDelete,
+					File:     f,
+					Action:   ActionDelete,
+					LocalCRC: hashed,
 				})
 			}
 
 			continue
 		}
 
-		// Full path on disk to the patch file.
-		path := localizePath(fmt.Sprintf("%s/%s", d2path, f.Name))
-
 		// Get the checksum from the patch file on disk.
-		hashed, err := hashCRC32(path, polynomial)
+		hashed, err := hashCRC32(localPath, polynomial)
+
 		if err != nil {
 			// If the file doesn't exist on disk, we need to patch it.
 			if err == ErrCRCFileNotFound {
 				shouldPatch = append(shouldPatch, PatchAction{
-					File:   f.Name,
-					Action: ActionDownload,
+					File:     f,
+					Action:   ActionDownload,
+					LocalCRC: hashed,
 				})
 				totalContentLength += f.ContentLength
 				continue
@@ -895,8 +918,9 @@ func (s *service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnor
 		// File checksum differs from local copy, we need to get a new one.
 		if hashed != f.CRC {
 			shouldPatch = append(shouldPatch, PatchAction{
-				File:   f.Name,
-				Action: ActionDownload,
+				File:     f,
+				Action:   ActionDownload,
+				LocalCRC: hashed,
 			})
 			totalContentLength += f.ContentLength
 		}
@@ -922,6 +946,41 @@ func (s *service) getManifest(path string) (*Manifest, error) {
 	}
 
 	return &manifest, nil
+}
+
+func (s *service) addPatchFilesToBeDeleted(d2path string, files []PatchFile) error {
+	var actions = make([]PatchAction, len(files))
+
+	for i, file := range files {
+		// Full path on disk to the patch file.
+		localPath := localizePath(fmt.Sprintf("%s/%s", d2path, file.Name))
+
+		hashed, err := hashCRC32(localPath, polynomial)
+		if err != nil {
+			return err
+		}
+
+		actions[i] = PatchAction{
+			Action:   ActionDelete,
+			File:     file,
+			LocalCRC: hashed,
+		}
+	}
+
+	s.addFilesToModel(actions)
+
+	return nil
+}
+
+func (s *service) addFilesToModel(patchActions []PatchAction) {
+	for _, action := range patchActions {
+		f := NewFile(nil)
+		f.Name = action.File.Name
+		f.RemoteCRC = action.File.CRC
+		f.LocalCRC = action.LocalCRC
+		f.FileAction = string(action.Action)
+		s.patchFileModel.AddFile(f)
+	}
 }
 
 // PatchState represents the state given on every patch cycle.
@@ -956,8 +1015,9 @@ const (
 
 // PatchAction is performed while patching.
 type PatchAction struct {
-	File   string `json:"file"`
-	Action Action
+	Action   Action
+	File     PatchFile
+	LocalCRC string
 }
 
 // NewService returns a service with all the dependencies.
@@ -965,12 +1025,14 @@ func NewService(
 	slashdiabloClient slashdiablo.Client,
 	configuration config.Service,
 	logger log.Logger,
+	patchFileModel *FileModel,
 ) Service {
 	s := &service{
 		slashdiabloClient: slashdiabloClient,
 		configService:     configuration,
 		logger:            logger,
 		gameStates:        make(chan execState, 4),
+		patchFileModel:    patchFileModel,
 	}
 
 	// Setup game listener once, will stay alive for the duration

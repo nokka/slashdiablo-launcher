@@ -55,6 +55,11 @@ Item {
         id: settingsPopup
     }
 
+    // Patch popup.
+    PatchPopup{
+        id: patchPopup
+    }
+
     // This is a bit of a hack to get a popup to display right after
     // the parent loads, if we remove the timer we get an error saying
     // there's no parent to create the popup from.

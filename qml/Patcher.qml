@@ -192,7 +192,7 @@ Item {
     Item {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        width: 350
+        width: 550
         height: 40
         visible: (!diablo.validVersion && !diablo.patching && !diablo.errored && !diablo.validatingVersion)
 
@@ -210,15 +210,35 @@ Item {
             label: "UPDATE NOW"
             fontSize: 12
             anchors.top: parent.top
-            anchors.right: parent.right
+            anchors.right: patchChanges.left
 
             onClicked: diablo.applyPatches()
+        }
+
+        Image {
+            id: patchChanges
+            fillMode: Image.Pad
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            width: 16
+            height: 16
+            source: "assets/icons/settings.png"
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: patchPopup.open()
+            }
         }
     }
 
     Component.onCompleted: {
         // If any games have been set, check their versions.
         if(settings.games.rowCount() > 0) {
+            // Clear any files that needs to be patched before revalidating.
+            diablo.patchFiles.clear()
+            
             diablo.validateVersion()
         }
     }

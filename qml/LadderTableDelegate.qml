@@ -13,19 +13,19 @@ Item {
 
     Row {
 
-        LadderCell {
+        TableCell {
             width: row.width * 0.10
             height: row.height
             content: "#" + model.rank
         }
 
-        LadderCell {
+        TableCell {
             width: row.width * 0.10
             height: row.height
             content: model.level
         }
 
-        LadderCell {
+        TableCell {
             width: row.width * 0.10
             height: row.height
             content: model.class
@@ -46,7 +46,7 @@ Item {
             Separator{}
         }
 
-        LadderCell {
+        TableCell {
             width: row.width * 0.10
             height: row.height
             content: model.title

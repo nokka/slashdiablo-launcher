@@ -386,6 +386,7 @@ Popup {
                             var success = settings.persistGameModel()
                             if(success) {
                                 // Validate the game versions after changes has been made to the settings.
+                                diablo.patchFiles.clear()
                                 diablo.validateVersion()
                                 settingsPopup.close()
                             }
