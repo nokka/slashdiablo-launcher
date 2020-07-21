@@ -2,13 +2,13 @@
     "FixedFileInfo": {
         "FileVersion": {
             "Major": 1,
-            "Minor": 1,
+            "Minor": 2,
             "Patch": 0,
             "Build": 0
         },
         "ProductVersion": {
             "Major": 1,
-            "Minor": 1,
+            "Minor": 2,
             "Patch": 0,
             "Build": 0
         },
@@ -22,14 +22,14 @@
         "Comments": "Slashdiablo launcher",
         "CompanyName": "Slashdiablo",
         "FileDescription": "Slashdiablo Launcher",
-        "FileVersion": "v1.1.0.0",
+        "FileVersion": "v1.2.0.0",
         "InternalName": "slashdiablo-launcher.exe",
         "LegalCopyright": "Copyright (c) 2020 Slashdiablo",
         "LegalTrademarks": "",
         "OriginalFilename": "Slashdiablo.exe",
         "PrivateBuild": "",
         "ProductName": "Slashdiablo launcher",
-        "ProductVersion": "v1.1.0.0",
+        "ProductVersion": "v1.2.0.0",
         "SpecialBuild": ""
     },
     "VarFileInfo": {
