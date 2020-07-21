@@ -2,6 +2,7 @@ import QtQuick 2.12
 
 Item {
     id: launchView
+    property bool configButtonHovered: false
     width: parent.width; height: parent.height
     
     Item {
@@ -34,7 +35,7 @@ Item {
         NewsTable{}
 
         Item {
-            width: 115
+            width: 80
             height: 40
             anchors.bottom: parent.bottom
             anchors.right: parent.right
@@ -42,7 +43,37 @@ Item {
             Title {
                 text: settings.buildVersion
                 font.pixelSize: 10
-                anchors.centerIn: parent
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            Image {
+                id: debugIcon
+                fillMode: Image.Pad
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                anchors.rightMargin: 20
+                width: 16
+                height: 16
+                source: "assets/icons/bug.png"
+                opacity: configButtonHovered ? 1.0 : 0.5
+
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        settings.openConfigPath()
+                        configButtonHovered = false
+                    }
+                    
+                    onEntered: {
+                        configButtonHovered = true
+                    }
+                    onExited: {
+                        configButtonHovered = false
+                    }
+                }
             }
         }
     }

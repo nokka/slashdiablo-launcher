@@ -4,6 +4,7 @@ import QtQuick.Controls.Styles 1.4
 
 Item {
     id: patcher
+    property bool patchFilesHovered: false
     height: 120
     anchors.left: parent.left
     anchors.leftMargin: 20
@@ -192,7 +193,7 @@ Item {
     Item {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        width: 550
+        width: 400
         height: 40
         visible: (!diablo.validVersion && !diablo.patching && !diablo.errored && !diablo.validatingVersion)
 
@@ -211,6 +212,7 @@ Item {
             fontSize: 12
             anchors.top: parent.top
             anchors.right: patchChanges.left
+            anchors.rightMargin: 10
 
             onClicked: diablo.applyPatches()
         }
@@ -222,13 +224,21 @@ Item {
             anchors.right: parent.right
             width: 16
             height: 16
-            source: "assets/icons/settings.png"
+            source: "assets/icons/patch.png"
+            opacity: patchFilesHovered ? 1.0 : 0.5
 
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: patchPopup.open()
+
+                onEntered: {
+                    patchFilesHovered = true
+                }
+                onExited: {
+                    patchFilesHovered = false
+                }
             }
         }
     }

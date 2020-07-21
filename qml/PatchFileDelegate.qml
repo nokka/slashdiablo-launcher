@@ -13,24 +13,28 @@ Item {
 
     Row {
         TableCell {
-            width: row.width * 0.25
+            width: row.width * 0.20
             height: row.height
             content: model.name
         }
         TableCell {
-            width: row.width * 0.25
+            width: row.width * 0.20
             height: row.height
-            // x > 10 ? "greater than 10" : "less than 10";
+            content: getName()
+        }
+        TableCell {
+            width: row.width * 0.20
+            height: row.height
             content: (model.localCRC.length > 0 ? localCRC : "not on disk")
         }
         TableCell {
-            width: row.width * 0.25
+            width: row.width * 0.20
             height: row.height
             content: model.remoteCRC
         }
 
          Item { 
-            width: row.width * 0.25
+            width: row.width * 0.20
             height: row.height
 
             Text {
@@ -43,5 +47,17 @@ Item {
 
             Separator{}
         }
+    }
+
+    function getName() {
+        var path = model.d2Path
+        var parts = path.split("/")
+        
+        var name = parts[parts.length - 1]
+        if(name == "") {
+            name = "Unknown"
+        }
+
+        return name
     }
 }

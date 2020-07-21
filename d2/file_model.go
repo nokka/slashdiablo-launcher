@@ -8,6 +8,7 @@ import (
 type File struct {
 	core.QObject
 	Name       string
+	D2Path     string
 	RemoteCRC  string
 	LocalCRC   string
 	FileAction string
@@ -16,6 +17,7 @@ type File struct {
 // Model Roles.
 const (
 	Name = int(core.Qt__UserRole) + 1<<iota
+	D2Path
 	RemoteCRC
 	LocalCRC
 	FileAction
@@ -37,6 +39,7 @@ type FileModel struct {
 func (m *FileModel) init() {
 	m.SetRoles(map[int]*core.QByteArray{
 		Name:       core.NewQByteArray2("name", -1),
+		D2Path:     core.NewQByteArray2("d2Path", -1),
 		RemoteCRC:  core.NewQByteArray2("remoteCRC", -1),
 		LocalCRC:   core.NewQByteArray2("localCRC", -1),
 		FileAction: core.NewQByteArray2("fileAction", -1),
@@ -76,6 +79,8 @@ func (m *FileModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	switch role {
 	case Name:
 		return core.NewQVariant1(item.Name)
+	case D2Path:
+		return core.NewQVariant1(item.D2Path)
 	case RemoteCRC:
 		return core.NewQVariant1(item.RemoteCRC)
 	case LocalCRC:
@@ -98,7 +103,7 @@ func (m *FileModel) addFile(g *File) {
 func (m *FileModel) updateFile(index int) {
 	var fIndex = m.Index(0, 0, core.NewQModelIndex())
 	var lIndex = m.Index(index, 0, core.NewQModelIndex())
-	m.DataChanged(fIndex, lIndex, []int{Name, LocalCRC, RemoteCRC, FileAction})
+	m.DataChanged(fIndex, lIndex, []int{Name, D2Path, LocalCRC, RemoteCRC, FileAction})
 }
 
 // removeFile will remove a file from the model.

@@ -6,11 +6,13 @@ import (
 	"github.com/nokka/slashdiablo-launcher/config"
 	"github.com/nokka/slashdiablo-launcher/log"
 	"github.com/therecipe/qt/core"
+	"github.com/therecipe/qt/gui"
 )
 
 // ConfigBridge is the connection between QML and the Go config.
 type ConfigBridge struct {
 	core.QObject
+	configPath string
 
 	// Dependencies.
 	config config.Service
@@ -32,6 +34,7 @@ type ConfigBridge struct {
 	_ func(id string)        `slot:"deleteGame"`
 	_ func() bool            `slot:"persistGameModel"`
 	_ func()                 `slot:"getPrerequisites"`
+	_ func()                 `slot:"openConfigPath"`
 }
 
 // Connect will connect the QML signals to functions in Go.
@@ -41,6 +44,7 @@ func (c *ConfigBridge) Connect() {
 	c.ConnectDeleteGame(c.deleteGame)
 	c.ConnectPersistGameModel(c.persistGameModel)
 	c.ConnectGetPrerequisites(c.getPrerequisites)
+	c.ConnectOpenConfigPath(c.openConfigPath)
 }
 
 // addGame will add a game to the game model.
@@ -105,9 +109,16 @@ func (c *ConfigBridge) getPrerequisites() {
 	}()
 }
 
+// openConfigPath will open the config path in the file explorer.
+func (c *ConfigBridge) openConfigPath() {
+	gui.QDesktopServices_OpenUrl(core.QUrl_FromLocalFile(c.configPath))
+}
+
 // NewConfig returns a new config bridge with all dependencies set up.
-func NewConfig(cs config.Service, gm *config.GameModel, logger log.Logger) *ConfigBridge {
+func NewConfig(cs config.Service, gm *config.GameModel, configPath string, logger log.Logger) *ConfigBridge {
 	b := NewConfigBridge(nil)
+
+	b.configPath = configPath
 
 	// Setup dependencies.
 	b.config = cs

@@ -109,7 +109,7 @@ func main() {
 
 	// Setup QML bridges with all dependencies.
 	diabloBridge := bridge.NewDiablo(d2s, fm, conf.LaunchDelay, logger)
-	configBridge := bridge.NewConfig(cs, gm, logger)
+	configBridge := bridge.NewConfig(cs, gm, configPath, logger)
 	ladderBridge := bridge.NewLadder(ls, lm, logger)
 	newsBridge := bridge.NewNews(ns, nm, logger)
 

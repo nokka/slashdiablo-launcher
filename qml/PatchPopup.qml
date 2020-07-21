@@ -67,25 +67,31 @@ Popup {
                     Layout.alignment: Qt.AlignBottom
 
                     TableCell {
-                        width: patchFileList.width * 0.25
+                        width: patchFileList.width * 0.20
                         height: parent.height
                         content: "Name"
 				    }
 
                     TableCell {
-                        width: patchFileList.width * 0.25
+                        width: patchFileList.width * 0.20
+                        height: parent.height
+                        content: "Install"
+				    }
+
+                    TableCell {
+                        width: patchFileList.width * 0.20
                         height: parent.height
                         content: "Local CRC"
                     }
 
                     TableCell {
-                        width: patchFileList.width * 0.25
+                        width: patchFileList.width * 0.20
                         height: parent.height
                         content: "Remote CRC"
                     }
 
                     TableCell {
-                        width: patchFileList.width * 0.25
+                        width: patchFileList.width * 0.20
                         height: parent.height
                         content: "Action"
                     }

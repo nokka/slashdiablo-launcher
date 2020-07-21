@@ -883,6 +883,7 @@ func (s *service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnor
 					File:     f,
 					Action:   ActionDelete,
 					LocalCRC: hashed,
+					D2Path:   d2path,
 				})
 			}
 
@@ -899,6 +900,7 @@ func (s *service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnor
 					File:     f,
 					Action:   ActionDownload,
 					LocalCRC: hashed,
+					D2Path:   d2path,
 				})
 				totalContentLength += f.ContentLength
 				continue
@@ -921,6 +923,7 @@ func (s *service) getFilesToPatch(files []PatchFile, d2path string, filesToIgnor
 				File:     f,
 				Action:   ActionDownload,
 				LocalCRC: hashed,
+				D2Path:   d2path,
 			})
 			totalContentLength += f.ContentLength
 		}
@@ -964,6 +967,7 @@ func (s *service) addPatchFilesToBeDeleted(d2path string, files []PatchFile) err
 			Action:   ActionDelete,
 			File:     file,
 			LocalCRC: hashed,
+			D2Path:   d2path,
 		}
 	}
 
@@ -976,6 +980,7 @@ func (s *service) addFilesToModel(patchActions []PatchAction) {
 	for _, action := range patchActions {
 		f := NewFile(nil)
 		f.Name = action.File.Name
+		f.D2Path = action.D2Path
 		f.RemoteCRC = action.File.CRC
 		f.LocalCRC = action.LocalCRC
 		f.FileAction = string(action.Action)
@@ -1017,6 +1022,7 @@ const (
 type PatchAction struct {
 	Action   Action
 	File     PatchFile
+	D2Path   string
 	LocalCRC string
 }
 
