@@ -214,7 +214,12 @@ Item {
             anchors.right: patchChanges.left
             anchors.rightMargin: 10
 
-            onClicked: diablo.applyPatches()
+            onClicked: {
+                // Clear any files that has been set to be patched before patching.
+                diablo.patchFiles.clear()
+                
+                diablo.applyPatches()
+            }
         }
 
         Image {

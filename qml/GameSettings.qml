@@ -402,7 +402,7 @@ Item {
                         }
 
                         SText {
-                            text: "Run if this install has troubles with crashing - requires reboot after"
+                            text: "Run if this install gets Access Violation (C0000005) error - requires reboot"
                             font.pixelSize: 11
                             topPadding: 5
                             color: "#676767"

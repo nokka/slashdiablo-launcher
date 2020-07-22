@@ -13,8 +13,7 @@ type Client struct {
 
 // GetFile will the file by the given path in the repository set on the service.
 func (c *Client) GetFile(filePath string) (io.ReadCloser, error) {
-	// TODO: Fix back to slashdiablo-patches.
-	resp, err := http.Get(fmt.Sprintf("%s/debug/%s", c.address, filePath))
+	resp, err := http.Get(fmt.Sprintf("%s/slashdiablo-patches/%s", c.address, filePath))
 	if err != nil {
 		return nil, err
 	}

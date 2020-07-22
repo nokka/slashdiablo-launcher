@@ -145,6 +145,12 @@ func (s *service) ValidateGameVersions() (bool, error) {
 	}
 
 	// Get current slash patch and compare.
+	version113cManifest, err := s.getManifest("1.13c/manifest.json")
+	if err != nil {
+		return false, err
+	}
+
+	// Get current slash patch and compare.
 	slashManifest, err := s.getManifest("current/manifest.json")
 	if err != nil {
 		return false, err
@@ -166,7 +172,14 @@ func (s *service) ValidateGameVersions() (bool, error) {
 
 			// Game wasn't 1.13c, needs to be updated.
 			if !valid {
-				return false, nil
+				upToDate = false
+				// Get files that aren't up to date and add them to the file model.
+				version113cFiles, _, err := s.getFilesToPatch(version113cManifest.Files, game.Location, nil)
+				if err != nil {
+					return false, err
+				}
+
+				s.addFilesToModel(version113cFiles)
 			}
 
 			// Check if the current game install is up to date with the slash patch.
@@ -502,6 +515,8 @@ func (s *service) listenForGameStates() {
 }
 
 func (s *service) validateMaphackVersion(game *storage.Game, versions []string) (bool, error) {
+	isValid := true
+
 	for _, v := range versions {
 		manifest, err := s.getManifest(fmt.Sprintf("maphack_%s/manifest.json", v))
 		if err != nil {
@@ -526,7 +541,7 @@ func (s *service) validateMaphackVersion(game *storage.Game, versions []string) 
 			// Maphack patch isn't up to date.
 			if len(missingMaphackFiles) > 0 {
 				s.addFilesToModel(missingMaphackFiles)
-				return false, nil
+				isValid = false
 			}
 		} else {
 			installed, err := isModInstalled(game.Location, ModMaphackIdentifier, manifest)
@@ -542,15 +557,17 @@ func (s *service) validateMaphackVersion(game *storage.Game, versions []string) 
 					return false, err
 				}
 
-				return false, nil
+				isValid = false
 			}
 		}
 	}
 
-	return true, nil
+	return isValid, nil
 }
 
 func (s *service) validateHDVersion(game *storage.Game, versions []string) (bool, error) {
+	isValid := true
+
 	for _, v := range versions {
 		manifest, err := s.getManifest(fmt.Sprintf("hd_%s/manifest.json", v))
 		if err != nil {
@@ -568,7 +585,7 @@ func (s *service) validateHDVersion(game *storage.Game, versions []string) (bool
 			// HD mod isn't up to date.
 			if len(missingFiles) > 0 {
 				s.addFilesToModel(missingFiles)
-				return false, nil
+				isValid = false
 			}
 		} else {
 			installed, err := isModInstalled(game.Location, ModHDIdentifier, manifest)
@@ -583,12 +600,13 @@ func (s *service) validateHDVersion(game *storage.Game, versions []string) (bool
 				if err != nil {
 					return false, err
 				}
-				return false, nil
+
+				isValid = false
 			}
 		}
 	}
 
-	return true, nil
+	return isValid, nil
 }
 
 func (s *service) apply113c(path string, state chan PatchState, progress chan float32) error {

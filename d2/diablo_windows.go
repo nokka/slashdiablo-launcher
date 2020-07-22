@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"syscall"
 	"unicode/utf8"
 
 	"golang.org/x/sys/windows/registry"
@@ -97,11 +96,9 @@ func launch(path string, flags []string, done chan execState) (*int, error) {
 	// Wait on separate thread.
 	go func() {
 		if err := cmd.Wait(); err != nil {
-			if exiterr, ok := err.(*exec.ExitError); ok {
-				// The program has exited with an exit code != 0
-				if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
-					done <- execState{pid: &cmd.Process.Pid, err: fmt.Errorf("Exit status: %d : %s", status.ExitStatus(), stderr.String())}
-				}
+			if _, ok := err.(*exec.ExitError); ok {
+				// The program has exited unsuccessfully most probably they just 'X'ed the window, no need to log it.
+				done <- execState{pid: &cmd.Process.Pid, err: nil}
 			} else {
 				// Was some other wait error such as permissions, return the err.
 				done <- execState{pid: &cmd.Process.Pid, err: fmt.Errorf("cmd.Wait: %d : %s", err, stderr.String())}
