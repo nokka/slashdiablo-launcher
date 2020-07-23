@@ -34,14 +34,6 @@ const (
 	// ModHDIdentifier is the identifier we use to look for installs of hd mod.
 	ModHDIdentifier = "D2HD.dll"
 
-	errRegistryKeyNotFound = "The system cannot find the file specified."
-
-	// RegistryConfiguration is the configuration key for Diablo II.
-	RegistryConfiguration = `Software\Battle.net\Configuration`
-
-	// RegistryDiablo is where all Diablo II specific values are.
-	RegistryDiablo = `Software\Blizzard Entertainment\Diablo II`
-
 	// RegistryLayers is where all data about execution resides, like DEP.
 	RegistryLayers = `Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers`
 
@@ -159,48 +151,6 @@ func applyDEP(path string) error {
 
 	// Close the registry when we're done.
 	if err := depKey.Close(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// setDiabloRegistryKeys will remove the registry for BNETIP and set CmdLine options.
-func setDiabloRegistryKeys() error {
-	var (
-		d2Key registry.Key
-		err   error
-	)
-
-	// Open the generic Diablo II key.
-	d2Key, err = registry.OpenKey(registry.CURRENT_USER, RegistryDiablo, RegistryPermissions)
-	if err != nil && err.Error() == errRegistryKeyNotFound {
-		// The key doesn't exist, we have to create it.
-		d2Key, _, err = registry.CreateKey(registry.CURRENT_USER, RegistryDiablo, RegistryPermissions)
-		if err != nil {
-			return err
-		}
-	} else if err != nil {
-		return err
-	}
-
-	bnetIP, _, err := d2Key.GetStringValue("BNETIP")
-
-	// If getting the string value errors and the error is something other than not found, return err.
-	if err != nil && err.Error() != errRegistryKeyNotFound {
-		return err
-	}
-
-	if bnetIP != "" {
-		// The user has the BNETIP set, let's remove it, not to mess with other installs.
-		err = d2Key.DeleteValue("BNETIP")
-		if err != nil {
-			return err
-		}
-	}
-
-	// Close the registry when we're done.
-	if err := d2Key.Close(); err != nil {
 		return err
 	}
 
