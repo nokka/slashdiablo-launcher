@@ -23,7 +23,7 @@ Popup {
     modal: true
     focus: true
     width: 850
-    height: 500
+    height: 520
     margins: 0
     padding: 0
     
@@ -336,7 +336,7 @@ Popup {
                         id: gameSettings
                         anchors.left: parent.left
                         anchors.top: parent.top
-                        anchors.topMargin: 45
+                        anchors.topMargin: 40
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                 }
@@ -375,7 +375,7 @@ Popup {
                     height: 50
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
-                    anchors.bottomMargin: -25
+                    anchors.bottomMargin: -20
                     anchors.leftMargin: 65
 
                     onClicked: {

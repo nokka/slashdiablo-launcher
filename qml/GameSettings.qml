@@ -9,6 +9,7 @@ Item {
     property bool depError: false
     property int activeHDIndex: 0
     property int activeMaphackIndex: 0
+    property int boxHeight: 58
 
     function setGame(current) {
         // Set current game instance to the view.
@@ -89,6 +90,18 @@ Item {
             flags.push("-skiptobnet")
         }
 
+        if(nsFlag.active) {
+            flags.push("-ns")
+        }
+
+        if(nofixaspectFlag.active) {
+            flags.push("-nofixaspect")
+        }
+
+        if(directTxtFlag.active) {
+            flags.push("-direct -txt")
+        }
+
         return flags
     }
 
@@ -110,7 +123,7 @@ Item {
 
     Item {
         id: currentGame
-        width: parent.width * 0.95
+        width: parent.width
         height: 400
 
         anchors.horizontalCenter: parent.horizontalCenter
@@ -126,22 +139,16 @@ Item {
             Item {
                 id: fileDialogBox
                 Layout.preferredWidth: settingsLayout.width
-                Layout.preferredHeight: 100
+                Layout.preferredHeight: 85
 
                 Column {
                     anchors.top: parent.top
-                    topPadding: 0
+                    topPadding: 10
                     spacing: 5
 
                     Title {
                         text: "SET DIABLO II DIRECTORY"
                         font.pixelSize: 13
-                    }
-
-                    SText {
-                        text: "Specify your Diablo II game directory in order for the launcher to use it."
-                        font.pixelSize: 11
-                        color: "#676767"
                     }
                 }
 
@@ -151,7 +158,7 @@ Item {
 
                     TextField {
                         id: d2pathInput
-                        width: fileDialogBox.width * 0.55; height: 35
+                        width: fileDialogBox.width * 0.80; height: 35
                         font.pixelSize: 11
                         color: "#676767"
                         readOnly: true
@@ -167,43 +174,10 @@ Item {
                         label: "Open"
                         borderRadius: 0
                         borderColor: "#373737"
-                        width: fileDialogBox.width * 0.15; height: 35
+                        width: fileDialogBox.width * 0.20; height: 35
                         cursorShape: Qt.PointingHandCursor
 
                         onClicked: d2PathDialog.open()
-                    }
-
-                    Item {
-                        width: (fileDialogBox.width - (d2pathInput.width + chooseD2Path.width)); height: 35
-
-                        Row {
-                            spacing: 2
-                            leftPadding: 2
-
-                            ToggleButton {
-                                id: windowModeFlag
-                                label: "-w"
-                                width: 47
-                                height: 35
-                                onClicked: updateGameModel()
-                            }
-
-                            ToggleButton {
-                                id: gfxFlag
-                                label: "-3dfx"
-                                width: 47
-                                height: 35
-                                onClicked: updateGameModel()
-                            }
-
-                            ToggleButton {
-                                id: skipFlag
-                                label: "-skip"
-                                width: 47
-                                height: 35
-                                onClicked: updateGameModel()
-                            }
-                        }
                     }
 
                     // File dialog.
@@ -226,10 +200,97 @@ Item {
                 Separator{}
             }
 
+             // Flags box.
+            Item {
+                Layout.preferredWidth: settingsLayout.width
+                Layout.preferredHeight: boxHeight
+
+                Row {
+                    topPadding: 10
+
+                    Column {
+                        id: parametersText
+                        width: 225
+                        
+                        Title {
+                            text: "LAUNCH PARAMETERS"
+                            font.pixelSize: 13
+                        }
+
+                        SText {
+                            text: "Set when the game launches"
+                            font.pixelSize: 11
+                            topPadding: 5
+                            color: "#676767"
+                        }
+                    }
+
+                    Column {
+                        width: (settingsLayout.width - parametersText.width)
+
+                         Row {
+                            spacing: 2
+                            leftPadding: 2
+
+                            ToggleButton {
+                                id: windowModeFlag
+                                label: "-w"
+                                width: 35
+                                height: 35
+                                onClicked: updateGameModel()
+                            }
+
+                            ToggleButton {
+                                id: gfxFlag
+                                label: "-3dfx"
+                                width: 35
+                                height: 35
+                                onClicked: updateGameModel()
+                            }
+
+                            ToggleButton {
+                                id: skipFlag
+                                label: "-skip"
+                                width: 35
+                                height: 35
+                                onClicked: updateGameModel()
+                            }
+
+                            ToggleButton {
+                                id: nsFlag
+                                label: "-ns"
+                                width: 35
+                                height: 35
+                                onClicked: updateGameModel()
+                            }
+
+                            ToggleButton {
+                                id: nofixaspectFlag
+                                label: "-nofixaspect"
+                                width: 70
+                                height: 35
+                                onClicked: updateGameModel()
+                            }
+
+                            ToggleButton {
+                                id: directTxtFlag
+                                label: "-direct -txt"
+                                width: 70
+                                height: 35
+                                onClicked: updateGameModel()
+                            }
+                        }
+                    }
+                }
+                
+                Separator{}
+            }
+
+
             // Game instances box.
             Item {
                 Layout.preferredWidth: settingsLayout.width
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: boxHeight
 
                 Row {
                     topPadding: 10
@@ -270,7 +331,7 @@ Item {
             // Include maphack box.
             Item {
                 Layout.preferredWidth: settingsLayout.width
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: boxHeight
 
                 Row {
                     topPadding: 10
@@ -311,7 +372,7 @@ Item {
             // Include HD box.
             Item {
                 Layout.preferredWidth: settingsLayout.width
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: boxHeight
 
                 Row {
                     topPadding: 10
@@ -353,7 +414,7 @@ Item {
             // Use default maphack config.
             Item {
                 Layout.preferredWidth: settingsLayout.width
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: boxHeight
 
                 Row {
                     topPadding: 10
@@ -389,7 +450,7 @@ Item {
              // Dep fix.
             Item {
                 Layout.preferredWidth: settingsLayout.width
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: boxHeight
 
                 Row {
                     topPadding: 10
