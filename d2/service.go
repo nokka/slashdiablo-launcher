@@ -355,7 +355,6 @@ func (s *service) Patch(done chan bool) (<-chan float32, <-chan PatchState) {
 
 			if game.OverrideBHCfg {
 				ignoredMaphackFiles = append(ignoredMaphackFiles, "BH.cfg")
-				ignoredMaphackFiles = append(ignoredMaphackFiles, "BH_settings.cfg")
 			}
 
 			// Reset the maphack versions, to avoid rogue files and duplicates.
