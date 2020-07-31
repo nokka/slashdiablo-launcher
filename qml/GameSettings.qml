@@ -33,10 +33,17 @@ Item {
             windowModeFlag.active = current.flags.includes("-w")
             gfxFlag.active = current.flags.includes("-3dfx")
             skipFlag.active = current.flags.includes("-skiptobnet")
+            nsFlag.active = current.flags.includes("-ns")
+            nofixaspectFlag.active = current.flags.includes("-nofixaspect")
+            directTxtFlag.active = current.flags.includes("-direct -txt")
+
         } else {
             windowModeFlag.active = false
             gfxFlag.active = false
             skipFlag.active = false
+            nsFlag.active = false
+            nofixaspectFlag.active = false
+            directTxtFlag.active = false
         }
     }
 
