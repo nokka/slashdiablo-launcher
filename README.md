@@ -18,7 +18,7 @@ Slashdiablo launcher is a cross platform game launcher for Diablo II and specifi
 - [x] Launch multiple Diablo II boxes from multiple installs
 - [x] Help with OS specific configuration such as DEP issues
 - [x] View ingame top ladder
-- [ ] Patch Diablo II from 1.14+ down to 1.13c
+- [x] Patch Diablo II from 1.14+ down to 1.13c
 
 ### Full OS support
 
